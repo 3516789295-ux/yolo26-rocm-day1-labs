@@ -247,7 +247,6 @@ make('02_Lab_B_Dataset_Annotation_QA.ipynb','02 / Lab B · 数据集、标注、
 - Check label ranges, duplicates, bounding boxes and the dataset config.
 
 > **Key scientific boundary**: official COCO128 reuses the same images for train and val and is for smoke tests only. This notebook re-groups and re-splits them to prevent direct overlap; with just 128 images the result can never be presented as industrial accuracy or a strict COCO benchmark, and semantically similar scenes still need human review.'''),
- c(SETUP),
  m('''### 新的 Lab B：先手工标注，再自动检查
 1. 在 Windows/macOS/Linux 本地安装开源 **X-AnyLabeling**（它是独立桌面软件，不要装进 ROCm PyTorch 环境）。
 2. 讲师提供已获授权的图片；每名学生先手工绘制至少 5 张图片的矩形框，与同伴交换至少 5 张进行复核。先定义统一的类别顺序：classes.txt 每行一个类别，从 0 开始。
@@ -266,6 +265,7 @@ make('02_Lab_B_Dataset_Annotation_QA.ipynb','02 / Lab B · 数据集、标注、
 6. Group images from the same video/scene before splitting. Provide optional scenes.csv with image,scene columns; without it the perceptual duplicate heuristic still requires human review.
 
 **Teaching boundary**: at least nine images and three independent groups are required. Otherwise use the default COCO128 demo. A tiny dataset does not establish industrial generalization. Lab C reuses the successful import via shared config.'''),
+ c(SETUP),
  c('''from course.lab_utils import (download_coco128,prepare_coco128_demo,inspect_dataset,
     plot_labels,read_labels,label_errors,list_images)
 from course.annotation_import import import_anylabeling_yolo
