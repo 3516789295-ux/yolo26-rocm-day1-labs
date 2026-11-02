@@ -370,7 +370,7 @@ else:
 4. Which errors are annotation-spec problems rather than model problems?
 
 **Deliverables**: `data/processed/.../data.yaml`, `split_manifest.csv`, `dataset_manifest.json`, the QA JSON, the manual review sheet, annotated images.''')
-], '50–60 分钟','手工标注 → 导出 → 防泄漏划分 → QA','50–60 minutes','manual labeling → export → grouped splits → QA')
+], '50–60 分钟','50–60 minutes','手工标注 → 导出 → 防泄漏划分 → QA','manual labeling → export → grouped splits → QA')
 
 make('03_Lab_C_ROCm_Training_Finetune.ipynb','03 / Lab C · ROCm GPU 训练、微调与 Loss','03 / Lab C · ROCm GPU Training, Fine-tuning & Loss',[
  m('''## 实验目标
