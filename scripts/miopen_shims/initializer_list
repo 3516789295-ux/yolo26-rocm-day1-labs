@@ -1,0 +1,36 @@
+// Freestanding <initializer_list> shim for MIOpen hipRTC device-kernel compilation.
+// Mirrors upstream ROCm/rocm-libraries#13437 (miopen_initializer_list.hpp): the
+// compiler lowers braced-init-lists to a {begin, size} pair; this definition has
+// exactly that layout. Inert outside HIP/hipRTC compilation units.
+#pragma once
+
+#if defined(__HIP__) || defined(__HIP_PLATFORM_AMD__) || defined(__HIPRTC__)
+
+// Fully freestanding (hipRTC -nostdinc isolation): use the compiler builtin.
+typedef __SIZE_TYPE__ shim_size_t;
+
+namespace std {
+
+template <class E>
+class initializer_list {
+    const E* __begin_;
+    shim_size_t __size_;
+
+    constexpr initializer_list(const E* b, shim_size_t s) noexcept : __begin_(b), __size_(s) {}
+
+public:
+    constexpr initializer_list() noexcept : __begin_(nullptr), __size_(0) {}
+    constexpr const E* begin() const noexcept { return __begin_; }
+    constexpr const E* end() const noexcept { return __begin_ + __size_; }
+    constexpr shim_size_t size() const noexcept { return __size_; }
+};
+
+template <class E>
+constexpr const E* begin(initializer_list<E> il) noexcept { return il.begin(); }
+
+template <class E>
+constexpr const E* end(initializer_list<E> il) noexcept { return il.end(); }
+
+} // namespace std
+
+#endif  // HIP guard

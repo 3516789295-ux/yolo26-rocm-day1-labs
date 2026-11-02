@@ -1,0 +1,92 @@
+{
+  "timestamp_utc": "2026-11-02T09:17:50.796021+00:00",
+  "python": "3.12.16",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "gates": {
+    "torch_version": {
+      "pass": true,
+      "detail": "2.12.0+rocm7.14.1"
+    },
+    "torchvision_version": {
+      "pass": true,
+      "detail": "0.27.0+rocm7.14.1"
+    },
+    "torchaudio_version": {
+      "pass": true,
+      "detail": "2.11.0+rocm7.14.1"
+    },
+    "hip_backend": {
+      "pass": true,
+      "detail": "7.14.60850"
+    },
+    "cuda_api_note": {
+      "pass": true,
+      "detail": "torch.version.cuda=None (None is normal on HIP-only ROCm Windows wheels; torch.cuda namespace is the HIP API surface)"
+    },
+    "gpu_available": {
+      "pass": true,
+      "detail": null
+    },
+    "device_name": {
+      "pass": true,
+      "detail": "AMD Radeon RX 7900 XTX"
+    },
+    "gfx_arch_gfx1100": {
+      "pass": true,
+      "detail": "gfx1100"
+    },
+    "gpu_tensor_alloc": {
+      "pass": true,
+      "detail": "cuda:0"
+    },
+    "gpu_matmul": {
+      "pass": true,
+      "detail": "211.7 ms"
+    },
+    "gpu_conv2d_forward": {
+      "pass": true,
+      "detail": "85.9 ms"
+    },
+    "gpu_loss_finite": {
+      "pass": true,
+      "detail": "loss=0.184226"
+    },
+    "gpu_backward_grad_exists": {
+      "pass": true,
+      "detail": "66.3 ms"
+    },
+    "optimizer_step_changed_weights": {
+      "pass": true,
+      "detail": "max|Δw|=7.965e-05"
+    },
+    "no_nan_inf": {
+      "pass": true,
+      "detail": null
+    },
+    "batchnorm_train_mode": {
+      "pass": true,
+      "detail": "num_batches_tracked=1"
+    },
+    "real_compute_pipeline": {
+      "pass": true,
+      "detail": null
+    }
+  },
+  "explanation": "AMD ROCm PyTorch exposes HIP through the torch.cuda API namespace; torch.version.hip != None proves the ROCm build, torch.version.cuda reports the HIP runtime version alias on ROCm wheels.",
+  "device": {
+    "name": "AMD Radeon RX 7900 XTX",
+    "gcnArchName": "gfx1100",
+    "capability": "11.0",
+    "total_memory_GiB": 23.98,
+    "multi_processor_count": 48
+  },
+  "compute": {
+    "alloc_matmul_ms": 211.69,
+    "conv_bn_loss_forward_ms": 85.94,
+    "backward_ms": 66.29,
+    "peak_allocated_GiB": 0.0845
+  },
+  "driver": "{\"Name\":\"AMD Radeon RX 7900 XTX\",\"DriverVersion\":\"32.0.21030.2001\"}",
+  "overall": "PASS",
+  "failed_gates": []
+}

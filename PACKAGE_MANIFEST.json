@@ -1,0 +1,84 @@
+{
+  "version": "1.0",
+  "generated_utc": "2026-11-02T01:43:43.263400+00:00",
+  "project": "AMD Radeon Cloud YOLO Day 1 Labs",
+  "gpu_executed_in_generation_environment": false,
+  "offline_unit_tests": "6 passed",
+  "files": [
+    {
+      "path": "DESIGN_SYSTEM.md",
+      "size": 24350,
+      "sha256": "94110e5c0f92e5964970eb0d38e86891c35ead4c8bd565d3b1c725d1289469e2"
+    },
+    {
+      "path": "INSTRUCTOR_GUIDE.md",
+      "size": 5136,
+      "sha256": "dd12298efa8fcdc8de28077ae79f8de495be74ff95cb7331d71074200275f22f"
+    },
+    {
+      "path": "README.md",
+      "size": 6860,
+      "sha256": "3e4d0544310d896f7fb5976897b91c2665494f93d9257bcb46a48cb238f7824c"
+    },
+    {
+      "path": "build_notebooks.py",
+      "size": 32409,
+      "sha256": "0d7a93706774eb8507a06e7a45e25da38fa0bef6ed2f0084ccbd081c7bf2d61b"
+    },
+    {
+      "path": "course/__init__.py",
+      "size": 72,
+      "sha256": "e8e5c9d5f87eddfd04b69ce3386e579d55fc37cf21a13bc284d48805210499d6"
+    },
+    {
+      "path": "course/lab_utils.py",
+      "size": 18965,
+      "sha256": "1ca622045b5e218db97d70817ee550b05bd432dfbe3f3d14333c41251472aef7"
+    },
+    {
+      "path": "notebooks/00_ROCm_Environment_Preflight.ipynb",
+      "size": 6272,
+      "sha256": "14aff59d4804ac853b813e07add9a8c2ba3753c60e000f73278873a5713d1130"
+    },
+    {
+      "path": "notebooks/01_Lab_A_Predict_and_Threshold.ipynb",
+      "size": 7340,
+      "sha256": "f0a91265fa3a5a882ea057fd99b7885f058605e23393952ecb7034551ff6cd84"
+    },
+    {
+      "path": "notebooks/02_Lab_B_Dataset_Annotation_QA.ipynb",
+      "size": 9766,
+      "sha256": "a4517d4856092029108f8c9d3be5f80e6f8577e7a498511a2ca044a5d89d0b82"
+    },
+    {
+      "path": "notebooks/03_Lab_C_ROCm_Training_Finetune.ipynb",
+      "size": 8316,
+      "sha256": "d8c9674dc65fb987342413dc1bba7c44a57b098be6cafbf2da19ea2f6382eb3b"
+    },
+    {
+      "path": "notebooks/04_Lab_D_Evaluation_Error_Analysis.ipynb",
+      "size": 8859,
+      "sha256": "e3146cf56217eb441c1332458800f726e81c83fce90f4f3dfe9144e6d218abee"
+    },
+    {
+      "path": "notebooks/05_Lab_E_Controlled_AB_Optimization.ipynb",
+      "size": 10577,
+      "sha256": "19ce5e689f6a6a9984fb72df7637e28d851ad402de443a7b67adf64e06a8201a"
+    },
+    {
+      "path": "requirements-course.txt",
+      "size": 254,
+      "sha256": "cc6ffd6751f1cbfa3ca5d53e99bf635457bbb5fcf255e74f68d2052b01af177d"
+    },
+    {
+      "path": "tests/test_lab_utils.py",
+      "size": 3404,
+      "sha256": "3f47a3ee0e02a186d6cbcc3d3ab26a657a39c25d126cdf9c15e21f4690425027"
+    },
+    {
+      "path": "tests/test_prediction_matching.py",
+      "size": 856,
+      "sha256": "12aa590fd5d6b31c9d326adab13deca902cf1c4bc68170e19a21d56197c0d280"
+    }
+  ]
+}

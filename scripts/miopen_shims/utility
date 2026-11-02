@@ -1,0 +1,67 @@
+// Freestanding <utility> shim for MIOpen hipRTC device-kernel compilation.
+// Same rationale as the <type_traits> shim (ROCm/rocm-libraries#13437 pattern);
+// inert outside HIP/hipRTC compilation units.
+#pragma once
+
+#if defined(__HIP__) || defined(__HIP_PLATFORM_AMD__) || defined(__HIPRTC__)
+
+#include "type_traits"  // freestanding shim in the same directory
+
+namespace std {
+
+template <typename T>
+constexpr remove_reference_t<T>&& move(T&& t_) noexcept {
+    return static_cast<remove_reference_t<T>&&>(t_);
+}
+
+template <typename T>
+constexpr T&& forward(remove_reference_t<T>& t_) noexcept {
+    return static_cast<T&&>(t_);
+}
+
+template <typename T>
+constexpr T&& forward(remove_reference_t<T>&& t_) noexcept {
+    return static_cast<T&&>(t_);
+}
+
+template <class T>
+constexpr void swap(T& a, T& b) {
+    T tmp = move(a);
+    a = move(b);
+    b = move(tmp);
+}
+
+template <class T, class U = T>
+constexpr T exchange(T& obj, U&& new_val) {
+    T old = move(obj);
+    obj = forward<U>(new_val);
+    return old;
+}
+
+template <class T>
+constexpr add_const_t<T>& as_const(T& t) noexcept { return t; }
+
+// index_sequence family (used by some kernel template packs)
+template <size_t... I> struct index_sequence { static constexpr size_t size() noexcept { return sizeof...(I); } };
+template <size_t N, size_t... I>
+struct make_index_sequence_impl : make_index_sequence_impl<N - 1, N - 1, I...> {};
+template <size_t... I>
+struct make_index_sequence_impl<0, I...> { using type = index_sequence<I...>; };
+template <size_t N>
+using make_index_sequence = typename make_index_sequence_impl<N>::type;
+template <class... T>
+using index_sequence_for = make_index_sequence<sizeof...(T)>;
+
+template <class T1, class T2>
+struct pair {
+    T1 first;
+    T2 second;
+    constexpr pair() : first(), second() {}
+    constexpr pair(const T1& a, const T2& b) : first(a), second(b) {}
+    template <class U1, class U2>
+    constexpr pair(U1&& a, U2&& b) : first(forward<U1>(a)), second(forward<U2>(b)) {}
+};
+
+} // namespace std
+
+#endif  // HIP guard

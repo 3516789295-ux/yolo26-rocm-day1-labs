@@ -1,0 +1,29 @@
+device: AMD Radeon RX 7900 XTX
+MIOpen(HIP): Error [Compile] 'hiprtcCompileProgram(prog.get(), c_options.size(), c_options.data())' MIOpenBatchNormFwdTrainSpatial.cpp: HIPRTC_ERROR_COMPILATION (6)
+MIOpen(HIP): Error [BuildHip] HIPRTC status = HIPRTC_ERROR_COMPILATION (6), source file: MIOpenBatchNormFwdTrainSpatial.cpp
+MIOpen(HIP): Warning [BuildHip] In file included from C:\Users\Rocm\AppData\Local\Temp\comgr-26656-6-33cd7f\input\MIOpenBatchNormFwdTrainSpatial.cpp:8:
+In file included from C:\Users\Rocm\AppData\Local\Temp\comgr-26656-6-33cd7f\include\batchnorm_functions.hpp:30:
+In file included from C:\Users\Rocm\AppData\Local\Temp\comgr-26656-6-33cd7f\include\configuration.hpp:34:
+In file included from C:\Users\Rocm\AppData\Local\Temp\comgr-26656-6-33cd7f\include\vector_types.hpp:8:
+C:\Users\Rocm\AppData\Local\Temp\comgr-26656-6-33cd7f\include\miopen_type_traits.hpp:151:10: fatal error: 'type_traits' file not found
+  151 | #include <type_traits>
+      |          ^~~~~~~~~~~~~
+1 error generated when compiling for gfx1100.
+MIOpen Error: DESKTOP-S6VG7J7:C:/home/runner/_work/rockrel/rockrel/rocm-libraries/projects/miopen/src/hipoc/hipoc_program.cpp:299: Code object build failed. Source: MIOpenBatchNormFwdTrainSpatial.cpp
+Traceback (most recent call last):
+  File "C:\Users\Rocm\Desktop\YOLO\YOLO26_ROCm_Day1_Labs\scripts\bn_repro.py", line 19, in <module>
+    y = m(x)
+        ^^^^
+  File "C:\Users\Rocm\Desktop\YOLO\YOLO26_ROCm_Day1_Labs\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Rocm\Desktop\YOLO\YOLO26_ROCm_Day1_Labs\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Rocm\Desktop\YOLO\YOLO26_ROCm_Day1_Labs\.venv\Lib\site-packages\torch\nn\modules\batchnorm.py", line 210, in forward
+    return F.batch_norm(
+           ^^^^^^^^^^^^^
+  File "C:\Users\Rocm\Desktop\YOLO\YOLO26_ROCm_Day1_Labs\.venv\Lib\site-packages\torch\nn\functional.py", line 2850, in batch_norm
+    return torch.batch_norm(
+           ^^^^^^^^^^^^^^^^^
+RuntimeError: miopenStatusUnknownError

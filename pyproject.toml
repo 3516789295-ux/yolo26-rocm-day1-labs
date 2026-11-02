@@ -1,0 +1,65 @@
+[project]
+name = "yolo26-rocm-day1-labs"
+version = "1.0"
+description = "YOLO26 ROCm Day 1 Labs - teaching package (Windows native ROCm + Linux Radeon Cloud)"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+# NOTE: torch/torchvision/torchaudio are deliberately NOT normal dependencies here.
+# They MUST come from the AMD ROCm wheel index (repo.amd.com) via the `rocm-gfx1100`
+# extra below, so no resolver can ever silently replace them with PyPI CPU/CUDA builds.
+# Reproduction: see docs/ROCM_WINDOWS_SETUP.md and validation/DEPENDENCY_MANIFEST.md.
+dependencies = [
+    "ultralytics>=8.4,<9",
+    "numpy>=1.24",
+    "pillow>=10",
+    "matplotlib>=3.7",
+    "pandas>=2.0",
+    "pyyaml>=6.0",
+    "ipykernel>=6.0",
+    "nbformat>=5.0",
+]
+
+[project.optional-dependencies]
+# AMD ROCm 7.14.1 PyTorch trio for gfx1100 (RX 7900 XTX / Navi31), Windows & Linux.
+rocm-gfx1100 = [
+    "torch[device-gfx1100]==2.12.0+rocm7.14.1",
+    "torchvision[device-gfx1100]==0.27.0+rocm7.14.1",
+    "torchaudio==2.11.0+rocm7.14.1",
+]
+# Notebook automation / validation tooling used by scripts/run_all_labs.py and tests.
+validation = [
+    "nbclient>=0.10",
+    "jupyterlab>=4.0",
+    "pytest>=8.0",
+]
+
+[tool.uv]
+# Hard constraint: never let any resolution drift the PyTorch trio off the AMD wheels.
+constraint-dependencies = [
+    "torch==2.12.0+rocm7.14.1",
+    "torchvision==0.27.0+rocm7.14.1",
+    "torchaudio==2.11.0+rocm7.14.1",
+]
+
+[[tool.uv.index]]
+name = "amd-rocm"
+url = "https://repo.amd.com/rocm/whl-multi-arch/"
+explicit = true
+
+[tool.uv.sources]
+# All ROCm stack distributions come from the AMD wheel index, never PyPI.
+torch = { index = "amd-rocm" }
+torchvision = { index = "amd-rocm" }
+torchaudio = { index = "amd-rocm" }
+rocm = { index = "amd-rocm" }
+rocm-sdk-core = { index = "amd-rocm" }
+rocm-sdk-libraries = { index = "amd-rocm" }
+rocm-bootstrap = { index = "amd-rocm" }
+rocm-sdk-device-gfx1100 = { index = "amd-rocm" }
+rocm-sdk-device-gfx110x = { index = "amd-rocm" }
+amd-torch-device-gfx1100 = { index = "amd-rocm" }
+amd-torch-device-gfx110x = { index = "amd-rocm" }
+amd-torchvision-device-gfx1100 = { index = "amd-rocm" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

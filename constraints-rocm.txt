@@ -1,0 +1,7 @@
+# Protect the AMD ROCm PyTorch trio from any resolver replacement.
+# These exact versions are installed from https://repo.amd.com/rocm/whl-multi-arch/
+# (torch/torchvision with the device-gfx1100 extra). Pass to pip/uv via
+#   --constraints constraints-rocm.txt
+torch==2.12.0+rocm7.14.1
+torchvision==0.27.0+rocm7.14.1
+torchaudio==2.11.0+rocm7.14.1

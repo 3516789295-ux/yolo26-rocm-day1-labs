@@ -1,0 +1,29 @@
+== YOLO26 ROCm Day1 runner ==
+venv: C:\Users\Rocm\Desktop\YOLO\YOLO26_ROCm_Day1_Labs\.venv\Scripts\python.exe
+kernel: yolo26-rocm7141 (registered=True)
+course home: C:\Users\Rocm\Desktop\YOLO\YOLO26_ROCm_Day1_Labs\yolo_course_bilingual_check
+output: C:\Users\Rocm\Desktop\YOLO\YOLO26_ROCm_Day1_Labs\validation\executed\20261102_210903
+
+--- [21:09:03] running 00_ROCm_Environment_Preflight.ipynb ...
+C:\Users\Rocm\Desktop\YOLO\YOLO26_ROCm_Day1_Labs\.venv\Lib\site-packages\zmq\_future.py:718: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 00_ROCm_Environment_Preflight.ipynb: PASS in 3.34s (5/5 cells)
+--- [21:09:07] running 01_Lab_A_Predict_and_Threshold.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 01_Lab_A_Predict_and_Threshold.ipynb: PASS in 5.88s (7/7 cells)
+--- [21:09:13] running 02_Lab_B_Dataset_Annotation_QA.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 02_Lab_B_Dataset_Annotation_QA.ipynb: PASS in 4.92s (7/7 cells)
+--- [21:09:18] running 03_Lab_C_ROCm_Training_Finetune.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 03_Lab_C_ROCm_Training_Finetune.ipynb: PASS in 38.94s (6/6 cells)
+--- [21:09:57] running 04_Lab_D_Evaluation_Error_Analysis.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 04_Lab_D_Evaluation_Error_Analysis.ipynb: PASS in 7.42s (6/6 cells)
+--- [21:10:05] running 05_Lab_E_Controlled_AB_Optimization.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 05_Lab_E_Controlled_AB_Optimization.ipynb: PASS in 29.16s (6/6 cells)
+
+== 6/6 notebooks PASS ==
+data: C:\Users\Rocm\Desktop\YOLO\YOLO26_ROCm_Day1_Labs\validation\NOTEBOOK_EXECUTION_DATA_20261102_210903.json

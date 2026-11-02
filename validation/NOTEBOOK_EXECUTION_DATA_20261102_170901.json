@@ -1,0 +1,417 @@
+{
+  "summary": {
+    "timestamp_utc": "2026-11-02T09:14:53.305770+00:00",
+    "kernel": "yolo26-rocm7141",
+    "kernel_registered": true,
+    "course_home": "C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course",
+    "per_cell_timeout": 7200,
+    "venv_python": "C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\.venv\\Scripts\\python.exe",
+    "results": [
+      {
+        "notebook": "00_ROCm_Environment_Preflight.ipynb",
+        "kernel": "yolo26-rocm7141",
+        "started": "2026-11-02T09:09:01.946412+00:00",
+        "result": "PASS",
+        "duration_seconds": 10.21,
+        "code_cells": 5,
+        "executed_cells": 5,
+        "gpu_referenced_and_executed": true,
+        "executed_copy": "validation\\executed\\20261102_170901\\00_ROCm_Environment_Preflight.executed.ipynb"
+      },
+      {
+        "notebook": "01_Lab_A_Predict_and_Threshold.ipynb",
+        "kernel": "yolo26-rocm7141",
+        "started": "2026-11-02T09:09:12.155414+00:00",
+        "result": "PASS",
+        "duration_seconds": 14.19,
+        "code_cells": 7,
+        "executed_cells": 7,
+        "gpu_referenced_and_executed": true,
+        "executed_copy": "validation\\executed\\20261102_170901\\01_Lab_A_Predict_and_Threshold.executed.ipynb"
+      },
+      {
+        "notebook": "02_Lab_B_Dataset_Annotation_QA.ipynb",
+        "kernel": "yolo26-rocm7141",
+        "started": "2026-11-02T09:09:26.367152+00:00",
+        "result": "PASS",
+        "duration_seconds": 6.64,
+        "code_cells": 7,
+        "executed_cells": 7,
+        "gpu_referenced_and_executed": true,
+        "executed_copy": "validation\\executed\\20261102_170901\\02_Lab_B_Dataset_Annotation_QA.executed.ipynb"
+      },
+      {
+        "notebook": "03_Lab_C_ROCm_Training_Finetune.ipynb",
+        "kernel": "yolo26-rocm7141",
+        "started": "2026-11-02T09:09:33.016035+00:00",
+        "result": "PASS",
+        "duration_seconds": 200.19,
+        "code_cells": 6,
+        "executed_cells": 6,
+        "gpu_referenced_and_executed": true,
+        "executed_copy": "validation\\executed\\20261102_170901\\03_Lab_C_ROCm_Training_Finetune.executed.ipynb"
+      },
+      {
+        "notebook": "04_Lab_D_Evaluation_Error_Analysis.ipynb",
+        "kernel": "yolo26-rocm7141",
+        "started": "2026-11-02T09:12:53.214675+00:00",
+        "result": "PASS",
+        "duration_seconds": 30.51,
+        "code_cells": 6,
+        "executed_cells": 6,
+        "gpu_referenced_and_executed": true,
+        "executed_copy": "validation\\executed\\20261102_170901\\04_Lab_D_Evaluation_Error_Analysis.executed.ipynb"
+      },
+      {
+        "notebook": "05_Lab_E_Controlled_AB_Optimization.ipynb",
+        "kernel": "yolo26-rocm7141",
+        "started": "2026-11-02T09:13:23.743950+00:00",
+        "result": "PASS",
+        "duration_seconds": 89.56,
+        "code_cells": 6,
+        "executed_cells": 6,
+        "gpu_referenced_and_executed": true,
+        "executed_copy": "validation\\executed\\20261102_170901\\05_Lab_E_Controlled_AB_Optimization.executed.ipynb"
+      }
+    ]
+  },
+  "notebooks": [
+    {
+      "notebook": "00_ROCm_Environment_Preflight.ipynb",
+      "kernel": "yolo26-rocm7141",
+      "started": "2026-11-02T09:09:01.946412+00:00",
+      "result": "PASS",
+      "duration_seconds": 10.21,
+      "code_cells": 5,
+      "executed_cells": 5,
+      "gpu_referenced_and_executed": true,
+      "cells": [
+        {
+          "index": 3,
+          "executed": true,
+          "execution_count": 1,
+          "duration_seconds": null,
+          "output_tail": "Project: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs \nPersistent output: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\n"
+        },
+        {
+          "index": 4,
+          "executed": true,
+          "execution_count": 2,
+          "duration_seconds": null,
+          "output_tail": "{'gpu_device_nodes': {'/dev/dri': False, '/dev/kfd': False},\n 'gpu_name': 'AMD Radeon RX 7900 XTX',\n 'gpu_visible': True,\n 'platform': 'Windows-11-10.0.26300-SP0',\n 'proxy_configured': {'HTTPS_PROXY': False,\n                      'HTTP_PROXY': False,\n                      'http_proxy': False,\n                      'https_proxy': False},\n 'python': '3.12.16',\n 'timestamp_utc': '2026-11-02T09:09:04Z',\n 'torch': '2.12.0+rocm7.14.1',\n 'torch_hip': '7.14.60850',\n 'ultralytics': '8.4.198'}\n"
+        },
+        {
+          "index": 6,
+          "executed": true,
+          "execution_count": 3,
+          "duration_seconds": null,
+          "output_tail": "AMD ROCm verified: AMD Radeon RX 7900 XTX HIP: 7.14.60850\nDevice argument for Ultralytics: 0\n"
+        },
+        {
+          "index": 7,
+          "executed": true,
+          "execution_count": 4,
+          "duration_seconds": null,
+          "output_tail": "HIP kernel smoke: PASS, output shape: (128, 128)\n"
+        },
+        {
+          "index": 9,
+          "executed": true,
+          "execution_count": 5,
+          "duration_seconds": null,
+          "output_tail": "ub.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt to 'yolo26n.pt': 61% ━━━━━━━───── 3.2/5.3MB 4.7MB/s 1.2s<0.4s\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt to 'yolo26n.pt': 67% ━━━━━━━━──── 3.5/5.3MB 3.0MB/s 1.3s<0.6s\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt to 'yolo26n.pt': 72% ━━━━━━━━╸─── 3.9/5.3MB 3.1MB/s 1.4s<0.5s\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt to 'yolo26n.pt': 78% ━━━━━━━━━─── 4.2/5.3MB 3.1MB/s 1.5s<0.4s\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt to 'yolo26n.pt': 87% ━━━━━━━━━━── 4.6/5.3MB 4.5MB/s 1.6s<0.1s\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt to 'yolo26n.pt': 97% ━━━━━━━━━━━╸ 5.2/5.3MB 5.4MB/s 1.7s<0.0s\r\u001b[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolo26n.pt to 'yolo26n.pt': 100% ━━━━━━━━━━━━ 5.3MB 3.1MB/s 1.7s\nPinned model: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\artifacts\\yolo26n.pt sha256: 9b09cc8bf347f0fc8a5f7657480587f25db09b34bf33b0652110fb03a8ad4fef\n{'home': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course',\n 'model': 'yolo26n.pt',\n 'dataset_yaml': '',\n 'dataset_kind': '',\n 'baseline_weights': '',\n 'baseline_run': '',\n 'model_licence_reviewed': False,\n 'model_sha256': '9b09cc8bf347f0fc8a5f7657480587f25db09b34bf33b0652110fb03a8ad4fef'}"
+        }
+      ],
+      "executed_copy": "validation\\executed\\20261102_170901\\00_ROCm_Environment_Preflight.executed.ipynb"
+    },
+    {
+      "notebook": "01_Lab_A_Predict_and_Threshold.ipynb",
+      "kernel": "yolo26-rocm7141",
+      "started": "2026-11-02T09:09:12.155414+00:00",
+      "result": "PASS",
+      "duration_seconds": 14.19,
+      "code_cells": 7,
+      "executed_cells": 7,
+      "gpu_referenced_and_executed": true,
+      "cells": [
+        {
+          "index": 3,
+          "executed": true,
+          "execution_count": 1,
+          "duration_seconds": null,
+          "output_tail": "Project: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs \nPersistent output: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\n"
+        },
+        {
+          "index": 4,
+          "executed": true,
+          "execution_count": 2,
+          "duration_seconds": null,
+          "output_tail": "AMD ROCm verified: AMD Radeon RX 7900 XTX HIP: 7.14.60850\nLoaded: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\artifacts\\yolo26n.pt\n"
+        },
+        {
+          "index": 5,
+          "executed": true,
+          "execution_count": 3,
+          "duration_seconds": null,
+          "output_tail": "<PIL.Image.Image image mode=RGB size=480x640>"
+        },
+        {
+          "index": 6,
+          "executed": true,
+          "execution_count": 4,
+          "duration_seconds": null,
+          "output_tail": "0.1 predictions: 7 -> C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\assets\\lab_a_thresholds\\conf_0.10.jpg\n0.25 predictions: 5 -> C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\assets\\lab_a_thresholds\\conf_0.25.jpg\n0.5 predictions: 5 -> C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\assets\\lab_a_thresholds\\conf_0.50.jpg\n"
+        },
+        {
+          "index": 7,
+          "executed": true,
+          "execution_count": 5,
+          "duration_seconds": null,
+          "output_tail": "xyxy: [[          0      230.48       803.2       750.7]\n [     48.614       397.7      240.34      902.41]\n [     222.94      404.82      345.47      861.02]]\nconfidence: [     0.8806     0.87201     0.86081]\nclass ID: [          5           0           0]\n"
+        },
+        {
+          "index": 8,
+          "executed": true,
+          "execution_count": 6,
+          "duration_seconds": null,
+          "output_tail": "IoU= 0.7064 学生可修改 box_pred 并观察变化\n"
+        },
+        {
+          "index": 9,
+          "executed": true,
+          "execution_count": 7,
+          "duration_seconds": null,
+          "output_tail": "conf=0.10  boxes=7\n<PIL.Image.Image image mode=RGB size=640x480>conf=0.25  boxes=5\n<PIL.Image.Image image mode=RGB size=640x480>conf=0.50  boxes=5\n<PIL.Image.Image image mode=RGB size=640x480>Threshold monotonicity: PASS\n"
+        }
+      ],
+      "executed_copy": "validation\\executed\\20261102_170901\\01_Lab_A_Predict_and_Threshold.executed.ipynb"
+    },
+    {
+      "notebook": "02_Lab_B_Dataset_Annotation_QA.ipynb",
+      "kernel": "yolo26-rocm7141",
+      "started": "2026-11-02T09:09:26.367152+00:00",
+      "result": "PASS",
+      "duration_seconds": 6.64,
+      "code_cells": 7,
+      "executed_cells": 7,
+      "gpu_referenced_and_executed": true,
+      "cells": [
+        {
+          "index": 3,
+          "executed": true,
+          "execution_count": 1,
+          "duration_seconds": null,
+          "output_tail": "Project: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs \nPersistent output: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\n"
+        },
+        {
+          "index": 4,
+          "executed": true,
+          "execution_count": 2,
+          "duration_seconds": null,
+          "output_tail": "{'source': 'COCO128 (COCO train2017 first 128 images)', 'pedagogical_only': True, 'note': 'Image-disjoint internal partition; still tiny and biased, not a COCO benchmark, near-duplicate heuristic is not a guarantee.', 'splits': {'train': 89, 'val': 20, 'test': 19}, 'class_counts': {'train:0': 196, 'train:1': 32, 'val:0': 29, 'train:2': 33, 'test:0': 29, 'test:2': 2, 'test:1': 14}, 'groups': 128, 'seed': 42, 'names': ['person', 'car', 'chair'], 'data_yaml': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\data\\\\processed\\\\coco128_classroom_3class\\\\data.yaml', 'source_url': 'https://github.com/ultralytics/assets/releases/download/v0.0.0/coco128.zip'}\nTraining dataset: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\data\\processed\\coco128_classroom_3class\\data.yaml\n"
+        },
+        {
+          "index": 5,
+          "executed": true,
+          "execution_count": 3,
+          "duration_seconds": null,
+          "output_tail": "Class names: {0: 'person', 1: 'car', 2: 'chair'}\nSplit stats: {'train': {'images': 89, 'boxes': 261, 'empty_or_missing_labels': 34}, 'val': {'images': 20, 'boxes': 29, 'empty_or_missing_labels': 12}, 'test': {'images': 19, 'boxes': 45, 'empty_or_missing_labels': 11}}\nErrors: []\nNear-duplicate review warnings: []\nDataset structural QA: PASS\n"
+        },
+        {
+          "index": 6,
+          "executed": true,
+          "execution_count": 4,
+          "duration_seconds": null,
+          "output_tail": "<Figure size 1200x700 with 6 Axes>"
+        },
+        {
+          "index": 7,
+          "executed": true,
+          "execution_count": 5,
+          "duration_seconds": null,
+          "output_tail": "Label format & invalid-bound tests: PASS\n"
+        },
+        {
+          "index": 8,
+          "executed": true,
+          "execution_count": 6,
+          "duration_seconds": null,
+          "output_tail": "人工检查 20 张并填写: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\reports\\lab_b_manual_review.csv\n"
+        },
+        {
+          "index": 10,
+          "executed": true,
+          "execution_count": 7,
+          "duration_seconds": null,
+          "output_tail": "编辑目标: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\data\\processed\\coco128_classroom_3class\\labels\\train\\000000000009.txt\n原始标签: []\n安全预览：未修改任何文件。\n"
+        }
+      ],
+      "executed_copy": "validation\\executed\\20261102_170901\\02_Lab_B_Dataset_Annotation_QA.executed.ipynb"
+    },
+    {
+      "notebook": "03_Lab_C_ROCm_Training_Finetune.ipynb",
+      "kernel": "yolo26-rocm7141",
+      "started": "2026-11-02T09:09:33.016035+00:00",
+      "result": "PASS",
+      "duration_seconds": 200.19,
+      "code_cells": 6,
+      "executed_cells": 6,
+      "gpu_referenced_and_executed": true,
+      "cells": [
+        {
+          "index": 3,
+          "executed": true,
+          "execution_count": 1,
+          "duration_seconds": null,
+          "output_tail": "Project: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs \nPersistent output: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\n"
+        },
+        {
+          "index": 4,
+          "executed": true,
+          "execution_count": 2,
+          "duration_seconds": null,
+          "output_tail": "AMD ROCm verified: AMD Radeon RX 7900 XTX HIP: 7.14.60850\nTraining: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\artifacts\\yolo26n.pt dataset: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\data\\processed\\coco128_classroom_3class\\data.yaml\n"
+        },
+        {
+          "index": 5,
+          "executed": true,
+          "execution_count": 3,
+          "duration_seconds": null,
+          "output_tail": ".624       0.65      0.797      0.577\n\n1 epochs completed in 0.013 hours.\nOptimizer stripped from C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\runs\\lab_c\\smoke\\weights\\last.pt, 5.5MB\nOptimizer stripped from C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\runs\\lab_c\\smoke\\weights\\best.pt, 5.5MB\n\nValidating C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\runs\\lab_c\\smoke\\weights\\best.pt...\nUltralytics 8.4.198  Python-3.12.16 torch-2.12.0+rocm7.14.1 CUDA:0 (AMD Radeon RX 7900 XTX, 24560MiB)\nYOLO26n summary (fused): 120 layers, 2,408,932 parameters, 0 gradients, 5.5 GFLOPs\n\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 1/1 42.5it/s 0.0s\n                   all          4         17      0.647      0.642      0.797       0.59\n                person          3         10      0.335      0.355      0.307      0.148\n                   dog          1          1        0.6          1      0.995      0.697\n                 horse          1          2       0.59          1      0.995      0.509\n              elephant          1          2      0.809        0.5      0.495      0.396\n              umbrella          1          1      0.548          1      0.995      0.995\n          potted plant          1          1          1          0      0.995      0.796\nSpeed: 0.1ms preprocess, 2.0ms inference, 0.0ms loss, 0.8ms postprocess per image\nGPU smoke completed; COCO8 is not a benchmark.\n"
+        },
+        {
+          "index": 6,
+          "executed": true,
+          "execution_count": 4,
+          "duration_seconds": null,
+          "output_tail": "                all         20         29      0.759      0.483      0.556       0.35\n                person          8         29      0.759      0.483      0.556       0.35\nSpeed: 0.7ms preprocess, 1.5ms inference, 0.0ms loss, 0.4ms postprocess per image\nResults saved to \u001b[1mC:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\runs\\lab_c\\baseline\u001b[0m\n{'run_dir': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\runs\\\\lab_c\\\\baseline', 'weights': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\runs\\\\lab_c\\\\baseline\\\\weights\\\\best.pt', 'sha256': '1c058d8d1cc076c35f01e20f427acc6874fab0eab073f529a20f5d8093ae6f8b', 'elapsed_seconds': 79.68, 'peak_allocated_GiB': 1.546, 'args': {'data': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\data\\\\processed\\\\coco128_classroom_3class\\\\data.yaml', 'epochs': 12, 'imgsz': 512, 'batch': 8, 'device': 0, 'workers': 0, 'patience': 30, 'optimizer': 'SGD', 'seed': 42, 'deterministic': False, 'amp': False, 'plots': True, 'project': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\runs\\\\lab_c', 'name': 'baseline', 'exist_ok': True}, 'system': {'python': '3.12.16', 'platform': 'Windows-11-10.0.26300-SP0', 'timestamp_utc': '2026-11-02T09:12:06Z', 'torch': '2.12.0+rocm7.14.1', 'torch_hip': '7.14.60850', 'gpu_visible': True, 'gpu_name': 'AMD Radeon RX 7900 XTX', 'ultralytics': '8.4.198'}, 'warning': 'Peak memory is PyTorch allocated memory, not total device VRAM.'}\n"
+        },
+        {
+          "index": 7,
+          "executed": true,
+          "execution_count": 5,
+          "duration_seconds": null,
+          "output_tail": "    epoch     time  train/box_loss  train/cls_loss  train/l1_loss  \\\n7       8  66.6108         1.35736         1.24344        0.00967   \n8       9  68.5153         1.45418         1.30019        0.01113   \n9      10  70.3841         1.55575         1.36577        0.00887   \n10     11  72.2540         1.42699         1.29034        0.00929   \n11     12  74.2170         1.49689         1.26257        0.00973   \n\n    metrics/precision(B)  metrics/recall(B)  metrics/mAP50(B)  \\\n7                0.55639            0.38959           0.47093   \n8                0.61182            0.44828           0.49181   \n9                0.73164            0.34483           0.46180   \n10               0.61670            0.44828           0.55487   \n11               0.64500            0.44828           0.57787   \n\n    metrics/mAP50-95(B)  val/box_loss  val/cls_loss  val/l1_loss    lr/pg0  \\\n7               0.27658       1.56998       1.73378      0.01062  0.004225   \n8               0.28032       1.62561       1.71655      0.01400  0.003400   \n9               0.28122       1.60894       1.70635      0.01410  0.002575   \n10              0.28877       1.74671       1.41796      0.01692  0.001750   \n11              0.29968       1.69617       1.45392      0.01635  0.000925   \n\n      lr/pg1    lr/pg2  \n7   0.004225  0.004225  \n8   0.003400  0.003400  \n9   0.002575  0.002575  \n10  0.001750  0.001750  \n11  0.000925  0.000925  <PIL.Image.Image image mode=RGBA size=1120x530>"
+        },
+        {
+          "index": 8,
+          "executed": true,
+          "execution_count": 6,
+          "duration_seconds": null,
+          "output_tail": "Ultralytics 8.4.198  Python-3.12.16 torch-2.12.0+rocm7.14.1 CUDA:0 (AMD Radeon RX 7900 XTX, 24560MiB)\nYOLO26n summary (fused): 121 layers, 2,390,221 parameters, 0 gradients, 5.4 GFLOPs\n\u001b[34m\u001b[1mval: \u001b[0mFast image access  (ping: 0.0±0.0 ms, read: 1268.4±659.3 MB/s, size: 69.6 KB)\n\r\u001b[K\u001b[34m\u001b[1mval: \u001b[0mScanning C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\data\\processed\\coco128_classroom_3class\\labels\\val.cache... 20 images, 12 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 20/20  0.0s\n\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 33% ━━━━──────── 1/3 7.2s/it 2.1s<14.3s\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 66% ━━━━━━━━──── 2/3 4.1s/it 4.2s<4.1s\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 3/3 2.1s/it 6.3s\n                   all         20         29      0.838      0.552      0.624       0.38\nSpeed: 0.2ms preprocess, 309.0ms inference, 0.0ms loss, 0.6ms postprocess per image\nResults saved to \u001b[1mC:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\runs\\detect\\val\u001b[0m\nValidation only (NOT test): {'precision': 0.8380172396172074, 'recall': 0.5517241379310345, 'mAP50': 0.6244846379177516, 'mAP50_95': 0.37951232443540484, 'split': 'val', 'model_sha256': '1c058d8d1cc076c35f01e20f427acc6874fab0eab073f529a20f5d8093ae6f8b'}\n"
+        }
+      ],
+      "executed_copy": "validation\\executed\\20261102_170901\\03_Lab_C_ROCm_Training_Finetune.executed.ipynb"
+    },
+    {
+      "notebook": "04_Lab_D_Evaluation_Error_Analysis.ipynb",
+      "kernel": "yolo26-rocm7141",
+      "started": "2026-11-02T09:12:53.214675+00:00",
+      "result": "PASS",
+      "duration_seconds": 30.51,
+      "code_cells": 6,
+      "executed_cells": 6,
+      "gpu_referenced_and_executed": true,
+      "cells": [
+        {
+          "index": 3,
+          "executed": true,
+          "execution_count": 1,
+          "duration_seconds": null,
+          "output_tail": "Project: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs \nPersistent output: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\n"
+        },
+        {
+          "index": 4,
+          "executed": true,
+          "execution_count": 2,
+          "duration_seconds": null,
+          "output_tail": "AMD ROCm verified: AMD Radeon RX 7900 XTX HIP: 7.14.60850\nWeight SHA256: 1c058d8d1cc076c35f01e20f427acc6874fab0eab073f529a20f5d8093ae6f8b\n"
+        },
+        {
+          "index": 5,
+          "executed": true,
+          "execution_count": 3,
+          "duration_seconds": null,
+          "output_tail": "Ultralytics 8.4.198  Python-3.12.16 torch-2.12.0+rocm7.14.1 CUDA:0 (AMD Radeon RX 7900 XTX, 24560MiB)\nYOLO26n summary (fused): 121 layers, 2,390,221 parameters, 0 gradients, 5.4 GFLOPs\n\u001b[34m\u001b[1mval: \u001b[0mFast image access  (ping: 0.0±0.0 ms, read: 736.7±274.7 MB/s, size: 33.9 KB)\n\r\u001b[K\u001b[34m\u001b[1mval: \u001b[0mScanning C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\data\\processed\\coco128_classroom_3class\\labels\\val.cache... 20 images, 12 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 20/20  0.0s\n\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 33% ━━━━──────── 1/3 1.7it/s 0.2s<1.2s\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 3/3 9.5it/s 0.3s\n                   all         20         29      0.838      0.552      0.624       0.38\nSpeed: 0.4ms preprocess, 6.7ms inference, 0.0ms loss, 0.6ms postprocess per image\nResults saved to \u001b[1mC:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\runs\\detect\\val-2\u001b[0m\nOfficial validation metrics: {'precision': 0.8380172396172074, 'recall': 0.5517241379310345, 'mAP50': 0.6244846379177516, 'mAP50_95': 0.37951232443540484, 'split': 'val', 'dataset_yaml': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\data\\\\processed\\\\coco128_classroom_3class\\\\data.yaml', 'weight_sha256': '1c058d8d1cc076c35f01e20f427acc6874fab0eab073f529a20f5d8093ae6f8b'}\nmAP: IoU=0.50..0.95 average, NOT confidence 50%-95%\n"
+        },
+        {
+          "index": 6,
+          "executed": true,
+          "execution_count": 4,
+          "duration_seconds": null,
+          "output_tail": "BoxPR_curve.png\n<PIL.Image.Image image mode=RGBA size=950x600>confusion_matrix.png\n<PIL.Image.Image image mode=RGBA size=950x600>confusion_matrix_normalized.png\n<PIL.Image.Image image mode=RGBA size=950x600>"
+        },
+        {
+          "index": 7,
+          "executed": true,
+          "execution_count": 5,
+          "duration_seconds": null,
+          "output_tail": "Fixed threshold teaching-level counts: {'TP': 18, 'FP': 6, 'FN': 11} P: 0.75 R: 0.621\nImportant: these are NOT the official integrated PR or mAP values.\n"
+        },
+        {
+          "index": 8,
+          "executed": true,
+          "execution_count": 6,
+          "duration_seconds": null,
+          "output_tail": "C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\assets\\lab_d_errors\\01_000000000074.jpg errors: 3\n<PIL.Image.Image image mode=RGB size=960x320>C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\assets\\lab_d_errors\\02_000000000241.jpg errors: 3\n<PIL.Image.Image image mode=RGB size=960x640>C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\assets\\lab_d_errors\\03_000000000520.jpg errors: 3\n<PIL.Image.Image image mode=RGB size=960x360>C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\assets\\lab_d_errors\\04_000000000641.jpg errors: 8\n<PIL.Image.Image image mode=RGB size=960x321>只有 4 张有失败案例。不能编造；可拓展验证集或评估更多困难样本。\n"
+        }
+      ],
+      "executed_copy": "validation\\executed\\20261102_170901\\04_Lab_D_Evaluation_Error_Analysis.executed.ipynb"
+    },
+    {
+      "notebook": "05_Lab_E_Controlled_AB_Optimization.ipynb",
+      "kernel": "yolo26-rocm7141",
+      "started": "2026-11-02T09:13:23.743950+00:00",
+      "result": "PASS",
+      "duration_seconds": 89.56,
+      "code_cells": 6,
+      "executed_cells": 6,
+      "gpu_referenced_and_executed": true,
+      "cells": [
+        {
+          "index": 3,
+          "executed": true,
+          "execution_count": 1,
+          "duration_seconds": null,
+          "output_tail": "Project: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs \nPersistent output: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\n"
+        },
+        {
+          "index": 4,
+          "executed": true,
+          "execution_count": 2,
+          "duration_seconds": null,
+          "output_tail": "AMD ROCm verified: AMD Radeon RX 7900 XTX HIP: 7.14.60850\nBaseline train imgsz: 512 epochs: 12\nBaseline model sha256: 1c058d8d1cc076c35f01e20f427acc6874fab0eab073f529a20f5d8093ae6f8b\n"
+        },
+        {
+          "index": 5,
+          "executed": true,
+          "execution_count": 3,
+          "duration_seconds": null,
+          "output_tail": " mAP50-95): 100% ━━━━━━━━━━━━ 2/2 16.9it/s 0.1s\n                   all         20         29      0.752      0.379       0.45      0.314\n                person          8         29      0.752      0.379       0.45      0.314\nSpeed: 0.1ms preprocess, 1.1ms inference, 0.0ms loss, 0.5ms postprocess per image\nResults saved to \u001b[1mC:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\runs\\lab_e\\imgsz416\u001b[0m\nVariant training finished: {'run_dir': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\runs\\\\lab_e\\\\imgsz416', 'weights': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\runs\\\\lab_e\\\\imgsz416\\\\weights\\\\best.pt', 'sha256': '13da48a3b05a546a88b4b8c8046ed4717fb6e05fb13bf7a7cb271f39a9f2a79f', 'elapsed_seconds': 85.81, 'peak_allocated_GiB': 1.066, 'args': {'data': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\data\\\\processed\\\\coco128_classroom_3class\\\\data.yaml', 'epochs': 12, 'imgsz': 416, 'batch': 8, 'device': 0, 'workers': 0, 'patience': 30, 'optimizer': 'SGD', 'seed': 42, 'deterministic': False, 'amp': False, 'plots': True, 'project': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\runs\\\\lab_e', 'name': 'imgsz416', 'exist_ok': True}, 'system': {'python': '3.12.16', 'platform': 'Windows-11-10.0.26300-SP0', 'timestamp_utc': '2026-11-02T09:14:51Z', 'torch': '2.12.0+rocm7.14.1', 'torch_hip': '7.14.60850', 'gpu_visible': True, 'gpu_name': 'AMD Radeon RX 7900 XTX', 'ultralytics': '8.4.198'}}\n"
+        },
+        {
+          "index": 6,
+          "executed": true,
+          "execution_count": 4,
+          "duration_seconds": null,
+          "output_tail": "80172396172074, 'recall': 0.5517241379310345, 'mAP50': 0.6244846379177516, 'mAP50_95': 0.37951232443540484, 'variant': 'baseline', 'train_imgsz': 512, 'training_time_seconds': 79.68, 'train_peak_allocated_gib': 1.546, 'model_sha256': '1c058d8d1cc076c35f01e20f427acc6874fab0eab073f529a20f5d8093ae6f8b', 'val_imgsz': 640, 'split': 'val'}\nUltralytics 8.4.198  Python-3.12.16 torch-2.12.0+rocm7.14.1 CUDA:0 (AMD Radeon RX 7900 XTX, 24560MiB)\nYOLO26n summary (fused): 121 layers, 2,390,221 parameters, 0 gradients, 5.4 GFLOPs\n\u001b[34m\u001b[1mval: \u001b[0mFast image access  (ping: 0.0±0.0 ms, read: 1302.9±564.8 MB/s, size: 52.4 KB)\n\r\u001b[K\u001b[34m\u001b[1mval: \u001b[0mScanning C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\data\\processed\\coco128_classroom_3class\\labels\\val.cache... 20 images, 12 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 20/20  0.0s\n\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 3/3 31.7it/s 0.1s\n                   all         20         29      0.731      0.552      0.641      0.338\nSpeed: 0.2ms preprocess, 1.8ms inference, 0.0ms loss, 0.5ms postprocess per image\nimgsz416 {'precision': 0.7314080368197988, 'recall': 0.5517241379310345, 'mAP50': 0.6406538187838988, 'mAP50_95': 0.3381018059811789, 'variant': 'imgsz416', 'train_imgsz': 416, 'training_time_seconds': 85.81, 'train_peak_allocated_gib': 1.066, 'model_sha256': '13da48a3b05a546a88b4b8c8046ed4717fb6e05fb13bf7a7cb271f39a9f2a79f', 'val_imgsz': 640, 'split': 'val'}\n"
+        },
+        {
+          "index": 7,
+          "executed": true,
+          "execution_count": 5,
+          "duration_seconds": null,
+          "output_tail": "<Figure size 800x400 with 1 Axes>ΔmAP50-95 B−A: -0.0414\n"
+        },
+        {
+          "index": 9,
+          "executed": true,
+          "execution_count": 6,
+          "duration_seconds": null,
+          "output_tail": "Test is sealed. Current metrics are Validation only.\n"
+        }
+      ],
+      "executed_copy": "validation\\executed\\20261102_170901\\05_Lab_E_Controlled_AB_Optimization.executed.ipynb"
+    }
+  ]
+}

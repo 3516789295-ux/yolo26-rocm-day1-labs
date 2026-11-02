@@ -1,0 +1,28 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Course runtime outputs (generated locally; never commit)
+yolo_course/
+yolo_course_*/
+runs/
+
+# Model weights & datasets (downloaded or trained locally)
+*.pt
+*.onnx
+*.zip
+coco128/
+coco8/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+Thumbs.db
+.DS_Store
+~$*
+
+# MIOpen / hipRTC user caches
+.miopen/

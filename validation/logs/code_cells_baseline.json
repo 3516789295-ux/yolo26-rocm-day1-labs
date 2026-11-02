@@ -1,0 +1,26 @@
+{
+ "00_ROCm_Environment_Preflight.ipynb": {
+  "count": 5,
+  "hash": "a0c3cd36f356fb765de7225c82869d16917b47c90728648e9159ff7b085fb7df"
+ },
+ "01_Lab_A_Predict_and_Threshold.ipynb": {
+  "count": 7,
+  "hash": "2b6207d4af47ccd79f252ccc6b48a37b3de623e9c24fe28c47de0c0ae73b0f3a"
+ },
+ "02_Lab_B_Dataset_Annotation_QA.ipynb": {
+  "count": 7,
+  "hash": "7bd9dbf84c154d00dcddc06f543347dccd23eb7d279332a97b1a20fc037485d4"
+ },
+ "03_Lab_C_ROCm_Training_Finetune.ipynb": {
+  "count": 6,
+  "hash": "c98a4f02d4bc6dae4337a2dd8842221a2069b3b550aff4cd59bec4baf061801a"
+ },
+ "04_Lab_D_Evaluation_Error_Analysis.ipynb": {
+  "count": 6,
+  "hash": "06b72a272e1247121b9e73b9edf62711e008db9adf78405a66fed2dc23d90454"
+ },
+ "05_Lab_E_Controlled_AB_Optimization.ipynb": {
+  "count": 6,
+  "hash": "64442ec30758c39ca043b6b7e160c11f0b72acbe52a21c8581d23bad70141264"
+ }
+}

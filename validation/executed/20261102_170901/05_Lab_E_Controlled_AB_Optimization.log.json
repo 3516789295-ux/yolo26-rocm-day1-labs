@@ -1,0 +1,55 @@
+{
+  "notebook": "05_Lab_E_Controlled_AB_Optimization.ipynb",
+  "kernel": "yolo26-rocm7141",
+  "started": "2026-11-02T09:13:23.743950+00:00",
+  "result": "PASS",
+  "duration_seconds": 89.56,
+  "code_cells": 6,
+  "executed_cells": 6,
+  "gpu_referenced_and_executed": true,
+  "cells": [
+    {
+      "index": 3,
+      "executed": true,
+      "execution_count": 1,
+      "duration_seconds": null,
+      "output_tail": "Project: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs \nPersistent output: C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\n"
+    },
+    {
+      "index": 4,
+      "executed": true,
+      "execution_count": 2,
+      "duration_seconds": null,
+      "output_tail": "AMD ROCm verified: AMD Radeon RX 7900 XTX HIP: 7.14.60850\nBaseline train imgsz: 512 epochs: 12\nBaseline model sha256: 1c058d8d1cc076c35f01e20f427acc6874fab0eab073f529a20f5d8093ae6f8b\n"
+    },
+    {
+      "index": 5,
+      "executed": true,
+      "execution_count": 3,
+      "duration_seconds": null,
+      "output_tail": " mAP50-95): 100% ━━━━━━━━━━━━ 2/2 16.9it/s 0.1s\n                   all         20         29      0.752      0.379       0.45      0.314\n                person          8         29      0.752      0.379       0.45      0.314\nSpeed: 0.1ms preprocess, 1.1ms inference, 0.0ms loss, 0.5ms postprocess per image\nResults saved to \u001b[1mC:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\runs\\lab_e\\imgsz416\u001b[0m\nVariant training finished: {'run_dir': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\runs\\\\lab_e\\\\imgsz416', 'weights': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\runs\\\\lab_e\\\\imgsz416\\\\weights\\\\best.pt', 'sha256': '13da48a3b05a546a88b4b8c8046ed4717fb6e05fb13bf7a7cb271f39a9f2a79f', 'elapsed_seconds': 85.81, 'peak_allocated_GiB': 1.066, 'args': {'data': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\data\\\\processed\\\\coco128_classroom_3class\\\\data.yaml', 'epochs': 12, 'imgsz': 416, 'batch': 8, 'device': 0, 'workers': 0, 'patience': 30, 'optimizer': 'SGD', 'seed': 42, 'deterministic': False, 'amp': False, 'plots': True, 'project': 'C:\\\\Users\\\\Rocm\\\\Desktop\\\\YOLO\\\\YOLO26_ROCm_Day1_Labs\\\\yolo_course\\\\runs\\\\lab_e', 'name': 'imgsz416', 'exist_ok': True}, 'system': {'python': '3.12.16', 'platform': 'Windows-11-10.0.26300-SP0', 'timestamp_utc': '2026-11-02T09:14:51Z', 'torch': '2.12.0+rocm7.14.1', 'torch_hip': '7.14.60850', 'gpu_visible': True, 'gpu_name': 'AMD Radeon RX 7900 XTX', 'ultralytics': '8.4.198'}}\n"
+    },
+    {
+      "index": 6,
+      "executed": true,
+      "execution_count": 4,
+      "duration_seconds": null,
+      "output_tail": "80172396172074, 'recall': 0.5517241379310345, 'mAP50': 0.6244846379177516, 'mAP50_95': 0.37951232443540484, 'variant': 'baseline', 'train_imgsz': 512, 'training_time_seconds': 79.68, 'train_peak_allocated_gib': 1.546, 'model_sha256': '1c058d8d1cc076c35f01e20f427acc6874fab0eab073f529a20f5d8093ae6f8b', 'val_imgsz': 640, 'split': 'val'}\nUltralytics 8.4.198  Python-3.12.16 torch-2.12.0+rocm7.14.1 CUDA:0 (AMD Radeon RX 7900 XTX, 24560MiB)\nYOLO26n summary (fused): 121 layers, 2,390,221 parameters, 0 gradients, 5.4 GFLOPs\n\u001b[34m\u001b[1mval: \u001b[0mFast image access  (ping: 0.0±0.0 ms, read: 1302.9±564.8 MB/s, size: 52.4 KB)\n\r\u001b[K\u001b[34m\u001b[1mval: \u001b[0mScanning C:\\Users\\Rocm\\Desktop\\YOLO\\YOLO26_ROCm_Day1_Labs\\yolo_course\\data\\processed\\coco128_classroom_3class\\labels\\val.cache... 20 images, 12 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 20/20  0.0s\n\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 3/3 31.7it/s 0.1s\n                   all         20         29      0.731      0.552      0.641      0.338\nSpeed: 0.2ms preprocess, 1.8ms inference, 0.0ms loss, 0.5ms postprocess per image\nimgsz416 {'precision': 0.7314080368197988, 'recall': 0.5517241379310345, 'mAP50': 0.6406538187838988, 'mAP50_95': 0.3381018059811789, 'variant': 'imgsz416', 'train_imgsz': 416, 'training_time_seconds': 85.81, 'train_peak_allocated_gib': 1.066, 'model_sha256': '13da48a3b05a546a88b4b8c8046ed4717fb6e05fb13bf7a7cb271f39a9f2a79f', 'val_imgsz': 640, 'split': 'val'}\n"
+    },
+    {
+      "index": 7,
+      "executed": true,
+      "execution_count": 5,
+      "duration_seconds": null,
+      "output_tail": "<Figure size 800x400 with 1 Axes>ΔmAP50-95 B−A: -0.0414\n"
+    },
+    {
+      "index": 9,
+      "executed": true,
+      "execution_count": 6,
+      "duration_seconds": null,
+      "output_tail": "Test is sealed. Current metrics are Validation only.\n"
+    }
+  ],
+  "executed_copy": "validation\\executed\\20261102_170901\\05_Lab_E_Controlled_AB_Optimization.executed.ipynb"
+}
