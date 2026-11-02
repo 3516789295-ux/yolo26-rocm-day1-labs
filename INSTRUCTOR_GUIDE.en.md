@@ -62,3 +62,8 @@ Interview-expression bar for students: "describe the baseline → evidence → p
 - Never auto-upgrade PyTorch; any `torch` change must be checked against the ROCm compatibility matrix.
 - Without a proxy, use pre-downloaded, licensed samples — never fabricate results.
 - Third-party models and data follow their own licenses, especially when moving toward commercial use.
+
+
+## Updated Lab B hands-on (50–60 min)
+
+Follow the [X-AnyLabeling manual workflow](docs/LAB_B_X_ANYLABELING.md): agree on class/bounding-box policy, label at least five licensed images per student, peer-review five, export YOLO detection .txt plus classes.txt, upload the images/labels folders, configure YOLO_ANYLABELING_EXPORT and perform automated QA + manual near-duplicate/scene review. Require three genuine annotation error examples and corrective actions. If fewer than nine images or three independent groups exist, keep the COCO128 fallback for Lab C. Historic Windows ROCm 6/6 passes do NOT prove the new student-export path has been exercised on Radeon Cloud GPU.
