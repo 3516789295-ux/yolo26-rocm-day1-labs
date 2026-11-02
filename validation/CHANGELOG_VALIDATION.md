@@ -105,3 +105,29 @@ Linux Radeon Cloud 行为逐字不变;Windows 确定性落到 `Path.cwd()/yolo_c
   LICENSE(MIT + 第三方声明)、.gitignore、.github PR/Issue 模板、
   docs/*.en.md ×3、INSTRUCTOR_GUIDE.en.md、validation/FINAL_REPORT.en-summary.md。
 - SHA256SUMS 按发布树重生成(原 v1.0 快照保留于 PACKAGE_MANIFEST.json 与 §7 基线)。
+
+## 7. Notebook 代码 cell PEP 8 化(2026-11-02 第三轮)
+
+**问题**(用户报告+审计确认):六份 Notebook 的代码 cell 沿用生成器 v1.0 的压缩风格——
+分号连接语句(10 处)、超 100 字符行(14 处)、`a=b` 无空格赋值、复合表达式过密,不利学生阅读。
+
+**修复方式**:`build_notebooks.py` 内全部代码 cell 重排为 PEP 8——一行一语句、
+运算符/赋值两侧加空格、超长行换行(含相邻字符串字面量折叠)、import 拆分;
+**零标识符重命名、零字面量/调用/控制流变更**(跨 cell 变量 `qa`/`summary`/`reports` 等
+是 cell 间隐式接口,刻意保留原名)。Notebook 版本号 1.1-bilingual → 1.2-bilingual-pep8。
+
+**行为等价证明(三重)**:
+1. **AST 等价**:37/37 code cell 的规范化 AST(唯一规范化=合并连续普通 import)
+   与改前逐一致(`validation/logs/code_cells_ast_before_style.json` 为改前基线);
+2. **永久守护**:新增 `tests/test_notebook_ast_reference.py` + 提交基准
+   `validation/notebook_code_asts.json`——今后任何 Notebook 语义漂移都会被测试拦截,
+   需显式再生成基准并说明理由;
+3. **真实 GPU 复验**:重构版在隔离目录全量执行(证据 `NOTEBOOK_EXECUTION_DATA_*.json`
+   第三份 + `validation/logs/run_all_labs_style.log`),指标与前两轮比对一致。
+
+**风格指标(tokenize 口径)**:分号连接语句 10→0;>100 字符行 14→0;总行数 453→543
+(可读性换行的预期成本);82 处 `a=b` 紧凑模式均为函数调用关键字参数(PEP 8 正确写法)。
+新增 `scripts/audit_code_style.py` 可随时复测。
+
+**同步修改**:`tests/test_windows_compat.py` 的 Notebook 结构断言由精确字符串改为
+空白不敏感正则(语义不变,如 `BASELINE_EPOCHS\s*=\s*12`),防止排版改进误伤守护测试。

@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-11-02T09:17:50.796021+00:00",
+  "timestamp_utc": "2026-11-02T13:46:24.323596+00:00",
   "python": "3.12.16",
   "platform": "Windows-11-10.0.26300-SP0",
   "gates": {
@@ -41,11 +41,11 @@
     },
     "gpu_matmul": {
       "pass": true,
-      "detail": "211.7 ms"
+      "detail": "206.7 ms"
     },
     "gpu_conv2d_forward": {
       "pass": true,
-      "detail": "85.9 ms"
+      "detail": "85.8 ms"
     },
     "gpu_loss_finite": {
       "pass": true,
@@ -53,7 +53,7 @@
     },
     "gpu_backward_grad_exists": {
       "pass": true,
-      "detail": "66.3 ms"
+      "detail": "64.6 ms"
     },
     "optimizer_step_changed_weights": {
       "pass": true,
@@ -81,9 +81,9 @@
     "multi_processor_count": 48
   },
   "compute": {
-    "alloc_matmul_ms": 211.69,
-    "conv_bn_loss_forward_ms": 85.94,
-    "backward_ms": 66.29,
+    "alloc_matmul_ms": 206.69,
+    "conv_bn_loss_forward_ms": 85.79,
+    "backward_ms": 64.64,
     "peak_allocated_GiB": 0.0845
   },
   "driver": "{\"Name\":\"AMD Radeon RX 7900 XTX\",\"DriverVersion\":\"32.0.21030.2001\"}",
