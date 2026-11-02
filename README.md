@@ -71,6 +71,13 @@ build_notebooks.py 双语生成器(代码 cell 与验证版字节级一致)
 constraints-rocm.txt / pyproject.toml   AMD wheel 版本硬约束
 ```
 
+
+### Lab B · X-AnyLabeling 人工标注与数据导入（新版）
+
+推荐学生使用开源 [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) 桌面软件：**手动标注至少 5 张图片 → 同伴交叉复核 5 张 → 导出 YOLO Detection txt → 上传 Radeon Cloud → Notebook 自动 QA 与分组划分**。完整可操作步骤见 [Lab B 标注指南](docs/LAB_B_X_ANYLABELING.md)。
+
+启动 Lab B 前，设置 `YOLO_ANYLABELING_EXPORT` 指向包含 `images/`、`labels/`、`classes.txt` 的导出文件夹；可选 `YOLO_ANYLABELING_SCENES` 指向包含 `image,scene` 列的 CSV。**不设置时仍运行历史 COCO128 演示路径**，不会破坏已有 Windows ROCm 训练链路。新导入结果只写入新的 `data/processed/xanylabeling_student_v1`，旧结果不覆盖。学生数据与云端 Linux GPU 路径尚需真机走通，不把离线检查称为新路径的 GPU PASS。
+
 ## 🧪 数据与诚信原则(课程核心)
 
 - 教学数据为官方 **COCO128** 的 person/car/chair 三类重划分(train 89 / val 20 / test 19,图片级互斥);
