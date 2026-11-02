@@ -1,10 +1,13 @@
 """Generate the Day 1 teaching notebooks with repeatable metadata and code.
 
 Bilingual edition: every teaching markdown cell is emitted as Chinese first,
-then an English translation after a `---` divider. Code cells are identical to
-the validated v1.0 run (byte-for-byte); only markdown carries translations.
-The generator stays the single source of truth so the two languages cannot
-drift apart.
+then an English translation after a `---` divider. Code cells are semantically
+identical to the validated v1.0 run — restyled to PEP 8 (spacing, one
+statement per line, wrapped long lines) without renaming identifiers or
+changing any literal, call or control flow. Cross-cell variables (e.g. `qa`,
+`summary`, `reports`) are the implicit cell-to-cell interface and keep their
+names. Semantic parity is proven by the canonical-AST check committed with the
+repo (tests/test_notebook_ast_reference.py).
 """
 from pathlib import Path
 from textwrap import dedent
@@ -16,18 +19,22 @@ LANG_DIVIDER='\n\n---\n\n'
 STYLE = ('<div style="border-left:5px solid #67CBEE;padding:10px 16px;background:#F7F9FB;color:#19222D;margin:12px 0">'
          '<b>AMD Radeon · YOLO26 · Day 01</b><br><span style="color:#536273">算法 → 数据 → 训练 → 评测 → 证据。每一个结论都应由实际运行结果支撑。</span><br>'
          '<span style="color:#536273">Algorithm → Data → Training → Evaluation → Evidence. Every conclusion must be backed by real execution results.</span></div>')
-SETUP = r'''from pathlib import Path
-import os, sys, json
+SETUP = '''from pathlib import Path
+import os
+import sys
+import json
+
 candidates = [Path.cwd(), Path.cwd().parent, Path('/workspace/YOLO26_ROCm_Day1_Labs')]
-package = next((p for p in candidates if (p/'course/lab_utils.py').exists()), None)
+package = next((p for p in candidates if (p / 'course/lab_utils.py').exists()), None)
 if package is None:
     raise FileNotFoundError('请先将 ZIP 完整解压，并从项目目录或 notebooks/ 目录启动 Jupyter。')
 sys.path.insert(0, str(package))
 from course.lab_utils import (root, ensure_dirs, load_config, save_config, write_json,
-    write_csv, system_info, require_rocm, sha256)
+                              write_csv, system_info, require_rocm, sha256)
+
 home = ensure_dirs()
 cfg = load_config()
-print('Project:', package, '\nPersistent output:', home)
+print('Project:', package, '\\nPersistent output:', home)
 '''
 
 
@@ -52,7 +59,7 @@ def make(fname, title_zh, title_en, cells, duration_zh, duration_en, tags_zh, ta
     nb=nbf.v4.new_notebook(cells=[nbf.v4.new_markdown_cell(STYLE),header,*cells],
         metadata={'kernelspec':{'display_name':'Python 3 (ROCm)','language':'python','name':'python3'},
                   'language_info':{'name':'python'},
-                  'course':{'version':'1.1-bilingual','lab':fname,'design':'Premium Engineering Keynote'}})
+                  'course':{'version':'1.2-bilingual-pep8','lab':fname,'design':'Premium Engineering Keynote'}})
     nbf.validate(nb)
     path=OUT/fname;nbf.write(nb,path)
     print(path)
@@ -73,10 +80,12 @@ make('00_ROCm_Environment_Preflight.ipynb','00 / ROCm 环境预检与课程工�
 **Important:** never run `pip install torch` or `pip install -U torch` inside an environment that already carries the AMD-customized PyTorch. If Ultralytics is missing, follow the [official AMD integration guide](https://docs.ultralytics.com/integrations/amd/) and install it into the matching ROCm environment.'''),
  c(SETUP),
  c('''from pprint import pprint
-info=system_info()
-info['gpu_device_nodes']={p:Path(p).exists() for p in ('/dev/kfd','/dev/dri')}
-info['proxy_configured']={n:bool(os.getenv(n)) for n in ('HTTP_PROXY','HTTPS_PROXY','http_proxy','https_proxy')}
-write_json(home/'reports/environment.json',info)
+
+info = system_info()
+info['gpu_device_nodes'] = {p: Path(p).exists() for p in ('/dev/kfd', '/dev/dri')}
+info['proxy_configured'] = {n: bool(os.getenv(n)) for n in ('HTTP_PROXY', 'HTTPS_PROXY',
+                                                            'http_proxy', 'https_proxy')}
+write_json(home / 'reports/environment.json', info)
 pprint(info)'''),
  m('''### 理解环境信息
 - `torch.version.hip != None` 表示 ROCm PyTorch 构建。
@@ -94,30 +103,33 @@ if STRICT_ROCM:
 else:
     device = 'cpu'
     print('CPU-only diagnostic mode; GPU experiment conclusions are NOT valid.')
-print('Device argument for Ultralytics:',device)'''),
+print('Device argument for Ultralytics:', device)'''),
  c('''# 可选：实际在 GPU 上计算一个小矩阵，验证张量确实被送入 GPU
 import torch
+
 if STRICT_ROCM:
-    x=torch.randn((128,128),device='cuda:0')
-    y=x@x
+    x = torch.randn((128, 128), device='cuda:0')
+    y = x @ x
     torch.cuda.synchronize()
-    assert y.device.type=='cuda'  # ROCm 也报告 cuda device type
-    print('HIP kernel smoke: PASS, output shape:',tuple(y.shape))'''),
+    assert y.device.type == 'cuda'  # ROCm 也报告 cuda device type
+    print('HIP kernel smoke: PASS, output shape:', tuple(y.shape))'''),
  m('''### 冻结预训练权重（所有 A/C/E 使用相同模型）
 为了避免课程中途的自动下载或不同版本导致 A/B 实验起点不一致，首次联网时缓存 `yolo26n.pt`，后续统一从 `/workspace/yolo_course/artifacts/yolo26n.pt` 读取。缓存成功后记录 SHA256。''',
    '''### Pinning the Pretrained Weights (labs A/C/E share one model)
 To keep every A/B experiment starting from an identical point — and to avoid mid-class downloads — cache `yolo26n.pt` on first network use, then always load it from `/workspace/yolo_course/artifacts/yolo26n.pt`. Its SHA256 is recorded once the cache is pinned.'''),
  c('''import shutil
 from ultralytics import YOLO
-model_cache=home/'artifacts/yolo26n.pt'
+
+model_cache = home / 'artifacts/yolo26n.pt'
 if not model_cache.is_file():
-    fresh=YOLO('yolo26n.pt')
-    source=Path(fresh.ckpt_path).resolve()
-    assert source.is_file(),f'Model download not found at {source}'
-    if source!=model_cache.resolve():shutil.copy2(source,model_cache)
+    fresh = YOLO('yolo26n.pt')
+    source = Path(fresh.ckpt_path).resolve()
+    assert source.is_file(), f'Model download not found at {source}'
+    if source != model_cache.resolve():
+        shutil.copy2(source, model_cache)
 assert model_cache.is_file()
-print('Pinned model:',model_cache,'sha256:',sha256(model_cache))
-save_config({'model':'yolo26n.pt','model_sha256':sha256(model_cache)})'''),
+print('Pinned model:', model_cache, 'sha256:', sha256(model_cache))
+save_config({'model': 'yolo26n.pt', 'model_sha256': sha256(model_cache)})'''),
  m('''### 课后问题（写进环境报告）
 1. 为什么 AMD GPU 使用 `torch.cuda`？
 2. `torch.version.hip` 返回 `None` 意味着什么？
@@ -142,59 +154,69 @@ Run the same image at `conf=0.10/0.25/0.50`, count detections and save the image
 
 **Prerequisite**: finish 00 first. The pretrained model and the sample image come from official sources (pre-upload them to the cache if your cloud has no external network).'''),
  c(SETUP),
- c('''device=require_rocm()
+ c('''device = require_rocm()
 from ultralytics import YOLO
 import ultralytics
 from PIL import Image
 from IPython.display import display
-model_path = home/'artifacts/yolo26n.pt'
+
+model_path = home / 'artifacts/yolo26n.pt'
 model = YOLO(str(model_path) if model_path.is_file() else cfg['model'])
-print('Loaded:',model.ckpt_path if hasattr(model,'ckpt_path') else cfg['model'])'''),
+print('Loaded:', model.ckpt_path if hasattr(model, 'ckpt_path') else cfg['model'])'''),
  c('''# 优先使用 Ultralytics 包内样例，否则下载官方公交车样例
-example=Path(ultralytics.__file__).resolve().parent/'assets/bus.jpg'
+example = Path(ultralytics.__file__).resolve().parent / 'assets/bus.jpg'
 if not example.exists():
-    example=home/'assets/bus.jpg'
+    example = home / 'assets/bus.jpg'
     if not example.exists():
         import urllib.request
-        url='https://ultralytics.com/images/bus.jpg'
-        try: urllib.request.urlretrieve(url,example)
-        except Exception as exc: raise RuntimeError(f'无法下载示例图。请自行上传一张图片至 {example}。原因: {exc}')
+
+        url = 'https://ultralytics.com/images/bus.jpg'
+        try:
+            urllib.request.urlretrieve(url, example)
+        except Exception as exc:
+            raise RuntimeError(f'无法下载示例图。请自行上传一张图片至 {example}。原因: {exc}')
 assert example.is_file()
-display(Image.open(example).resize((480,640)))'''),
+display(Image.open(example).resize((480, 640)))'''),
  c('''from collections import Counter
-thresholds=[0.10,0.25,0.50]
-output_dir=home/'assets/lab_a_thresholds';output_dir.mkdir(parents=True,exist_ok=True)
-summary=[]
+
+thresholds = [0.10, 0.25, 0.50]
+output_dir = home / 'assets/lab_a_thresholds'
+output_dir.mkdir(parents=True, exist_ok=True)
+summary = []
 for threshold in thresholds:
-    result=model.predict(source=str(example),device=device,conf=threshold,imgsz=640,
-                         save=False,verbose=False)[0]
-    boxes=result.boxes
-    counts=Counter(int(k) for k in boxes.cls.cpu().tolist()) if boxes is not None else Counter()
-    image_out=output_dir/f'conf_{threshold:.2f}.jpg'
-    Image.fromarray(result.plot()[...,::-1]).save(image_out)
-    summary.append({'conf':threshold,'detections':sum(counts.values()),
-                    'classes':{model.names[k]:v for k,v in counts.items()},
-                    'prediction_image':str(image_out)})
-    print(threshold,'predictions:',sum(counts.values()),'->',image_out)
-write_json(home/'reports/lab_a_predictions.json',summary)'''),
+    result = model.predict(source=str(example), device=device, conf=threshold, imgsz=640,
+                           save=False, verbose=False)[0]
+    boxes = result.boxes
+    counts = Counter(int(k) for k in boxes.cls.cpu().tolist()) if boxes is not None else Counter()
+    image_out = output_dir / f'conf_{threshold:.2f}.jpg'
+    Image.fromarray(result.plot()[..., ::-1]).save(image_out)
+    summary.append({'conf': threshold,
+                    'detections': sum(counts.values()),
+                    'classes': {model.names[k]: v for k, v in counts.items()},
+                    'prediction_image': str(image_out)})
+    print(threshold, 'predictions:', sum(counts.values()), '->', image_out)
+write_json(home / 'reports/lab_a_predictions.json', summary)'''),
  c('''# 让学生实际看到 xyxy / conf / cls 三组张量
-example_result=model.predict(str(example),device=device,conf=0.25,verbose=False)[0]
-if example_result.boxes is not None and len(example_result.boxes)>0:
-    print('xyxy:',example_result.boxes.xyxy[:3].cpu().numpy())
-    print('confidence:',example_result.boxes.conf[:3].cpu().numpy())
-    print('class ID:',example_result.boxes.cls[:3].cpu().numpy())
-else: print('此阈值下没有检测目标；属于有效的实验结果。')'''),
+example_result = model.predict(str(example), device=device, conf=0.25, verbose=False)[0]
+if example_result.boxes is not None and len(example_result.boxes) > 0:
+    print('xyxy:', example_result.boxes.xyxy[:3].cpu().numpy())
+    print('confidence:', example_result.boxes.conf[:3].cpu().numpy())
+    print('class ID:', example_result.boxes.cls[:3].cpu().numpy())
+else:
+    print('此阈值下没有检测目标；属于有效的实验结果。')'''),
  c('''# 练习：亲手计算两个框的交并比（几何示例，不是模型测出的 mAP）
 from course.lab_utils import iou_xyxy
-box_true=(160,120,480,360)
-box_pred=(200,140,500,380)
-overlap=iou_xyxy(box_true,box_pred)
-print('IoU=',round(overlap,4),'学生可修改 box_pred 并观察变化')
-assert 0<=overlap<=1'''),
+
+box_true = (160, 120, 480, 360)
+box_pred = (200, 140, 500, 380)
+overlap = iou_xyxy(box_true, box_pred)
+print('IoU=', round(overlap, 4), '学生可修改 box_pred 并观察变化')
+assert 0 <= overlap <= 1'''),
  c('''for item in summary:
     print(f"conf={item['conf']:.2f}  boxes={item['detections']}")
-    display(Image.open(item['prediction_image']).resize((640,480)))
-assert all(summary[i]['detections'] >= summary[i+1]['detections'] for i in range(len(summary)-1)), '同模型、同图像下阈值变大，检出数不应增加'
+    display(Image.open(item['prediction_image']).resize((640, 480)))
+assert all(summary[i]['detections'] >= summary[i + 1]['detections']
+           for i in range(len(summary) - 1)), '同模型、同图像下阈值变大，检出数不应增加'
 print('Threshold monotonicity: PASS')'''),
  m('''### 思考题 / 面试必答
 1. 为什么阈值升高，检测框数通常不会增加？
@@ -225,6 +247,7 @@ make('02_Lab_B_Dataset_Annotation_QA.ipynb','02 / Lab B · 数据集、标注、
 - Check label ranges, duplicates, bounding boxes and the dataset config.
 
 > **Key scientific boundary**: official COCO128 reuses the same images for train and val and is for smoke tests only. This notebook re-groups and re-splits them to prevent direct overlap; with just 128 images the result can never be presented as industrial accuracy or a strict COCO benchmark, and semantically similar scenes still need human review.'''),
+ c(SETUP),
  m('''### 新的 Lab B：先手工标注，再自动检查
 1. 在 Windows/macOS/Linux 本地安装开源 **X-AnyLabeling**（它是独立桌面软件，不要装进 ROCm PyTorch 环境）。
 2. 讲师提供已获授权的图片；每名学生先手工绘制至少 5 张图片的矩形框，与同伴交换至少 5 张进行复核。先定义统一的类别顺序：classes.txt 每行一个类别，从 0 开始。
@@ -243,7 +266,6 @@ make('02_Lab_B_Dataset_Annotation_QA.ipynb','02 / Lab B · 数据集、标注、
 6. Group images from the same video/scene before splitting. Provide optional scenes.csv with image,scene columns; without it the perceptual duplicate heuristic still requires human review.
 
 **Teaching boundary**: at least nine images and three independent groups are required. Otherwise use the default COCO128 demo. A tiny dataset does not establish industrial generalization. Lab C reuses the successful import via shared config.'''),
- c(SETUP),
  c('''from course.lab_utils import (download_coco128,prepare_coco128_demo,inspect_dataset,
     plot_labels,read_labels,label_errors,list_images)
 from course.annotation_import import import_anylabeling_yolo
@@ -294,25 +316,26 @@ else:
     yaml_path=dest/'data.yaml'
     save_config({'dataset_yaml':str(yaml_path),'dataset_kind':'COCO128_repartitioned_teaching_only'})
 print('Training dataset:',yaml_path)'''),
- c('''qa=inspect_dataset(yaml_path)
-print('Class names:',qa['names'])
-print('Split stats:',qa['splits'])
-print('Errors:',qa['problems'][:30])
-print('Near-duplicate review warnings:',qa['warnings'][:10])
-write_json(home/'reports/lab_b_dataset_qa.json',{k:v for k,v in qa.items() if k!='sample_paths'})
-assert qa['pass'],'发现数据结构错误，请先修复再训练'
+ c('''qa = inspect_dataset(yaml_path)
+print('Class names:', qa['names'])
+print('Split stats:', qa['splits'])
+print('Errors:', qa['problems'][:30])
+print('Near-duplicate review warnings:', qa['warnings'][:10])
+write_json(home / 'reports/lab_b_dataset_qa.json',
+           {k: v for k, v in qa.items() if k != 'sample_paths'})
+assert qa['pass'], '发现数据结构错误，请先修复再训练'
 print('Dataset structural QA: PASS')'''),
  c('''# 可视化训练标签；此步骤由学生人工复核遮挡、错标、漏标等问题
-names=list(qa['names'].values()) if isinstance(qa['names'],dict) else list(qa['names'])
-train_imgs=qa['sample_paths']['train']
-fig=plot_labels(train_imgs,names,6)
-fig.savefig(home/'assets/lab_b_label_gallery.png',dpi=150,bbox_inches='tight')
+names = list(qa['names'].values()) if isinstance(qa['names'], dict) else list(qa['names'])
+train_imgs = qa['sample_paths']['train']
+fig = plot_labels(train_imgs, names, 6)
+fig.savefig(home / 'assets/lab_b_label_gallery.png', dpi=150, bbox_inches='tight')
 plt.show()'''),
  c('''# 代码练习：验证无效标签能够被 QA 捕获，不会污染实际数据集
-valid='0 0.5 0.5 0.2 0.3\\n'
-invalid='0 1.2 0.5 0.2 0.3\\n'
-assert not label_errors(valid,len(names))
-assert label_errors(invalid,len(names))
+valid = '0 0.5 0.5 0.2 0.3\\n'
+invalid = '0 1.2 0.5 0.2 0.3\\n'
+assert not label_errors(valid, len(names))
+assert label_errors(invalid, len(names))
 print('Label format & invalid-bound tests: PASS')'''),
  c('''# 创建人工审阅清单。不要直接上传敏感/受限图像到公开 GitHub。
 review=[{'image':str(img),'label':str(Path(qa['root'])/'labels/train'/f'{img.stem}.txt'),
@@ -330,30 +353,36 @@ else:
 Pick an annotated image and one label line, then type the corrected line below. Nothing is written unless you explicitly set `APPLY_CORRECTION=True`, and the old label is always backed up first. **Verify against human ground truth first — never bend the truth labels just because predictions disappoint you.**'''),
  c('''from course.lab_utils import label_path_for_image
 import datetime
+
 TARGET_IMAGE = train_imgs[0]
 LABEL_LINE_INDEX = 0  # 一行一个目标，从 0 开始
 NEW_LABEL_LINE = '0 0.500000 0.500000 0.200000 0.200000'  # 教学占位，不应盲目写入
 CORRECTION_REASON = 'TODO: 请写清楚人工审核依据'
 APPLY_CORRECTION = False  # 先通过可视化核对，再显式设为 True
-label_file=label_path_for_image(TARGET_IMAGE)
-original_lines=label_file.read_text(encoding='utf-8').splitlines()
-print('编辑目标:',label_file)
-print('原始标签:',original_lines[:3])
+
+label_file = label_path_for_image(TARGET_IMAGE)
+original_lines = label_file.read_text(encoding='utf-8').splitlines()
+print('编辑目标:', label_file)
+print('原始标签:', original_lines[:3])
+
 if APPLY_CORRECTION:
     assert CORRECTION_REASON and not CORRECTION_REASON.startswith('TODO:')
     assert 0 <= LABEL_LINE_INDEX < len(original_lines), '该图可能是合法的空标签，需要先选择有框的图片'
-    assert not label_errors(NEW_LABEL_LINE,len(names))
-    old_line=original_lines[LABEL_LINE_INDEX]
-    backup=home/'artifacts/label_backups'/f'{label_file.stem}_{datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")}.txt'
-    backup.parent.mkdir(parents=True,exist_ok=True)
-    backup.write_text(label_file.read_text(encoding='utf-8'),encoding='utf-8')
-    original_lines[LABEL_LINE_INDEX]=NEW_LABEL_LINE
-    label_file.write_text('\\n'.join(original_lines)+'\\n',encoding='utf-8')
-    write_json(home/'reports/lab_b_last_correction.json',
-       {'image':str(TARGET_IMAGE),'label':str(label_file),'before':old_line,'after':NEW_LABEL_LINE,
-        'reason':CORRECTION_REASON,'backup':str(backup)})
+    assert not label_errors(NEW_LABEL_LINE, len(names))
+    old_line = original_lines[LABEL_LINE_INDEX]
+    backup = (home / 'artifacts/label_backups' /
+              f'{label_file.stem}_'
+              f'{datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")}.txt')
+    backup.parent.mkdir(parents=True, exist_ok=True)
+    backup.write_text(label_file.read_text(encoding='utf-8'), encoding='utf-8')
+    original_lines[LABEL_LINE_INDEX] = NEW_LABEL_LINE
+    label_file.write_text('\\n'.join(original_lines) + '\\n', encoding='utf-8')
+    write_json(home / 'reports/lab_b_last_correction.json',
+               {'image': str(TARGET_IMAGE), 'label': str(label_file),
+                'before': old_line, 'after': NEW_LABEL_LINE,
+                'reason': CORRECTION_REASON, 'backup': str(backup)})
     assert inspect_dataset(yaml_path)['pass'], '修改后数据集 QA 失败，请恢复备份'
-    print('修正已写入，备份：',backup)
+    print('修正已写入，备份：', backup)
 else:
     print('安全预览：未修改任何文件。')'''),
  m('''### 思考题 / 面试必答
@@ -389,71 +418,78 @@ make('03_Lab_C_ROCm_Training_Finetune.ipynb','03 / Lab C · ROCm GPU 训练、�
 **Note**: this lab needs a GPU and time; pre-caching model/data before class is recommended. `amp=False` exists for ROCm AMP troubleshooting only — do not flip comparison configs without a diagnosed problem.'''),
  c(SETUP),
  c('''from course.lab_utils import get_metrics_summary
-import torch, time
+import torch
+import time
 from ultralytics import YOLO
-device=require_rocm()
-assert cfg['dataset_yaml'] and Path(cfg['dataset_yaml']).is_file(), '先完成 02 Lab B，或设置 YOLO_USER_DATA_YAML'
-model_initial=str(home/'artifacts/yolo26n.pt') if (home/'artifacts/yolo26n.pt').is_file() else cfg['model']
-print('Training:',model_initial,'dataset:',cfg['dataset_yaml'])'''),
+
+device = require_rocm()
+assert cfg['dataset_yaml'] and Path(cfg['dataset_yaml']).is_file(), \\
+    '先完成 02 Lab B，或设置 YOLO_USER_DATA_YAML'
+model_initial = (str(home / 'artifacts/yolo26n.pt')
+                 if (home / 'artifacts/yolo26n.pt').is_file() else cfg['model'])
+print('Training:', model_initial, 'dataset:', cfg['dataset_yaml'])'''),
  c('''# 非正式数据集，验证 GPU 实际能跑 Forward/Backward，不用于发布精度成绩。
-RUN_SMOKE=True
+RUN_SMOKE = True
 if RUN_SMOKE:
-    smoke_model=YOLO(model_initial)
-    smoke_model.train(data='coco8.yaml',epochs=1,imgsz=320,batch=4,device=device,
-                      workers=0,amp=False,project=str(home/'runs/lab_c'),name='smoke',
-                      exist_ok=True,plots=False,seed=42)
+    smoke_model = YOLO(model_initial)
+    smoke_model.train(data='coco8.yaml', epochs=1, imgsz=320, batch=4, device=device,
+                      workers=0, amp=False, project=str(home / 'runs/lab_c'), name='smoke',
+                      exist_ok=True, plots=False, seed=42)
     print('GPU smoke completed; COCO8 is not a benchmark.')'''),
  c('''# 正式教学训练。为了让学生在课上完成闭环，默认 12 Epoch；高质量结果需课后延长训练。
-RUN_BASELINE=True
-BASELINE_EPOCHS=12
-train_kwargs=dict(data=cfg['dataset_yaml'],epochs=BASELINE_EPOCHS,
-                  imgsz=512,batch=8,device=device,workers=0,patience=30,
-                  optimizer='SGD',seed=42,deterministic=False,
-                  amp=False,plots=True,project=str(home/'runs/lab_c'),
-                  name='baseline',exist_ok=True)
+RUN_BASELINE = True
+BASELINE_EPOCHS = 12
+train_kwargs = dict(data=cfg['dataset_yaml'], epochs=BASELINE_EPOCHS,
+                    imgsz=512, batch=8, device=device, workers=0, patience=30,
+                    optimizer='SGD', seed=42, deterministic=False,
+                    amp=False, plots=True, project=str(home / 'runs/lab_c'),
+                    name='baseline', exist_ok=True)
 if RUN_BASELINE:
-    torch.cuda.empty_cache();torch.cuda.reset_peak_memory_stats()
-    start=time.perf_counter()
-    baseline=YOLO(model_initial)
-    train_output=baseline.train(**train_kwargs)
+    torch.cuda.empty_cache()
+    torch.cuda.reset_peak_memory_stats()
+    start = time.perf_counter()
+    baseline = YOLO(model_initial)
+    train_output = baseline.train(**train_kwargs)
     torch.cuda.synchronize()
-    elapsed=time.perf_counter()-start
-    peak_gib=torch.cuda.max_memory_allocated()/2**30
-    run_dir=Path(baseline.trainer.save_dir).resolve()
-    weights=run_dir/'weights/best.pt'
-    assert weights.exists(),f'best.pt missing: {weights}'
-    record={'run_dir':str(run_dir),'weights':str(weights),'sha256':sha256(weights),
-            'elapsed_seconds':round(elapsed,2),'peak_allocated_GiB':round(peak_gib,3),
-            'args':train_kwargs,'system':system_info(),
-            'warning':'Peak memory is PyTorch allocated memory, not total device VRAM.'}
-    write_json(home/'reports/lab_c_baseline.json',record)
-    save_config({'baseline_run':str(run_dir),'baseline_weights':str(weights),
-                 'baseline_train_settings':train_kwargs})
+    elapsed = time.perf_counter() - start
+    peak_gib = torch.cuda.max_memory_allocated() / 2**30
+    run_dir = Path(baseline.trainer.save_dir).resolve()
+    weights = run_dir / 'weights/best.pt'
+    assert weights.exists(), f'best.pt missing: {weights}'
+    record = {'run_dir': str(run_dir), 'weights': str(weights), 'sha256': sha256(weights),
+              'elapsed_seconds': round(elapsed, 2), 'peak_allocated_GiB': round(peak_gib, 3),
+              'args': train_kwargs, 'system': system_info(),
+              'warning': 'Peak memory is PyTorch allocated memory, not total device VRAM.'}
+    write_json(home / 'reports/lab_c_baseline.json', record)
+    save_config({'baseline_run': str(run_dir), 'baseline_weights': str(weights),
+                 'baseline_train_settings': train_kwargs})
     print(record)
 else:
     print('未执行训练。后续实验需要一个经过验证的 best.pt，请不要伪造训练结果。')'''),
  c('''# 阅读训练工件：不同版本可能输出不同的列名，请以实际 CSV 为准。
 from PIL import Image
 import pandas as pd
-cfg=load_config()
-run_dir=Path(cfg['baseline_run'])
-csv_path=run_dir/'results.csv'
+
+cfg = load_config()
+run_dir = Path(cfg['baseline_run'])
+csv_path = run_dir / 'results.csv'
 if csv_path.exists():
-    history=pd.read_csv(csv_path)
+    history = pd.read_csv(csv_path)
     display(history.tail(5))
 else:
-    print('Missing results.csv:',csv_path)
-if (run_dir/'results.png').exists():
-    display(Image.open(run_dir/'results.png').resize((1120,530)))'''),
+    print('Missing results.csv:', csv_path)
+if (run_dir / 'results.png').exists():
+    display(Image.open(run_dir / 'results.png').resize((1120, 530)))'''),
  c('''# 不混淆验证集与最终测试集：首次使用 split='val'
-cfg=load_config()
-best=YOLO(cfg['baseline_weights'])
-metrics=best.val(data=cfg['dataset_yaml'],split='val',device=device,
-                 imgsz=640,batch=8,workers=0,plots=True,verbose=False)
-summary=get_metrics_summary(metrics)
-summary['split']='val';summary['model_sha256']=sha256(Path(cfg['baseline_weights']))
-write_json(home/'reports/lab_c_baseline_val.json',summary)
-print('Validation only (NOT test):',summary)'''),
+cfg = load_config()
+best = YOLO(cfg['baseline_weights'])
+metrics = best.val(data=cfg['dataset_yaml'], split='val', device=device,
+                   imgsz=640, batch=8, workers=0, plots=True, verbose=False)
+summary = get_metrics_summary(metrics)
+summary['split'] = 'val'
+summary['model_sha256'] = sha256(Path(cfg['baseline_weights']))
+write_json(home / 'reports/lab_c_baseline_val.json', summary)
+print('Validation only (NOT test):', summary)'''),
  m('''### 为什么基线固定训练用 `imgsz=512`，评测用 `imgsz=640`？
 训练输入尺寸属于训练方案，下一步 Lab E 会只改变训练尺寸；为了公平比较两组模型，Lab E 会用同一个 `imgsz=640` 做评测。这是一种课堂控制变量方案，不是所有工业评测任务必须如此。
 
@@ -493,74 +529,91 @@ make('04_Lab_D_Evaluation_Error_Analysis.ipynb','04 / Lab D · mAP、混淆与�
 `metrics.box.map` is the official mAP50-95; our fixed-threshold TP/FP/FN analysis exists only to learn about error causes.'''),
  c(SETUP),
  c('''from course.lab_utils import (get_metrics_summary, inspect_dataset, match_predictions,
-                                  xywhn_to_xyxy, read_labels, label_path_for_image)
+                              xywhn_to_xyxy, read_labels, label_path_for_image)
 from ultralytics import YOLO
-from PIL import Image,ImageDraw
+from PIL import Image, ImageDraw
 from IPython.display import display
 import torch
-device=require_rocm()
-assert cfg['baseline_weights'] and Path(cfg['baseline_weights']).is_file(), '先完成 Lab C，或经过核验设置 best.pt'
+
+device = require_rocm()
+assert cfg['baseline_weights'] and Path(cfg['baseline_weights']).is_file(), \\
+    '先完成 Lab C，或经过核验设置 best.pt'
 assert Path(cfg['dataset_yaml']).is_file()
-model=YOLO(cfg['baseline_weights'])
-print('Weight SHA256:',sha256(Path(cfg['baseline_weights'])))'''),
+model = YOLO(cfg['baseline_weights'])
+print('Weight SHA256:', sha256(Path(cfg['baseline_weights'])))'''),
  c('''# 正式官方 mAP 计算：不要把 conf=0.25 当作计算 mAP 的唯一阈值
-val_metrics=model.val(data=cfg['dataset_yaml'],split='val',device=device,
-                      imgsz=640,batch=8,workers=0,plots=True,verbose=False)
-score=get_metrics_summary(val_metrics)
-score.update({'split':'val','dataset_yaml':cfg['dataset_yaml'],
-              'weight_sha256':sha256(Path(cfg['baseline_weights']))})
-write_json(home/'reports/lab_d_official_metrics.json',score)
-print('Official validation metrics:',score)
+val_metrics = model.val(data=cfg['dataset_yaml'], split='val', device=device,
+                        imgsz=640, batch=8, workers=0, plots=True, verbose=False)
+score = get_metrics_summary(val_metrics)
+score.update({'split': 'val', 'dataset_yaml': cfg['dataset_yaml'],
+              'weight_sha256': sha256(Path(cfg['baseline_weights']))})
+write_json(home / 'reports/lab_d_official_metrics.json', score)
+print('Official validation metrics:', score)
 print('mAP: IoU=0.50..0.95 average, NOT confidence 50%-95%')'''),
  c('''# 展示 Ultralytics 官方可视化（如果已生成）
 from PIL import Image
-out=Path(val_metrics.save_dir)
-for title in ('BoxPR_curve.png','PR_curve.png','confusion_matrix.png','confusion_matrix_normalized.png'):
-    p=out/title
+
+out = Path(val_metrics.save_dir)
+for title in ('BoxPR_curve.png', 'PR_curve.png', 'confusion_matrix.png',
+              'confusion_matrix_normalized.png'):
+    p = out / title
     if p.exists():
         print(title)
-        display(Image.open(p).resize((950,600)))'''),
+        display(Image.open(p).resize((950, 600)))'''),
  c('''# 手工逐图片匹配：一个 GT 最多配一个同类、IoU>=0.50 的预测，其他为 FP/FN
-qa=inspect_dataset(Path(cfg['dataset_yaml']))
-val_images=qa['sample_paths']['val']
-rows=[]; failures=[];totals={'TP':0,'FP':0,'FN':0}
+qa = inspect_dataset(Path(cfg['dataset_yaml']))
+val_images = qa['sample_paths']['val']
+rows = []
+failures = []
+totals = {'TP': 0, 'FP': 0, 'FN': 0}
 for img in val_images:
-    pred=model.predict(source=str(img),device=device,imgsz=640,
-                       conf=0.25,iou=0.70,verbose=False)[0]
-    gt=label_path_for_image(img)
-    match=match_predictions(pred,gt,iou_threshold=0.50)
-    for k in totals:totals[k]+=match[k]
+    pred = model.predict(source=str(img), device=device, imgsz=640,
+                         conf=0.25, iou=0.70, verbose=False)[0]
+    gt = label_path_for_image(img)
+    match = match_predictions(pred, gt, iou_threshold=0.50)
+    for k in totals:
+        totals[k] += match[k]
     for issue in match['errors']:
-        rows.append({'image':img.name,'image_path':str(img),'error':issue['error'],
-                     'class_id':issue['class_id'],'score':issue['score'],'max_iou_gt':issue['max_iou_gt']})
+        rows.append({'image': img.name, 'image_path': str(img), 'error': issue['error'],
+                     'class_id': issue['class_id'], 'score': issue['score'],
+                     'max_iou_gt': issue['max_iou_gt']})
     if match['errors']:
-        failures.append((img,pred,gt,match))
-precision=totals['TP']/max(1,totals['TP']+totals['FP'])
-recall=totals['TP']/max(1,totals['TP']+totals['FN'])
-print('Fixed threshold teaching-level counts:',totals, 'P:',round(precision,3),'R:',round(recall,3))
+        failures.append((img, pred, gt, match))
+precision = totals['TP'] / max(1, totals['TP'] + totals['FP'])
+recall = totals['TP'] / max(1, totals['TP'] + totals['FN'])
+print('Fixed threshold teaching-level counts:', totals,
+      'P:', round(precision, 3), 'R:', round(recall, 3))
 print('Important: these are NOT the official integrated PR or mAP values.')
-write_csv(home/'reports/lab_d_errors.csv',rows,
-          ['image','image_path','error','class_id','score','max_iou_gt'])
-write_json(home/'reports/lab_d_fixed_threshold.json',{'conf':0.25,'matching_iou':0.50,
- 'nms_iou':0.70,'counts':totals,'precision_fixed':precision,'recall_fixed':recall,
- 'note':'Teaching matching only; not a COCO AP implementation.'})'''),
+write_csv(home / 'reports/lab_d_errors.csv', rows,
+          ['image', 'image_path', 'error', 'class_id', 'score', 'max_iou_gt'])
+write_json(home / 'reports/lab_d_fixed_threshold.json',
+           {'conf': 0.25, 'matching_iou': 0.50,
+            'nms_iou': 0.70, 'counts': totals,
+            'precision_fixed': precision, 'recall_fixed': recall,
+            'note': 'Teaching matching only; not a COCO AP implementation.'})'''),
  c('''# 保存真实失败图（左真值，右预测）；如果几乎无错误，忠实报告而不是捏造 5 个。
-from PIL import Image,ImageDraw
-error_dir=home/'assets/lab_d_errors';error_dir.mkdir(parents=True,exist_ok=True)
-names=list(qa['names'].values()) if isinstance(qa['names'],dict) else list(qa['names'])
-for idx,(img,pred,lab,match) in enumerate(failures[:5],1):
-    gt=Image.open(img).convert('RGB')
-    W,H=gt.size; d=ImageDraw.Draw(gt)
+from PIL import Image, ImageDraw
+
+error_dir = home / 'assets/lab_d_errors'
+error_dir.mkdir(parents=True, exist_ok=True)
+names = list(qa['names'].values()) if isinstance(qa['names'], dict) else list(qa['names'])
+for idx, (img, pred, lab, match) in enumerate(failures[:5], 1):
+    gt = Image.open(img).convert('RGB')
+    W, H = gt.size
+    d = ImageDraw.Draw(gt)
     for box in read_labels(lab):
-        coords=xywhn_to_xyxy(box,W,H)
-        d.rectangle(coords,outline=(40,210,120),width=max(2,W//160))
-        d.text((coords[0],max(0,coords[1]-15)),f'GT {names[box[0]]}',fill=(0,170,85))
-    predicted=Image.fromarray(pred.plot()[...,::-1]).convert('RGB')
-    board=Image.new('RGB',(W*2,H),(245,248,250));board.paste(gt,(0,0));board.paste(predicted,(W,0))
-    p=error_dir/f'{idx:02d}_{img.stem}.jpg';board.save(p,quality=90)
-    print(p,'errors:',len(match['errors']))
-    display(board.resize((960,round(960*H/(2*W)))))
-if len(failures)<5:
+        coords = xywhn_to_xyxy(box, W, H)
+        d.rectangle(coords, outline=(40, 210, 120), width=max(2, W // 160))
+        d.text((coords[0], max(0, coords[1] - 15)), f'GT {names[box[0]]}', fill=(0, 170, 85))
+    predicted = Image.fromarray(pred.plot()[..., ::-1]).convert('RGB')
+    board = Image.new('RGB', (W * 2, H), (245, 248, 250))
+    board.paste(gt, (0, 0))
+    board.paste(predicted, (W, 0))
+    p = error_dir / f'{idx:02d}_{img.stem}.jpg'
+    board.save(p, quality=90)
+    print(p, 'errors:', len(match['errors']))
+    display(board.resize((960, round(960 * H / (2 * W)))))
+if len(failures) < 5:
     print(f'只有 {len(failures)} 张有失败案例。不能编造；可拓展验证集或评估更多困难样本。')'''),
  m('''### 学生工作：手动归因至少 5 个实际错误（如果有）
 打开 `reports/lab_d_errors.csv` 和并排对照图，添加 **现象、证据、可能根因、下次实验验证方法**。把推测与已确认根因区分开。
@@ -595,90 +648,105 @@ Starting from the **real baseline produced by Lab C**, change exactly one thing 
 > **Fairness note:** lowering imgsz changes both the information content and the compute of each step. Equal epochs do not guarantee equal training time / SGD update quality; this experiment tests one clearly stated classroom hypothesis and provides no statistical significance. Training time is also affected by caches and concurrent load on shared cloud GPUs.'''),
  c(SETUP),
  c('''from course.lab_utils import get_metrics_summary
-import torch,time
+import torch
+import time
 from ultralytics import YOLO
-device=require_rocm()
-assert cfg.get('baseline_train_settings') and Path(cfg['baseline_weights']).is_file(),'请先完整运行 Lab C baseline。'
-base_record=json.loads((home/'reports/lab_c_baseline.json').read_text(encoding='utf-8'))
-args=cfg['baseline_train_settings']
-print('Baseline train imgsz:',args['imgsz'],'epochs:',args['epochs'])
-print('Baseline model sha256:',sha256(Path(cfg['baseline_weights'])))
-model_cache=home/'artifacts/yolo26n.pt'
+
+device = require_rocm()
+assert cfg.get('baseline_train_settings') and Path(cfg['baseline_weights']).is_file(), \\
+    '请先完整运行 Lab C baseline。'
+base_record = json.loads((home / 'reports/lab_c_baseline.json').read_text(encoding='utf-8'))
+args = cfg['baseline_train_settings']
+print('Baseline train imgsz:', args['imgsz'], 'epochs:', args['epochs'])
+print('Baseline model sha256:', sha256(Path(cfg['baseline_weights'])))
+model_cache = home / 'artifacts/yolo26n.pt'
 assert model_cache.is_file(), '预训练初始权重缓存不存在；重新运行 00 进行固定。'
-assert sha256(model_cache)==cfg.get('model_sha256'), '初始权重 SHA256 改变，A/B 结果不可比。'
-assert args['imgsz']==512,'此 Notebook 的实验方案假定 baseline 训练尺寸为 512，请先审核与修改方案' '''),
+assert sha256(model_cache) == cfg.get('model_sha256'), '初始权重 SHA256 改变，A/B 结果不可比。'
+assert args['imgsz'] == 512, '此 Notebook 的实验方案假定 baseline 训练尺寸为 512，请先审核与修改方案' '''),
  c('''# Variant：只修改 imgsz；额外不同的仅是 run output name/project
-RUN_VARIANT=True
-variant_args=dict(args)
-variant_args.update(imgsz=416,project=str(home/'runs/lab_e'),name='imgsz416',exist_ok=True)
-changed={key:(args[key],variant_args[key]) for key in args if args[key]!=variant_args[key]}
-print('Changed training arguments:',changed)
-assert set(changed)=={'imgsz','project','name'}
+RUN_VARIANT = True
+variant_args = dict(args)
+variant_args.update(imgsz=416, project=str(home / 'runs/lab_e'), name='imgsz416', exist_ok=True)
+changed = {key: (args[key], variant_args[key]) for key in args if args[key] != variant_args[key]}
+print('Changed training arguments:', changed)
+assert set(changed) == {'imgsz', 'project', 'name'}
 if RUN_VARIANT:
-    torch.cuda.empty_cache();torch.cuda.reset_peak_memory_stats()
-    t0=time.perf_counter()
-    init_model=str(home/'artifacts/yolo26n.pt') if (home/'artifacts/yolo26n.pt').is_file() else cfg['model']
-    variant=YOLO(init_model)  # 注意：不能用 baseline best.pt 作为 B 的初始权重！
+    torch.cuda.empty_cache()
+    torch.cuda.reset_peak_memory_stats()
+    t0 = time.perf_counter()
+    init_model = (str(home / 'artifacts/yolo26n.pt')
+                  if (home / 'artifacts/yolo26n.pt').is_file() else cfg['model'])
+    variant = YOLO(init_model)  # 注意：不能用 baseline best.pt 作为 B 的初始权重！
     variant.train(**variant_args)
     torch.cuda.synchronize()
-    run_dir=Path(variant.trainer.save_dir)
-    variant_best=run_dir/'weights/best.pt'
+    run_dir = Path(variant.trainer.save_dir)
+    variant_best = run_dir / 'weights/best.pt'
     assert variant_best.is_file()
-    variant_record={'run_dir':str(run_dir),'weights':str(variant_best),
-       'sha256':sha256(variant_best),'elapsed_seconds':round(time.perf_counter()-t0,2),
-       'peak_allocated_GiB':round(torch.cuda.max_memory_allocated()/2**30,3),
-       'args':variant_args,'system':system_info()}
-    write_json(home/'reports/lab_e_variant.json',variant_record)
-    print('Variant training finished:',variant_record)
+    variant_record = {'run_dir': str(run_dir), 'weights': str(variant_best),
+                      'sha256': sha256(variant_best),
+                      'elapsed_seconds': round(time.perf_counter() - t0, 2),
+                      'peak_allocated_GiB': round(torch.cuda.max_memory_allocated() / 2**30, 3),
+                      'args': variant_args, 'system': system_info()}
+    write_json(home / 'reports/lab_e_variant.json', variant_record)
+    print('Variant training finished:', variant_record)
 else:
     print('RUN_VARIANT=False: without real variant artifacts NO A/B conclusion can be made.')'''),
  c('''# 相同验证集、验证输入和运行条件，分别评测真实权重。
-variant_record=json.loads((home/'reports/lab_e_variant.json').read_text(encoding='utf-8'))
+variant_record = json.loads((home / 'reports/lab_e_variant.json').read_text(encoding='utf-8'))
 assert Path(variant_record['weights']).exists()
-reports=[]
-for label,rec in [('baseline',base_record),('imgsz416',variant_record)]:
-    m=YOLO(rec['weights']).val(data=cfg['dataset_yaml'],split='val',
-                  imgsz=640,device=device,batch=8,workers=0,plots=False,verbose=False)
-    scores=get_metrics_summary(m)
-    scores.update({'variant':label,'train_imgsz':rec['args']['imgsz'],
-      'training_time_seconds':rec['elapsed_seconds'],'train_peak_allocated_gib':rec['peak_allocated_GiB'],
-      'model_sha256':rec['sha256'],'val_imgsz':640,'split':'val'})
+reports = []
+for label, rec in [('baseline', base_record), ('imgsz416', variant_record)]:
+    m = YOLO(rec['weights']).val(data=cfg['dataset_yaml'], split='val',
+                                 imgsz=640, device=device, batch=8, workers=0,
+                                 plots=False, verbose=False)
+    scores = get_metrics_summary(m)
+    scores.update({'variant': label, 'train_imgsz': rec['args']['imgsz'],
+                   'training_time_seconds': rec['elapsed_seconds'],
+                   'train_peak_allocated_gib': rec['peak_allocated_GiB'],
+                   'model_sha256': rec['sha256'], 'val_imgsz': 640, 'split': 'val'})
     reports.append(scores)
-    print(label,scores)
-write_csv(home/'reports/lab_e_ab_comparison.csv',reports,
-          ['variant','train_imgsz','training_time_seconds','train_peak_allocated_gib',
-           'precision','recall','mAP50','mAP50_95','model_sha256','val_imgsz','split'])
-write_json(home/'reports/lab_e_ab_comparison.json',reports)'''),
+    print(label, scores)
+write_csv(home / 'reports/lab_e_ab_comparison.csv', reports,
+          ['variant', 'train_imgsz', 'training_time_seconds', 'train_peak_allocated_gib',
+           'precision', 'recall', 'mAP50', 'mAP50_95', 'model_sha256', 'val_imgsz', 'split'])
+write_json(home / 'reports/lab_e_ab_comparison.json', reports)'''),
  c('''# 图表使用实测数值，不预置任何提升率
 from matplotlib import pyplot as plt
-labels=[r['variant'] for r in reports]
-fig,ax=plt.subplots(figsize=(8,4))
-ax.bar(labels,[r['mAP50_95'] for r in reports])
-ax.set_ylabel('Validation mAP50-95');ax.set_ylim(0,1)
+
+labels = [r['variant'] for r in reports]
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.bar(labels, [r['mAP50_95'] for r in reports])
+ax.set_ylabel('Validation mAP50-95')
+ax.set_ylim(0, 1)
 ax.set_title('Same validation images and evaluation imgsz=640')
-for i,r in enumerate(reports):ax.text(i,r['mAP50_95']+.01,f"{r['mAP50_95']:.3f}",ha='center')
+for i, r in enumerate(reports):
+    ax.text(i, r['mAP50_95'] + .01, f"{r['mAP50_95']:.3f}", ha='center')
 fig.tight_layout()
-fig.savefig(home/'assets/lab_e_ab_mAP.png',dpi=150)
+fig.savefig(home / 'assets/lab_e_ab_mAP.png', dpi=150)
 plt.show()
-print('ΔmAP50-95 B−A:',round(reports[1]['mAP50_95']-reports[0]['mAP50_95'],4))'''),
+print('ΔmAP50-95 B−A:', round(reports[1]['mAP50_95'] - reports[0]['mAP50_95'], 4))'''),
  m('''### 最终 Test：仅在选定模型之后运行一次
 只使用 Validation 指标决定选择哪个候选模型。不要在查看 Test 分数后反过来改动超参数，再把同一 Test 分数当作独立最终成绩。''',
    '''### The final Test: run exactly once, after model selection
 Use validation metrics alone to pick the winning candidate. Never peek at the test score, go back and tweak hyperparameters, and then present that same test score as an independent final result.'''),
  c('''RUN_FINAL_TEST = False  # 小组完成模型选择并冻结方案后，明确改成 True 执行一次
 if RUN_FINAL_TEST:
-    target=home/'reports/lab_e_final_test.json'
+    target = home / 'reports/lab_e_final_test.json'
     assert not target.exists(), '独立 Test 已有成绩。避免重复查看后调参。'
-    selection=max(reports,key=lambda row:row['mAP50_95'])  # 仅由 Val 指标选择
-    test_weight=base_record['weights'] if selection['variant']=='baseline' else variant_record['weights']
-    final_test=YOLO(test_weight).val(data=cfg['dataset_yaml'],split='test',imgsz=640,
-                                    device=device,batch=8,workers=0,plots=False,verbose=False)
-    result=get_metrics_summary(final_test)
-    result.update({'split':'test','selected_by':'validation mAP50-95',
-                   'model_variant':selection['variant'],'model_sha256':sha256(Path(test_weight)),
-                   'warning':'Tiny classroom split; not a statistically reliable industrial benchmark.'})
-    write_json(target,result)
-    print('Frozen final test result:',result)
+    selection = max(reports, key=lambda row: row['mAP50_95'])  # 仅由 Val 指标选择
+    test_weight = (base_record['weights'] if selection['variant'] == 'baseline'
+                   else variant_record['weights'])
+    final_test = YOLO(test_weight).val(data=cfg['dataset_yaml'], split='test', imgsz=640,
+                                       device=device, batch=8, workers=0, plots=False,
+                                       verbose=False)
+    result = get_metrics_summary(final_test)
+    result.update({'split': 'test', 'selected_by': 'validation mAP50-95',
+                   'model_variant': selection['variant'],
+                   'model_sha256': sha256(Path(test_weight)),
+                   'warning': 'Tiny classroom split; not a statistically reliable '
+                              'industrial benchmark.'})
+    write_json(target, result)
+    print('Frozen final test result:', result)
 else:
     print('Test is sealed. Current metrics are Validation only.')'''),
  m('''### 结论必须回答五个问题

@@ -7,6 +7,7 @@ from __future__ import annotations
 import importlib
 import json
 import os
+import re
 import sys
 import types
 from pathlib import Path
@@ -118,20 +119,22 @@ def test_all_six_notebooks_present_and_parse():
         if p.name[:2] in {'01', '03', '04', '05'}:
             assert 'require_rocm()' in src, f'{p.name} lost its ROCm gate'
         # Baseline must remain a real multi-epoch run, not a smoke pass.
+        # (regex-based: formatting may change, semantics may not)
         if p.name[:2] == '03':
-            assert 'BASELINE_EPOCHS=12' in src and 'epochs=BASELINE_EPOCHS' in src
-            assert 'RUN_SMOKE=True' in src
+            assert re.search(r'BASELINE_EPOCHS\s*=\s*12', src)
+            assert re.search(r'epochs\s*=\s*BASELINE_EPOCHS', src)
+            assert re.search(r'RUN_SMOKE\s*=\s*True', src)
         # A/B evaluation must use identical val imgsz for both arms.
         if p.name[:2] == '05':
-            assert src.count('imgsz=640') >= 2
+            assert len(re.findall(r'imgsz\s*=\s*640', src)) >= 2
 
 
 def test_lab_c_smoke_and_baseline_use_gpu_device():
     nbformat = pytest.importorskip('nbformat')
     nb = nbformat.read(PROJECT / 'notebooks' / '03_Lab_C_ROCm_Training_Finetune.ipynb', as_version=4)
     src = '\n'.join(c.source for c in nb.cells if c.cell_type == 'code')
-    assert 'device=device' in src
-    assert 'workers=0' in src  # Windows multiprocessing safety
+    assert re.search(r'device\s*=\s*device', src)
+    assert re.search(r'workers\s*=\s*0', src)  # Windows multiprocessing safety
 
 
 # ------------------------------------------------------ lab_utils invariants ----
