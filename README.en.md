@@ -101,3 +101,10 @@ Workflow: see **[CONTRIBUTING.md](CONTRIBUTING.md)** (branch → test → PR tem
 - [Final validation report](validation/FINAL_REPORT.md) (Chinese) · [Execution matrix](validation/NOTEBOOK_EXECUTION_MATRIX.md) · [GPU admission evidence](validation/GPU_PHYSICAL_SMOKE.md)
 - [Instructor guide](INSTRUCTOR_GUIDE.md) (bilingual) · [Design system](DESIGN_SYSTEM.md)
 - Official docs: [Ultralytics on AMD](https://docs.ultralytics.com/integrations/amd/) · [YOLO26](https://docs.ultralytics.com/models/yolo26/) · [ROCm](https://rocm.docs.amd.com/)
+
+
+### Lab B · Manual labeling with X-AnyLabeling (updated)
+
+Students use the open-source [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) desktop app to **annotate at least 5 images manually → peer-review 5 → export YOLO detection .txt files → upload to Radeon Cloud → perform notebook dataset QA and grouped splits**. See the [Lab B guide (Chinese, with command examples)](docs/LAB_B_X_ANYLABELING.md).
+
+Set `YOLO_ANYLABELING_EXPORT` to a folder containing `images/`, `labels/`, and `classes.txt`; optionally set `YOLO_ANYLABELING_SCENES` to an `image,scene` CSV. Without these variables the previously validated COCO128 teaching route remains unchanged. The importer creates a new `data/processed/xanylabeling_student_v1` without overwriting existing results. This new student-export route still requires a physical cloud GPU rehearsal.

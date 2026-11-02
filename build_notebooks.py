@@ -247,32 +247,75 @@ make('02_Lab_B_Dataset_Annotation_QA.ipynb','02 / Lab B · 数据集、标注、
 - Check label ranges, duplicates, bounding boxes and the dataset config.
 
 > **Key scientific boundary**: official COCO128 reuses the same images for train and val and is for smoke tests only. This notebook re-groups and re-splits them to prevent direct overlap; with just 128 images the result can never be presented as industrial accuracy or a strict COCO benchmark, and semantically similar scenes still need human review.'''),
+ m('''### 新的 Lab B：先手工标注，再自动检查
+1. 在 Windows/macOS/Linux 本地安装开源 **X-AnyLabeling**（它是独立桌面软件，不要装进 ROCm PyTorch 环境）。
+2. 讲师提供已获授权的图片；每名学生先手工绘制至少 5 张图片的矩形框，与同伴交换至少 5 张进行复核。先定义统一的类别顺序：classes.txt 每行一个类别，从 0 开始。
+3. 在 X-AnyLabeling 选择 **Export Annotations → Export YOLO Annotations → Detection**，使用 classes.txt，得到按图片名称对应的 YOLO 检测 txt；图片保存在 images/，导出标签放在独立的 labels/ 文件夹。
+4. 上传 images/、labels/、classes.txt 至 Radeon Cloud，默认示例目录：/workspace/yolo_course/data/raw/anylabeling/。**先通过人工审核并确认版权/使用权限，再进行导入**。
+5. 在下面设置 YOLO_ANYLABELING_EXPORT（可设置环境变量或直接修改代码变量）。只读源文件，另建数据集并生成 train/val/test、split_manifest.csv、data.yaml、QA 报告。已有输出不会被覆盖。
+6. 同一视频、同一场景、近重复图片不能跨集合。推荐提供 scenes.csv 两列 image,scene；没有此文件时只执行图像相似性启发式分组，仍需人工检查。
+
+**教学注意**：至少需要 9 张图和 3 个独立场景/图片组；不足时继续用 COCO128 安全演示，不能把无效小数据集伪装成可泛化训练集。导入成功后 Lab C 自动读取新 data.yaml。未提供导出则保留原先 COCO128 默认路径。''',
+   '''### Updated Lab B: annotate by hand, then validate
+1. Install the free, open-source **X-AnyLabeling** desktop app outside your ROCm Python environment.
+2. Annotate at least five licensed images per student with rectangle boxes; cross-review at least five images with a teammate. Define the shared class order using classes.txt (one nonempty name per line, zero-based IDs).
+3. Use **Export Annotations → Export YOLO Annotations → Detection** and classes.txt. Keep images/ and exported labels/ separate, with matching image/label stems.
+4. Upload images/, labels/, classes.txt to Radeon Cloud (example /workspace/yolo_course/data/raw/anylabeling/) after manual review and permission checks.
+5. Set YOLO_ANYLABELING_EXPORT to the export folder. The importer never edits sources; it creates a new train/val/test dataset, manifest, data.yaml and QA report. Existing output is never overwritten.
+6. Group images from the same video/scene before splitting. Provide optional scenes.csv with image,scene columns; without it the perceptual duplicate heuristic still requires human review.
+
+**Teaching boundary**: at least nine images and three independent groups are required. Otherwise use the default COCO128 demo. A tiny dataset does not establish industrial generalization. Lab C reuses the successful import via shared config.'''),
  c(SETUP),
- c('''from course.lab_utils import (download_coco128, prepare_coco128_demo, inspect_dataset,
-                              plot_labels, read_labels, label_errors, list_images)
+ c('''from course.lab_utils import (download_coco128,prepare_coco128_demo,inspect_dataset,
+    plot_labels,read_labels,label_errors,list_images)
+from course.annotation_import import import_anylabeling_yolo
 from IPython.display import display
 from matplotlib import pyplot as plt
 
-# 如果已有自定义数据：设为你的绝对路径，例如 /workspace/my_dataset/data.yaml。
+# Option 1: a pre-split and independently reviewed user dataset
 USER_DATA_YAML = os.environ.get('YOLO_USER_DATA_YAML', '').strip()
+
+# Option 2: X-AnyLabeling export: images/, labels/, classes.txt
+# Example: /workspace/yolo_course/data/raw/anylabeling
+YOLO_ANYLABELING_EXPORT = os.environ.get('YOLO_ANYLABELING_EXPORT', '').strip()
+YOLO_ANYLABELING_SCENES = os.environ.get('YOLO_ANYLABELING_SCENES', '').strip()
+YOLO_ANYLABELING_OUTPUT_NAME = os.environ.get('YOLO_ANYLABELING_OUTPUT_NAME',
+                                                'xanylabeling_student_v1').strip()
 if USER_DATA_YAML:
-    yaml_path = Path(USER_DATA_YAML).expanduser().resolve()
-    if not yaml_path.is_file():
-        raise FileNotFoundError(yaml_path)
-    save_config({'dataset_yaml': str(yaml_path), 'dataset_kind': 'user_provided'})
-    print('Using user-owned dataset:', yaml_path)
+    yaml_path=Path(USER_DATA_YAML).expanduser().resolve()
+    if not yaml_path.is_file(): raise FileNotFoundError(yaml_path)
+    save_config({'dataset_yaml':str(yaml_path),'dataset_kind':'user_provided'})
+    print('Using user-owned dataset:',yaml_path)
+elif YOLO_ANYLABELING_EXPORT:
+    export=Path(YOLO_ANYLABELING_EXPORT).expanduser().resolve()
+    dest=home/'data/processed'/YOLO_ANYLABELING_OUTPUT_NAME
+    assert YOLO_ANYLABELING_OUTPUT_NAME and Path(YOLO_ANYLABELING_OUTPUT_NAME).name == YOLO_ANYLABELING_OUTPUT_NAME
+    if dest.exists():
+        if not (dest/'data.yaml').is_file():
+            raise FileExistsError(f'Destination already exists; choose a new output name: {dest}')
+        print('Using previously imported dataset; change YOLO_ANYLABELING_OUTPUT_NAME for a new revision:',dest)
+    else:
+        imported=import_anylabeling_yolo(
+            export/'images', export/'labels', export/'classes.txt', dest,
+            scene_csv=Path(YOLO_ANYLABELING_SCENES) if YOLO_ANYLABELING_SCENES else None,
+            seed=42)
+        write_json(home/'reports/lab_b_annotation_import.json',imported)
+        print('X-AnyLabeling export imported:',imported)
+    yaml_path=dest/'data.yaml'
+    save_config({'dataset_yaml':str(yaml_path),
+                 'dataset_kind':'X-AnyLabeling_student_reviewed_teaching'})
 else:
-    source = download_coco128(home)
-    dest = home / 'data/processed/coco128_classroom_3class'
-    if (dest / 'data.yaml').is_file():
+    # Validated fallback: COCO128 with regrouping, 3 selected COCO categories.
+    source=download_coco128(home)
+    dest=home/'data/processed/coco128_classroom_3class'
+    if (dest/'data.yaml').is_file():
         print('Reusing existing dataset; do not overwrite student corrections automatically.')
     else:
-        report = prepare_coco128_demo(source, dest, seed=42)
+        report=prepare_coco128_demo(source,dest,seed=42)
         print(report)
-    yaml_path = dest / 'data.yaml'
-    save_config({'dataset_yaml': str(yaml_path),
-                 'dataset_kind': 'COCO128_repartitioned_teaching_only'})
-print('Training dataset:', yaml_path)'''),
+    yaml_path=dest/'data.yaml'
+    save_config({'dataset_yaml':str(yaml_path),'dataset_kind':'COCO128_repartitioned_teaching_only'})
+print('Training dataset:',yaml_path)'''),
  c('''qa = inspect_dataset(yaml_path)
 print('Class names:', qa['names'])
 print('Split stats:', qa['splits'])
@@ -295,13 +338,15 @@ assert not label_errors(valid, len(names))
 assert label_errors(invalid, len(names))
 print('Label format & invalid-bound tests: PASS')'''),
  c('''# 创建人工审阅清单。不要直接上传敏感/受限图像到公开 GitHub。
-review = [{'image': str(img),
-           'label': str(Path(qa['root']) / 'labels/train' / f'{img.stem}.txt'),
-           'approved': '', 'issue_type': '', 'corrected': '', 'note': ''}
-          for img in train_imgs[:20]]
-write_csv(home / 'reports/lab_b_manual_review.csv', review,
-          ['image', 'label', 'approved', 'issue_type', 'corrected', 'note'])
-print('人工检查 20 张并填写:', home / 'reports/lab_b_manual_review.csv')'''),
+review=[{'image':str(img),'label':str(Path(qa['root'])/'labels/train'/f'{img.stem}.txt'),
+         'approved':'', 'issue_type':'', 'corrected':'', 'note':''} for img in train_imgs[:20]]
+review_path=home/'reports/lab_b_manual_review.csv'
+if review_path.exists():
+    print('复用已填写的人工检查表，避免重复运行时覆盖:',review_path)
+else:
+    write_csv(review_path,review,
+              ['image','label','approved','issue_type','corrected','note'])
+    print('人工检查图片后填写:',review_path)'''),
  m('''### 标注修改实操：可审计，默认不写入
 选择一张标注图片和其中一行，将新的标签行填写在下面；只有显式设置 `APPLY_CORRECTION=True` 时才会写入，且先备份旧标签。**请先核对人工真值，不可因为预测结果不合预期就任意修改真值标签。**''',
    '''### Hands-on Annotation Correction: auditable, off by default
@@ -354,7 +399,7 @@ else:
 4. Which errors are annotation-spec problems rather than model problems?
 
 **Deliverables**: `data/processed/.../data.yaml`, `split_manifest.csv`, `dataset_manifest.json`, the QA JSON, the manual review sheet, annotated images.''')
-], '40–50 分钟','数据来源 → 标注质检 → 防泄漏划分','40–50 minutes','data source → annotation QA → leak-proof splits')
+], '50–60 分钟','50–60 minutes','手工标注 → 导出 → 防泄漏划分 → QA','manual labeling → export → grouped splits → QA')
 
 make('03_Lab_C_ROCm_Training_Finetune.ipynb','03 / Lab C · ROCm GPU 训练、微调与 Loss','03 / Lab C · ROCm GPU Training, Fine-tuning & Loss',[
  m('''## 实验目标

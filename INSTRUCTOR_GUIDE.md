@@ -60,3 +60,10 @@ A：不能继续把同一个 Test 当独立最终评估。回到新的训练/验
 - 不自动升级 PyTorch；任何 `torch` 版本调整需与 ROCm 兼容矩阵核对。
 - 如果云端代理不可用，应使用事先下载并有权限使用的样例，不能虚构实验结果。
 - 课程含外部第三方模型与数据，请按各自许可证执行，尤其是转向商业应用时。
+
+
+## Lab B 新增实操（50–60 分钟）
+
+使用 [X-AnyLabeling 标注与导入操作指南](docs/LAB_B_X_ANYLABELING.md) 指导各小组：①统一类别及边界标注规范；②每人手动标注至少 5 张授权图片；③同伴复核至少 5 张；④导出 YOLO Detection 与 classes.txt；⑤上传 images/、labels/，在 Lab B 设置 YOLO_ANYLABELING_EXPORT；⑥自动检查文件、类别、坐标、数据划分，人工复核 near-duplicate 和场景独立性。收集 3 个标注错误案例与修复说明。
+
+若导出图片不够 9 张、没有 3 个独立图片/场景组，或者存在标签错误，不要伪造完整 Train/Val/Test；使用保留的 COCO128 教学路径继续 Lab C。**原有 Windows RX 7900 XTX 的 6/6 PASS 是历史验证，并不是新增 X-AnyLabeling 导出分支的 GPU 验收。**

@@ -15,6 +15,7 @@ ast.dump. Regenerate the reference after an INTENTIONAL semantic change:
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -80,7 +81,9 @@ def test_notebook_code_matches_ast_reference():
             f'{p.name}: code cell count changed ({len(expected)} -> {len(current)}); '
             'if intentional, regenerate the reference and explain in the PR')
         for idx, (now, ref) in enumerate(zip(current, expected)):
-            assert now == ref, (
+            ok = (hashlib.sha256(now.encode('utf-8')).hexdigest() == ref['sha256']
+                  if isinstance(ref, dict) else now == ref)
+            assert ok, (
                 f'{p.name} cell #{idx}: code semantics changed (AST mismatch). '
                 'Style-only edits never trip this. If the change is intentional, '
                 'regenerate the reference via '
