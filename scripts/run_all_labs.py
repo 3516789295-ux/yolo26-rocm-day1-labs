@@ -66,14 +66,41 @@ GPU_CELL_MARKERS = ('require_rocm', 'torch.cuda', 'device=device', "device='cuda
 
 
 def check_venv() -> Path:
-    exe = Path(sys.executable).resolve()
+    """Resolve the interpreter to run with.
+
+    Two supported environments:
+      A. project-local ``.venv`` (Windows ``Scripts/python.exe`` / POSIX ``bin/python``);
+      B. a platform-preinstalled ROCm environment (AMD Radeon Cloud "方式 A"),
+         where no project ``.venv`` exists.
+
+    For (B) we accept the current interpreter only when it actually carries a ROCm
+    PyTorch build, so the run cannot silently fall back to CPU/CUDA wheels.
+    """
+    # Keep the unresolved path: .venv/bin/python is usually a symlink to the base
+    # interpreter, and resolve() would report /usr/bin/python3.12 in the run log,
+    # hiding which environment the evidence actually came from.
+    exe = Path(sys.executable)
     venv_python = (PROJECT / '.venv' / 'Scripts' / 'python.exe')
     if os.name != 'nt':
         venv_python = PROJECT / '.venv' / 'bin' / 'python'
-    if exe != venv_python.resolve():
-        print(f'ERROR: run inside the project venv. Expected {venv_python}, got {exe}', file=sys.stderr)
-        sys.exit(2)
-    return exe
+    if exe == venv_python or exe.resolve() == venv_python.resolve():
+        return exe
+    if _has_rocm_torch():
+        print(f'NOTE: using platform-preinstalled ROCm environment ({exe}).')
+        return exe
+    print(f'ERROR: run inside the project venv. Expected {venv_python}, got {exe}\n'
+          f'       (a platform-preinstalled ROCm environment is also accepted — '
+          f'install ROCm PyTorch there first)', file=sys.stderr)
+    sys.exit(2)
+
+
+def _has_rocm_torch() -> bool:
+    """True when the current interpreter provides a ROCm (HIP) PyTorch build."""
+    try:
+        import torch
+    except Exception:
+        return False
+    return getattr(torch.version, 'hip', None) is not None
 
 
 def check_kernel(venv_exe: Path) -> tuple[str, bool]:
@@ -84,7 +111,7 @@ def check_kernel(venv_exe: Path) -> tuple[str, bool]:
     specs = mgr.find_kernel_specs()
     if KERNEL_NAME in specs:
         spec = mgr.get_kernel_spec(KERNEL_NAME)
-        if spec.argv and Path(spec.argv[0]).resolve() == venv_exe:
+        if spec.argv and Path(spec.argv[0]).resolve() == venv_exe.resolve():
             return KERNEL_NAME, True
         print(f'WARNING: kernel {KERNEL_NAME} argv mismatch: {spec.argv}')
     return 'python3', False

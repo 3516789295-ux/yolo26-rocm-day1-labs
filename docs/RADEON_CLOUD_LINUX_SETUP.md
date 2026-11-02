@@ -18,6 +18,21 @@ cd YOLO26_ROCm_Day1_Labs
 
 直接选择平台的 ROCm Kernel 打开 Notebook。**禁止** `pip install torch` / `pip install -U torch`。
 
+> **实测限制(2026-11,AMD Radeon Cloud)**
+>
+> 部分镜像预装的 `torchvision` 是 CPU-only 编译,不含 `torchvision::nms` 的 GPU 内核。
+> 此时 Lab A 第 5 个 cell 会抛 `NotImplementedError: Could not run 'torchvision::nms'
+> with arguments from the 'CUDA' backend`,其后所有检测类 Lab 均无法运行。
+> 实测环境:`torch 2.9.1+gitff65f5b` / `torchvision 0.24.1+d801a34` / HIP `7.2.53211-e1a6bc5663`。
+>
+> 开工前先用一条命令确认:
+>
+> ```bash
+> python3 -c "import torch,torchvision;b=torch.zeros((2,4),device='cuda');s=torch.zeros(2,device='cuda');print(torchvision.ops.nms(b,s,0.5))"
+> ```
+>
+> 打印出 tensor 才可走方式 A;报 `NotImplementedError` 请改用方式 B。
+
 ### B. 自建 uv 隔离环境(与 Windows 同构)
 
 ```bash
@@ -33,6 +48,12 @@ uv pip install --python .venv/bin/python --constraints constraints-rocm.txt \
 .venv/bin/python -m ipykernel install --user \
   --name yolo26-rocm7141 --display-name "YOLO26 - AMD ROCm 7.14.1"
 ```
+
+> 若环境没有 `uv`,`pip` 的等价选项是 `-c` / `--constraint`(单数),不是 `--constraints`:
+>
+> ```bash
+> python -m pip install -c constraints-rocm.txt -r requirements-course.txt nbclient jupyterlab pytest
+> ```
 
 gfx 架构按实际 GPU 更新 extra(如 MI300 系为 `device-gfx942`,RX 7000 为 `device-gfx1100`,
 RX 9060/8060 系为 gfx1151/gfx1201 等,以 `rocminfo | grep gfx` 为准)。

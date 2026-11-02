@@ -20,6 +20,22 @@ cd YOLO26_ROCm_Day1_Labs
 
 Open the notebooks with the platform's ROCm kernel. **Never** run `pip install torch` / `pip install -U torch`.
 
+> **Measured limitation (2026-11, AMD Radeon Cloud)**
+>
+> Some images ship a CPU-only `torchvision` build with no GPU kernel for
+> `torchvision::nms`. Lab A then fails at cell 5 with `NotImplementedError: Could not
+> run 'torchvision::nms' with arguments from the 'CUDA' backend`, and every later
+> detection lab fails too. Measured stack: `torch 2.9.1+gitff65f5b` /
+> `torchvision 0.24.1+d801a34` / HIP `7.2.53211-e1a6bc5663`.
+>
+> Check before you start:
+>
+> ```bash
+> python3 -c "import torch,torchvision;b=torch.zeros((2,4),device='cuda');s=torch.zeros(2,device='cuda');print(torchvision.ops.nms(b,s,0.5))"
+> ```
+>
+> A printed tensor means option A is usable; `NotImplementedError` means use option B.
+
 ### B. Self-built uv environment (same shape as Windows)
 
 ```bash
@@ -35,6 +51,12 @@ uv pip install --python .venv/bin/python --constraints constraints-rocm.txt \
 .venv/bin/python -m ipykernel install --user \
   --name yolo26-rocm7141 --display-name "YOLO26 - AMD ROCm 7.14.1"
 ```
+
+> Without `uv`, the `pip` equivalent is `-c` / `--constraint` (singular), not `--constraints`:
+>
+> ```bash
+> python -m pip install -c constraints-rocm.txt -r requirements-course.txt nbclient jupyterlab pytest
+> ```
 
 Adjust the device extra to your actual GPU (e.g. `device-gfx942` for MI300, `device-gfx1100` for RX 7000,
 gfx1151/gfx1201 for RX 9060/8060 — confirm with `rocminfo | grep gfx`).
