@@ -4,7 +4,7 @@
 
 ![status](https://img.shields.io/badge/status-validated%20on%20real%20GPU-brightgreen) ![gpu](https://img.shields.io/badge/GPU-AMD%20Radeon%20RX%207900%20XTX%20gfx1100-red) ![rocm](https://img.shields.io/badge/ROCm-7.14.1-orange) ![torch](https://img.shields.io/badge/PyTorch-2.12.0%2Brocm7.14.1-ee4c2c) ![python](https://img.shields.io/badge/Python-3.12-blue) ![license](https://img.shields.io/badge/license-MIT-green) ![lang](https://img.shields.io/badge/lang-English%20%7C%20%E4%B8%AD%E6%96%87-informational)
 
-> A **one-day introductory lab on AMD GPU object detection** for senior undergraduates: ROCm environment verification → inference & thresholds → dataset annotation & leak-proof splits → real GPU training → mAP evaluation & error analysis → a controlled A/B optimization experiment.
+> A **one-day introductory lab on AMD GPU object detection** for college students: ROCm environment verification → inference & thresholds → dataset annotation & leak-proof splits → real GPU training → mAP evaluation & error analysis → a controlled A/B optimization experiment.
 > All six notebooks are **bilingual (Chinese + English)**, and every one of them has been executed end-to-end on a real **AMD Radeon RX 7900 XTX (gfx1100) with native Windows 11 ROCm** (37/37 cells, including two genuine 12-epoch trainings). Evidence: [`validation/`](validation/FINAL_REPORT.en-summary.md) → see [FINAL_REPORT.md](validation/FINAL_REPORT.md) (Chinese) for full details.
 
 ## ✅ Validated Status (measured, not promised)
