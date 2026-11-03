@@ -40,3 +40,28 @@ def test_bilingual_header_time_and_path_not_swapped(nb_path):
     # The two languages must agree on the learning-path structure (arrow chain).
     assert zh['path'].strip().count('→') == en['path'].strip().count('→'), (
         f'{nb_path.name}: zh/en learning paths have different step counts')
+
+
+@pytest.mark.parametrize('nb_path', NOTEBOOKS, ids=lambda p: p.name)
+def test_kernel_notice_and_pinned_kernelspec(nb_path):
+    """Every notebook must open with a visible kernel-selection notice and pin
+    the course kernel in metadata (so Jupyter pre-selects it)."""
+    pytest.importorskip('nbformat')
+    import nbformat
+    nb = nbformat.read(nb_path, as_version=4)
+    ks = nb.metadata.get('kernelspec', {})
+    assert ks.get('name') == 'yolo26-rocm7141', (
+        f'{nb_path.name}: metadata kernelspec must pin the course kernel '
+        f'"yolo26-rocm7141" (got {ks.get("name")!r})')
+    assert 'ROCm' in ks.get('display_name', ''), (
+        f'{nb_path.name}: kernelspec display_name must mention ROCm')
+    # A bilingual notice near the top (cells 0-4) tells users which kernel to pick.
+    head = '\n'.join(''.join(c.source) for c in nb.cells[:5] if c.cell_type == 'markdown')
+    assert 'YOLO26 - AMD ROCm 7.14.1' in head, (
+        f'{nb_path.name}: kernel-selection notice missing near the top')
+    assert 'Change Kernel' in head, (
+        f'{nb_path.name}: notice must explain HOW to change the kernel')
+    assert 'ipykernel install' in head, (
+        f'{nb_path.name}: notice must include the kernel registration command')
+    for token in ('运行前 30 秒', '30 seconds before you run'):
+        assert token in head, f'{nb_path.name}: bilingual notice missing ({token!r})'

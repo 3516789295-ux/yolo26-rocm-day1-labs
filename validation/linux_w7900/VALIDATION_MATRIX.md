@@ -22,6 +22,7 @@
 | 12 | Preflight 课堂自检脚本 | **PASS 11/11**（真机实测，退出码 0） | `logs/preflight_demo.json`；首轮自测抓出自身 2 个缺陷并修复（int-dtype NMS 探针、Kernel 路径显示）——自检工具有效性实证 |
 | 13 | CI workflow | **已新增**；本地无 torch 环境等价验证 PASS；GitHub Actions 首跑状态见 PR | `.github/workflows/ci.yml`（ubuntu+windows 双平台；守卫测试 `test_ci_workflow.py` 确保不装 torch、必跑 pytest、双平台覆盖） |
 | 14 | 证据完整性 | **PASS** SHA256SUMS 18/18 复核 | 历史证据零删改 |
+| 15 | 内核提示升级后再复验（每份 Notebook 前置内核选择提示 + metadata 钉 `yolo26-rocm7141`；代码单元仍 41） | **PASS 6/6 · 41/41 cells · 退出码 0**（pytest 47+1skip 双环境） | `executed/20261103_063xxx`（全新目录 `yolo_course_kernel_notice_check`）；首试因未预置 coco128.zip 在下载路径超时 FAIL——与受限网络文档一致，留作证据 |
 
 ## 2. 本轮真机成绩（第 3 次独立复现，与前两轮确定性一致）
 

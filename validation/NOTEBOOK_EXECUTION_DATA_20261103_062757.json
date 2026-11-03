@@ -1,0 +1,243 @@
+{
+  "summary": {
+    "timestamp_utc": "2026-11-03T06:29:42.356977+00:00",
+    "kernel": "yolo26-rocm7141",
+    "kernel_registered": true,
+    "kernel_probe": {
+      "kernel": "yolo26-rocm7141",
+      "expected_executable": "/workspace/yolo26-rocm-day1-labs/.venv/bin/python",
+      "executable": "/workspace/yolo26-rocm-day1-labs/.venv/bin/python",
+      "torch": "2.12.0+rocm7.14.1",
+      "hip": "7.14.60850",
+      "gpu": "AMD Radeon Pro W7900D",
+      "ok": true,
+      "problems": []
+    },
+    "course_home": "/workspace/yolo_course_kernel_notice_check",
+    "per_cell_timeout": 7200,
+    "venv_python": "/workspace/yolo26-rocm-day1-labs/.venv/bin/python",
+    "practice_fill": "/workspace/yolo26-rocm-day1-labs/validation/linux_w7900/practice_fill_final_run.json",
+    "results": [
+      {
+        "notebook": "00_ROCm_Environment_Preflight.ipynb",
+        "kernel": "yolo26-rocm7141",
+        "started": "2026-11-03T06:28:01.404082+00:00",
+        "result": "PASS",
+        "duration_seconds": 4.25,
+        "code_cells": 6,
+        "executed_cells": 6,
+        "gpu_referenced_and_executed": true,
+        "executed_copy": "validation/executed/20261103_062757/00_ROCm_Environment_Preflight.executed.ipynb"
+      },
+      {
+        "notebook": "01_Lab_A_Predict_and_Threshold.ipynb",
+        "kernel": "yolo26-rocm7141",
+        "started": "2026-11-03T06:28:05.660864+00:00",
+        "result": "PASS",
+        "duration_seconds": 5.23,
+        "code_cells": 7,
+        "executed_cells": 7,
+        "gpu_referenced_and_executed": true,
+        "executed_copy": "validation/executed/20261103_062757/01_Lab_A_Predict_and_Threshold.executed.ipynb"
+      },
+      {
+        "notebook": "02_Lab_B_Dataset_Annotation_QA.ipynb",
+        "kernel": "yolo26-rocm7141",
+        "started": "2026-11-03T06:28:10.925583+00:00",
+        "result": "FAIL",
+        "error_type": "CellExecutionError",
+        "error": "An error occurred while executing the following cell:\n------------------\nfrom course.lab_utils import (download_coco128,prepare_coco128_demo,inspect_dataset,\n    plot_labels,read_labels,label_errors,list_images)\nfrom course.annotation_import import import_anylabeling_yolo\nfrom IPython.display import display\nfrom matplotlib import pyplot as plt\n\n# Option 1: a pre-split and independently reviewed user dataset\nUSER_DATA_YAML = os.environ.get('YOLO_USER_DATA_YAML', '').strip()\n\n# Option 2: X-AnyLabeling export: images/, labels/, classes.txt\n# Example: /workspace/yolo_course/data/raw/anylabeling\nYOLO_ANYLABELING_EXPORT = os.environ.get('YOLO_ANYLABELING_EXPORT', '').strip()\nYOLO_ANYLABELING_SCENES = os.environ.get('YOLO_ANYLABELING_SCENES', '').strip()\nYOLO_ANYLABELING_OUTPUT_NAME = os.environ.get('YOLO_ANYLABELING_OUTPUT_NAME',\n                                                'xanylabeling_student_v1').strip()\nif USER_DATA_YAML:\n    yaml_path=Path(USER_DATA_YAML).expanduser().resolve()\n    if not yaml_path.is_file(): raise FileNotFoundError(yaml_path)\n    save_config({'dataset_yaml':str(yaml_path),'dataset_kind':'user_provided'})\n    print('Using user-owned dataset:',yaml_path)\nelif YOLO_ANYLABELING_EXPORT:\n    export=Path(YOLO_ANYLABELING_EXPORT).expanduser().resolve()\n    dest=home/'data/processed'/YOLO_ANYLABELING_OUTPUT_NAME\n    assert YOLO_ANYLABELING_OUTPUT_NAME and Path(YOLO_ANYLABELING_OUTPUT_NAME).name == YOLO_ANYLABELING_OUTPUT_NAME\n    if dest.exists():\n        if not (dest/'data.yaml').is_file():\n            raise FileExistsError(f'Destination already exists; choose a new output name: {dest}')\n        print('Using previously imported dataset; change YOLO_ANYLABELING_OUTPUT_NAME for a new revision:',dest)\n    else:\n        imported=import_anylabeling_yolo(\n            export/'images', export/'labels', export/'classes.txt', dest,\n            scene_csv=Path(YOLO_ANYLABELING_SCENES) if YOLO_ANYLABELING_SCENES else None,\n            seed=42)\n        write_json(home/'reports/lab_b_annotation_import.json',imported)\n        print('X-AnyLabeling export imported:',imported)\n    yaml_path=dest/'data.yaml'\n    save_config({'dataset_yaml':str(yaml_path),\n                 'dataset_kind':'X-AnyLabeling_student_reviewed_teaching'})\nelse:\n    # Validated fallback: COCO128 with regrouping, 3 selected COCO categories.\n    source=download_coco128(home)\n    dest=home/'data/processed/coco128_classroom_3class'\n    if (dest/'data.yaml').is_file():\n        print('Reusing existing dataset; do not overwrite student corrections automatically.')\n    else:\n        report=prepare_coco128_demo(source,dest,seed=42)\n        print(report)\n    yaml_path=dest/'data.yaml'\n    save_config({'dataset_yaml':str(yaml_path),'dataset_kind':'COCO128_repartitioned_teaching_only'})\nprint('Training dataset:',yaml_path)\n------------------\n\n\n\u001b[31m---------------------------------------------------------------------------\u001b[39m\n\u001b[31mRemoteDisconnected\u001b[39m                        Traceback (most recent call last)\n\u001b[36mFile \u001b[39m\u001b[32m/workspace/yolo26-rocm-day1-labs/course/lab_utils.py:115\u001b[39m, in \u001b[36mdownload_coco128\u001b[39m\u001b[34m(home, allow_download)\u001b[39m\n\u001b[32m    114\u001b[39m request = urllib.request.Request(COCO128_URL, headers={\u001b[33m'\u001b[39m\u001b[33mUser-Agent\u001b[39m\u001b[33m'\u001b[39m: \u001b[33m'\u001b[39m\u001b[33mRadeon-YOLO-Day1-Education/1.0\u001b[39m\u001b[33m'\u001b[39m})\n\u001b[32m--> \u001b[39m\u001b[32m115\u001b[39m \u001b[38;5;28;01mwith\u001b[39;00m \u001b[30;43murllib\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mrequest\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43murlopen\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mrequest\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mtimeout\u001b[39;49m\u001b[30;43m=\u001b[39;49m\u001b[30;43m90\u001b[39;49m\u001b[30;43m)\u001b[39;49m \u001b[38;5;28;01mas\u001b[39;00m response, archive.open(\u001b[33m'\u001b[39m\u001b[33mwb\u001b[39m\u001b[33m'\u001b[39m) \u001b[38;5;28;01mas\u001b[39;00m f:\n\u001b[32m    116\u001b[39m     shutil.copyfileobj(response, f)\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:215\u001b[39m, in \u001b[36murlopen\u001b[39m\u001b[34m(url, data, timeout, cafile, capat",
+        "traceback": "rllib.request.Request(COCO128_URL, headers={\u001b[33m'\u001b[39m\u001b[33mUser-Agent\u001b[39m\u001b[33m'\u001b[39m: \u001b[33m'\u001b[39m\u001b[33mRadeon-YOLO-Day1-Education/1.0\u001b[39m\u001b[33m'\u001b[39m})\n\u001b[32m--> \u001b[39m\u001b[32m115\u001b[39m \u001b[38;5;28;01mwith\u001b[39;00m \u001b[30;43murllib\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mrequest\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43murlopen\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mrequest\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mtimeout\u001b[39;49m\u001b[30;43m=\u001b[39;49m\u001b[30;43m90\u001b[39;49m\u001b[30;43m)\u001b[39;49m \u001b[38;5;28;01mas\u001b[39;00m response, archive.open(\u001b[33m'\u001b[39m\u001b[33mwb\u001b[39m\u001b[33m'\u001b[39m) \u001b[38;5;28;01mas\u001b[39;00m f:\n\u001b[32m    116\u001b[39m     shutil.copyfileobj(response, f)\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:215\u001b[39m, in \u001b[36murlopen\u001b[39m\u001b[34m(url, data, timeout, cafile, capath, cadefault, context)\u001b[39m\n\u001b[32m    214\u001b[39m     opener = _opener\n\u001b[32m--> \u001b[39m\u001b[32m215\u001b[39m \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[30;43mopener\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mopen\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43murl\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mdata\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mtimeout\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:515\u001b[39m, in \u001b[36mOpenerDirector.open\u001b[39m\u001b[34m(self, fullurl, data, timeout)\u001b[39m\n\u001b[32m    514\u001b[39m sys.audit(\u001b[33m'\u001b[39m\u001b[33murllib.Request\u001b[39m\u001b[33m'\u001b[39m, req.full_url, req.data, req.headers, req.get_method())\n\u001b[32m--> \u001b[39m\u001b[32m515\u001b[39m response = \u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43m_open\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mreq\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mdata\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m    517\u001b[39m \u001b[38;5;66;03m# post-process response\u001b[39;00m\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:532\u001b[39m, in \u001b[36mOpenerDirector._open\u001b[39m\u001b[34m(self, req, data)\u001b[39m\n\u001b[32m    531\u001b[39m protocol = req.type\n\u001b[32m--> \u001b[39m\u001b[32m532\u001b[39m result = \u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43m_call_chain\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mhandle_open\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mprotocol\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mprotocol\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43m+\u001b[39;49m\n\u001b[32m    533\u001b[39m \u001b[30;43m                          \u001b[39;49m\u001b[30;43m'\u001b[39;49m\u001b[30;43m_open\u001b[39;49m\u001b[30;43m'\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mreq\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m    534\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m result:\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:492\u001b[39m, in \u001b[36mOpenerDirector._call_chain\u001b[39m\u001b[34m(self, chain, kind, meth_name, *args)\u001b[39m\n\u001b[32m    491\u001b[39m func = \u001b[38;5;28mgetattr\u001b[39m(handler, meth_name)\n\u001b[32m--> \u001b[39m\u001b[32m492\u001b[39m result = \u001b[30;43mfunc\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43m*\u001b[39;49m\u001b[30;43margs\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m    493\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m result \u001b[38;5;129;01mis\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;28;01mNone\u001b[39;00m:\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:1392\u001b[39m, in \u001b[36mHTTPSHandler.https_open\u001b[39m\u001b[34m(self, req)\u001b[39m\n\u001b[32m   1391\u001b[39m \u001b[38;5;28;01mdef\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[34mhttps_open\u001b[39m(\u001b[38;5;28mself\u001b[39m, req):\n\u001b[32m-> \u001b[39m\u001b[32m1392\u001b[39m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mdo_open\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mhttp\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mclient\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mHTTPSConnection\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mreq\u001b[39;49m\u001b[30;43m,\u001b[39;49m\n\u001b[32m   1393\u001b[39m \u001b[30;43m                        \u001b[39;49m\u001b[30;43mcontext\u001b[39;49m\u001b[30;43m=\u001b[39;49m\u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43m_context\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:1348\u001b[39m, in \u001b[36mAbstractHTTPHandler.do_open\u001b[39m\u001b[34m(self, http_class, req, **http_conn_args)\u001b[39m\n\u001b[32m   1347\u001b[39m         \u001b[38;5;28;01mraise\u001b[39;00m URLError(err)\n\u001b[32m-> \u001b[39m\u001b[32m1348\u001b[39m     r = \u001b[30;43mh\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mgetresponse\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m   1349\u001b[39m \u001b[38;5;28;01mexcept\u001b[39;00m:\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/http/client.py:1450\u001b[39m, in \u001b[36mHTTPConnection.getresponse\u001b[39m\u001b[34m(self)\u001b[39m\n\u001b[32m   1449\u001b[39m \u001b[38;5;28;01mtry\u001b[39;00m:\n\u001b[32m-> \u001b[39m\u001b[32m1450\u001b[39m     \u001b[30;43mresponse\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mbegin\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m   1451\u001b[39m \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mConnectionError\u001b[39;00m:\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/http/client.py:336\u001b[39m, in \u001b[36mHTTPResponse.begin\u001b[39m\u001b[34m(self)\u001b[39m\n\u001b[32m    335\u001b[39m \u001b[38;5;28;01mwhile\u001b[39;00m \u001b[38;5;28;01mTrue\u001b[39;00m:\n\u001b[32m--> \u001b[39m\u001b[32m336\u001b[39m     version, status, reason = \u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43m_read_status\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m    337\u001b[39m     \u001b[38;5;28;01mif\u001b[39;00m status != CONTINUE:\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/http/client.py:305\u001b[39m, in \u001b[36mHTTPResponse._read_status\u001b[39m\u001b[34m(self)\u001b[39m\n\u001b[32m    302\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m line:\n\u001b[32m    303\u001b[39m     \u001b[38;5;66;03m# Presumably, the server closed the connection before\u001b[39;00m\n\u001b[32m    304\u001b[39m     \u001b[38;5;66;03m# sending a valid response.\u001b[39;00m\n\u001b[32m--> \u001b[39m\u001b[32m305\u001b[39m     \u001b[38;5;28;01mraise\u001b[39;00m RemoteDisconnected(\u001b[33m\"\u001b[39m\u001b[33mRemote end closed connection without\u001b[39m\u001b[33m\"\u001b[39m\n\u001b[32m    306\u001b[39m                              \u001b[33m\"\u001b[39m\u001b[33m response\u001b[39m\u001b[33m\"\u001b[39m)\n\u001b[32m    307\u001b[39m \u001b[38;5;28;01mtry\u001b[39;00m:\n\n\u001b[31mRemoteDisconnected\u001b[39m: Remote end closed connection without response\n\nThe above exception was the direct cause of the following exception:\n\n\u001b[31mRuntimeError\u001b[39m                              Traceback (most recent call last)\n\u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[2]\u001b[39m\u001b[32m, line 41\u001b[39m\n\u001b[32m     37\u001b[39m     save_config({'dataset_yaml':str(yaml_path),\n\u001b[32m     38\u001b[39m                  \u001b[33m'dataset_kind'\u001b[39m:\u001b[33m'X-AnyLabeling_student_reviewed_teaching'\u001b[39m})\n\u001b[32m     39\u001b[39m \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[32m     40\u001b[39m     \u001b[38;5;66;03m# Validated fallback: COCO128 with regrouping, 3 selected COCO categories.\u001b[39;00m\n\u001b[32m---> \u001b[39m\u001b[32m41\u001b[39m     source=download_coco128(home)\n\u001b[32m     42\u001b[39m     dest=home/\u001b[33m'data/processed/coco128_classroom_3class'\u001b[39m\n\u001b[32m     43\u001b[39m     \u001b[38;5;28;01mif\u001b[39;00m (dest/\u001b[33m'data.yaml'\u001b[39m).is_file():\n\u001b[32m     44\u001b[39m         print(\u001b[33m'Reusing existing dataset; do not overwrite student corrections automatically.'\u001b[39m)\n\n\u001b[36mFile \u001b[39m\u001b[32m/workspace/yolo26-rocm-day1-labs/course/lab_utils.py:119\u001b[39m, in \u001b[36mdownload_coco128\u001b[39m\u001b[34m(home, allow_download)\u001b[39m\n\u001b[32m    117\u001b[39m     \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mException\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m e:\n\u001b[32m    118\u001b[39m         archive.unlink(missing_ok=\u001b[38;5;28;01mTrue\u001b[39;00m)\n\u001b[32m--> \u001b[39m\u001b[32m119\u001b[39m         \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mRuntimeError\u001b[39;00m(\u001b[33mf\u001b[39m\u001b[33m'\u001b[39m\u001b[33mCannot download COCO128 from official URL: \u001b[39m\u001b[38;5;132;01m{\u001b[39;00me\u001b[38;5;132;01m}\u001b[39;00m\u001b[33m. Upload coco128.zip to \u001b[39m\u001b[38;5;132;01m{\u001b[39;00marchive\u001b[38;5;132;01m}\u001b[39;00m\u001b[33m.\u001b[39m\u001b[33m'\u001b[39m) \u001b[38;5;28;01mfrom\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[34;01me\u001b[39;00m\n\u001b[32m    120\u001b[39m extract_root = home / \u001b[33m'\u001b[39m\u001b[33mdata/raw\u001b[39m\u001b[33m'\u001b[39m\n\u001b[32m    121\u001b[39m \u001b[38;5;28;01mwith\u001b[39;00m zipfile.ZipFile(archive) \u001b[38;5;28;01mas\u001b[39;00m z:\n\n\u001b[31mRuntimeError\u001b[39m: Cannot download COCO128 from official URL: Remote end closed connection without response. Upload coco128.zip to /workspace/yolo_course_kernel_notice_check/data/raw/coco128.zip.\n\n",
+        "duration_seconds": 91.43,
+        "code_cells": 7,
+        "executed_cells": 2,
+        "gpu_referenced_and_executed": true,
+        "executed_copy": "validation/executed/20261103_062757/02_Lab_B_Dataset_Annotation_QA.executed.ipynb"
+      }
+    ]
+  },
+  "notebooks": [
+    {
+      "notebook": "00_ROCm_Environment_Preflight.ipynb",
+      "kernel": "yolo26-rocm7141",
+      "started": "2026-11-03T06:28:01.404082+00:00",
+      "result": "PASS",
+      "duration_seconds": 4.25,
+      "code_cells": 6,
+      "executed_cells": 6,
+      "gpu_referenced_and_executed": true,
+      "cells": [
+        {
+          "index": 5,
+          "executed": true,
+          "execution_count": 1,
+          "duration_seconds": null,
+          "output_tail": "Project: /workspace/yolo26-rocm-day1-labs \nPersistent output: /workspace/yolo_course_kernel_notice_check\n"
+        },
+        {
+          "index": 6,
+          "executed": true,
+          "execution_count": 2,
+          "duration_seconds": null,
+          "output_tail": "{'gpu_device_nodes': {'/dev/dri': True, '/dev/kfd': True},\n 'gpu_name': 'AMD Radeon Pro W7900D',\n 'gpu_visible': True,\n 'platform': 'Linux-6.8.0-79-generic-x86_64-with-glibc2.39',\n 'proxy_configured': {'HTTPS_PROXY': True,\n                      'HTTP_PROXY': True,\n                      'http_proxy': True,\n                      'https_proxy': True},\n 'python': '3.12.13',\n 'timestamp_utc': '2026-11-03T06:28:02Z',\n 'torch': '2.12.0+rocm7.14.1',\n 'torch_hip': '7.14.60850',\n 'ultralytics': '8.4.199'}\n"
+        },
+        {
+          "index": 8,
+          "executed": true,
+          "execution_count": 3,
+          "duration_seconds": null,
+          "output_tail": "AMD ROCm verified: AMD Radeon Pro W7900D HIP: 7.14.60850\nDevice argument for Ultralytics: 0\n"
+        },
+        {
+          "index": 9,
+          "executed": true,
+          "execution_count": 4,
+          "duration_seconds": null,
+          "output_tail": "HIP kernel smoke: PASS, output shape: (128, 128)\n"
+        },
+        {
+          "index": 11,
+          "executed": true,
+          "execution_count": 5,
+          "duration_seconds": null,
+          "output_tail": "actual shape: (128, 128) | actual device: cuda:0\nyour prediction: {'shape': '(128, 128)', 'device': 'cuda:0 (HIP)'}\nprediction matched: False （猜错不扣分；先预测再验证才是目的）\n"
+        },
+        {
+          "index": 13,
+          "executed": true,
+          "execution_count": 6,
+          "duration_seconds": null,
+          "output_tail": "Pinned model: /workspace/yolo_course_kernel_notice_check/artifacts/yolo26n.pt sha256: 9b09cc8bf347f0fc8a5f7657480587f25db09b34bf33b0652110fb03a8ad4fef\n{'home': '/workspace/yolo_course_kernel_notice_check',\n 'model': 'yolo26n.pt',\n 'dataset_yaml': '',\n 'dataset_kind': '',\n 'baseline_weights': '',\n 'baseline_run': '',\n 'model_licence_reviewed': False,\n 'model_sha256': '9b09cc8bf347f0fc8a5f7657480587f25db09b34bf33b0652110fb03a8ad4fef'}"
+        }
+      ],
+      "executed_copy": "validation/executed/20261103_062757/00_ROCm_Environment_Preflight.executed.ipynb"
+    },
+    {
+      "notebook": "01_Lab_A_Predict_and_Threshold.ipynb",
+      "kernel": "yolo26-rocm7141",
+      "started": "2026-11-03T06:28:05.660864+00:00",
+      "result": "PASS",
+      "duration_seconds": 5.23,
+      "code_cells": 7,
+      "executed_cells": 7,
+      "gpu_referenced_and_executed": true,
+      "cells": [
+        {
+          "index": 5,
+          "executed": true,
+          "execution_count": 1,
+          "duration_seconds": null,
+          "output_tail": "Project: /workspace/yolo26-rocm-day1-labs \nPersistent output: /workspace/yolo_course_kernel_notice_check\n"
+        },
+        {
+          "index": 6,
+          "executed": true,
+          "execution_count": 2,
+          "duration_seconds": null,
+          "output_tail": "AMD ROCm verified: AMD Radeon Pro W7900D HIP: 7.14.60850\nLoaded: /workspace/yolo_course_kernel_notice_check/artifacts/yolo26n.pt\n"
+        },
+        {
+          "index": 7,
+          "executed": true,
+          "execution_count": 3,
+          "duration_seconds": null,
+          "output_tail": "<PIL.Image.Image image mode=RGB size=480x640>"
+        },
+        {
+          "index": 8,
+          "executed": true,
+          "execution_count": 4,
+          "duration_seconds": null,
+          "output_tail": "0.1 predictions: 7 -> /workspace/yolo_course_kernel_notice_check/assets/lab_a_thresholds/conf_0.10.jpg\n0.25 predictions: 5 -> /workspace/yolo_course_kernel_notice_check/assets/lab_a_thresholds/conf_0.25.jpg\n0.5 predictions: 5 -> /workspace/yolo_course_kernel_notice_check/assets/lab_a_thresholds/conf_0.50.jpg\n"
+        },
+        {
+          "index": 9,
+          "executed": true,
+          "execution_count": 5,
+          "duration_seconds": null,
+          "output_tail": "xyxy: [[          0      230.48       803.2       750.7]\n [     48.614       397.7      240.34      902.41]\n [     222.94      404.82      345.47      861.02]]\nconfidence: [     0.8806     0.87201     0.86081]\nclass ID: [          5           0           0]\n"
+        },
+        {
+          "index": 10,
+          "executed": true,
+          "execution_count": 6,
+          "duration_seconds": null,
+          "output_tail": "实际 IoU = 0.7064 | 你的预测 = 约 0.55（两框重叠区域约占并集一半多）\n修改 box_pred 的坐标再运行一次，观察 IoU 怎么变；猜错不扣分，先预测才是目的\n"
+        },
+        {
+          "index": 11,
+          "executed": true,
+          "execution_count": 7,
+          "duration_seconds": null,
+          "output_tail": "conf=0.10  boxes=7\n<PIL.Image.Image image mode=RGB size=640x480>conf=0.25  boxes=5\n<PIL.Image.Image image mode=RGB size=640x480>conf=0.50  boxes=5\n<PIL.Image.Image image mode=RGB size=640x480>Threshold monotonicity: PASS\n"
+        }
+      ],
+      "executed_copy": "validation/executed/20261103_062757/01_Lab_A_Predict_and_Threshold.executed.ipynb"
+    },
+    {
+      "notebook": "02_Lab_B_Dataset_Annotation_QA.ipynb",
+      "kernel": "yolo26-rocm7141",
+      "started": "2026-11-03T06:28:10.925583+00:00",
+      "result": "FAIL",
+      "error_type": "CellExecutionError",
+      "error": "An error occurred while executing the following cell:\n------------------\nfrom course.lab_utils import (download_coco128,prepare_coco128_demo,inspect_dataset,\n    plot_labels,read_labels,label_errors,list_images)\nfrom course.annotation_import import import_anylabeling_yolo\nfrom IPython.display import display\nfrom matplotlib import pyplot as plt\n\n# Option 1: a pre-split and independently reviewed user dataset\nUSER_DATA_YAML = os.environ.get('YOLO_USER_DATA_YAML', '').strip()\n\n# Option 2: X-AnyLabeling export: images/, labels/, classes.txt\n# Example: /workspace/yolo_course/data/raw/anylabeling\nYOLO_ANYLABELING_EXPORT = os.environ.get('YOLO_ANYLABELING_EXPORT', '').strip()\nYOLO_ANYLABELING_SCENES = os.environ.get('YOLO_ANYLABELING_SCENES', '').strip()\nYOLO_ANYLABELING_OUTPUT_NAME = os.environ.get('YOLO_ANYLABELING_OUTPUT_NAME',\n                                                'xanylabeling_student_v1').strip()\nif USER_DATA_YAML:\n    yaml_path=Path(USER_DATA_YAML).expanduser().resolve()\n    if not yaml_path.is_file(): raise FileNotFoundError(yaml_path)\n    save_config({'dataset_yaml':str(yaml_path),'dataset_kind':'user_provided'})\n    print('Using user-owned dataset:',yaml_path)\nelif YOLO_ANYLABELING_EXPORT:\n    export=Path(YOLO_ANYLABELING_EXPORT).expanduser().resolve()\n    dest=home/'data/processed'/YOLO_ANYLABELING_OUTPUT_NAME\n    assert YOLO_ANYLABELING_OUTPUT_NAME and Path(YOLO_ANYLABELING_OUTPUT_NAME).name == YOLO_ANYLABELING_OUTPUT_NAME\n    if dest.exists():\n        if not (dest/'data.yaml').is_file():\n            raise FileExistsError(f'Destination already exists; choose a new output name: {dest}')\n        print('Using previously imported dataset; change YOLO_ANYLABELING_OUTPUT_NAME for a new revision:',dest)\n    else:\n        imported=import_anylabeling_yolo(\n            export/'images', export/'labels', export/'classes.txt', dest,\n            scene_csv=Path(YOLO_ANYLABELING_SCENES) if YOLO_ANYLABELING_SCENES else None,\n            seed=42)\n        write_json(home/'reports/lab_b_annotation_import.json',imported)\n        print('X-AnyLabeling export imported:',imported)\n    yaml_path=dest/'data.yaml'\n    save_config({'dataset_yaml':str(yaml_path),\n                 'dataset_kind':'X-AnyLabeling_student_reviewed_teaching'})\nelse:\n    # Validated fallback: COCO128 with regrouping, 3 selected COCO categories.\n    source=download_coco128(home)\n    dest=home/'data/processed/coco128_classroom_3class'\n    if (dest/'data.yaml').is_file():\n        print('Reusing existing dataset; do not overwrite student corrections automatically.')\n    else:\n        report=prepare_coco128_demo(source,dest,seed=42)\n        print(report)\n    yaml_path=dest/'data.yaml'\n    save_config({'dataset_yaml':str(yaml_path),'dataset_kind':'COCO128_repartitioned_teaching_only'})\nprint('Training dataset:',yaml_path)\n------------------\n\n\n\u001b[31m---------------------------------------------------------------------------\u001b[39m\n\u001b[31mRemoteDisconnected\u001b[39m                        Traceback (most recent call last)\n\u001b[36mFile \u001b[39m\u001b[32m/workspace/yolo26-rocm-day1-labs/course/lab_utils.py:115\u001b[39m, in \u001b[36mdownload_coco128\u001b[39m\u001b[34m(home, allow_download)\u001b[39m\n\u001b[32m    114\u001b[39m request = urllib.request.Request(COCO128_URL, headers={\u001b[33m'\u001b[39m\u001b[33mUser-Agent\u001b[39m\u001b[33m'\u001b[39m: \u001b[33m'\u001b[39m\u001b[33mRadeon-YOLO-Day1-Education/1.0\u001b[39m\u001b[33m'\u001b[39m})\n\u001b[32m--> \u001b[39m\u001b[32m115\u001b[39m \u001b[38;5;28;01mwith\u001b[39;00m \u001b[30;43murllib\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mrequest\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43murlopen\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mrequest\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mtimeout\u001b[39;49m\u001b[30;43m=\u001b[39;49m\u001b[30;43m90\u001b[39;49m\u001b[30;43m)\u001b[39;49m \u001b[38;5;28;01mas\u001b[39;00m response, archive.open(\u001b[33m'\u001b[39m\u001b[33mwb\u001b[39m\u001b[33m'\u001b[39m) \u001b[38;5;28;01mas\u001b[39;00m f:\n\u001b[32m    116\u001b[39m     shutil.copyfileobj(response, f)\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:215\u001b[39m, in \u001b[36murlopen\u001b[39m\u001b[34m(url, data, timeout, cafile, capat",
+      "traceback": "rllib.request.Request(COCO128_URL, headers={\u001b[33m'\u001b[39m\u001b[33mUser-Agent\u001b[39m\u001b[33m'\u001b[39m: \u001b[33m'\u001b[39m\u001b[33mRadeon-YOLO-Day1-Education/1.0\u001b[39m\u001b[33m'\u001b[39m})\n\u001b[32m--> \u001b[39m\u001b[32m115\u001b[39m \u001b[38;5;28;01mwith\u001b[39;00m \u001b[30;43murllib\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mrequest\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43murlopen\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mrequest\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mtimeout\u001b[39;49m\u001b[30;43m=\u001b[39;49m\u001b[30;43m90\u001b[39;49m\u001b[30;43m)\u001b[39;49m \u001b[38;5;28;01mas\u001b[39;00m response, archive.open(\u001b[33m'\u001b[39m\u001b[33mwb\u001b[39m\u001b[33m'\u001b[39m) \u001b[38;5;28;01mas\u001b[39;00m f:\n\u001b[32m    116\u001b[39m     shutil.copyfileobj(response, f)\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:215\u001b[39m, in \u001b[36murlopen\u001b[39m\u001b[34m(url, data, timeout, cafile, capath, cadefault, context)\u001b[39m\n\u001b[32m    214\u001b[39m     opener = _opener\n\u001b[32m--> \u001b[39m\u001b[32m215\u001b[39m \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[30;43mopener\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mopen\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43murl\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mdata\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mtimeout\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:515\u001b[39m, in \u001b[36mOpenerDirector.open\u001b[39m\u001b[34m(self, fullurl, data, timeout)\u001b[39m\n\u001b[32m    514\u001b[39m sys.audit(\u001b[33m'\u001b[39m\u001b[33murllib.Request\u001b[39m\u001b[33m'\u001b[39m, req.full_url, req.data, req.headers, req.get_method())\n\u001b[32m--> \u001b[39m\u001b[32m515\u001b[39m response = \u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43m_open\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mreq\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mdata\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m    517\u001b[39m \u001b[38;5;66;03m# post-process response\u001b[39;00m\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:532\u001b[39m, in \u001b[36mOpenerDirector._open\u001b[39m\u001b[34m(self, req, data)\u001b[39m\n\u001b[32m    531\u001b[39m protocol = req.type\n\u001b[32m--> \u001b[39m\u001b[32m532\u001b[39m result = \u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43m_call_chain\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mhandle_open\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mprotocol\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mprotocol\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43m+\u001b[39;49m\n\u001b[32m    533\u001b[39m \u001b[30;43m                          \u001b[39;49m\u001b[30;43m'\u001b[39;49m\u001b[30;43m_open\u001b[39;49m\u001b[30;43m'\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mreq\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m    534\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m result:\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:492\u001b[39m, in \u001b[36mOpenerDirector._call_chain\u001b[39m\u001b[34m(self, chain, kind, meth_name, *args)\u001b[39m\n\u001b[32m    491\u001b[39m func = \u001b[38;5;28mgetattr\u001b[39m(handler, meth_name)\n\u001b[32m--> \u001b[39m\u001b[32m492\u001b[39m result = \u001b[30;43mfunc\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43m*\u001b[39;49m\u001b[30;43margs\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m    493\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m result \u001b[38;5;129;01mis\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;28;01mNone\u001b[39;00m:\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:1392\u001b[39m, in \u001b[36mHTTPSHandler.https_open\u001b[39m\u001b[34m(self, req)\u001b[39m\n\u001b[32m   1391\u001b[39m \u001b[38;5;28;01mdef\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[34mhttps_open\u001b[39m(\u001b[38;5;28mself\u001b[39m, req):\n\u001b[32m-> \u001b[39m\u001b[32m1392\u001b[39m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mdo_open\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43mhttp\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mclient\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mHTTPSConnection\u001b[39;49m\u001b[30;43m,\u001b[39;49m\u001b[30;43m \u001b[39;49m\u001b[30;43mreq\u001b[39;49m\u001b[30;43m,\u001b[39;49m\n\u001b[32m   1393\u001b[39m \u001b[30;43m                        \u001b[39;49m\u001b[30;43mcontext\u001b[39;49m\u001b[30;43m=\u001b[39;49m\u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43m_context\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/urllib/request.py:1348\u001b[39m, in \u001b[36mAbstractHTTPHandler.do_open\u001b[39m\u001b[34m(self, http_class, req, **http_conn_args)\u001b[39m\n\u001b[32m   1347\u001b[39m         \u001b[38;5;28;01mraise\u001b[39;00m URLError(err)\n\u001b[32m-> \u001b[39m\u001b[32m1348\u001b[39m     r = \u001b[30;43mh\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mgetresponse\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m   1349\u001b[39m \u001b[38;5;28;01mexcept\u001b[39;00m:\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/http/client.py:1450\u001b[39m, in \u001b[36mHTTPConnection.getresponse\u001b[39m\u001b[34m(self)\u001b[39m\n\u001b[32m   1449\u001b[39m \u001b[38;5;28;01mtry\u001b[39;00m:\n\u001b[32m-> \u001b[39m\u001b[32m1450\u001b[39m     \u001b[30;43mresponse\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43mbegin\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m   1451\u001b[39m \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mConnectionError\u001b[39;00m:\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/http/client.py:336\u001b[39m, in \u001b[36mHTTPResponse.begin\u001b[39m\u001b[34m(self)\u001b[39m\n\u001b[32m    335\u001b[39m \u001b[38;5;28;01mwhile\u001b[39;00m \u001b[38;5;28;01mTrue\u001b[39;00m:\n\u001b[32m--> \u001b[39m\u001b[32m336\u001b[39m     version, status, reason = \u001b[30;43mself\u001b[39;49m\u001b[30;43m.\u001b[39;49m\u001b[30;43m_read_status\u001b[39;49m\u001b[30;43m(\u001b[39;49m\u001b[30;43m)\u001b[39;49m\n\u001b[32m    337\u001b[39m     \u001b[38;5;28;01mif\u001b[39;00m status != CONTINUE:\n\n\u001b[36mFile \u001b[39m\u001b[32m~/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/http/client.py:305\u001b[39m, in \u001b[36mHTTPResponse._read_status\u001b[39m\u001b[34m(self)\u001b[39m\n\u001b[32m    302\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m line:\n\u001b[32m    303\u001b[39m     \u001b[38;5;66;03m# Presumably, the server closed the connection before\u001b[39;00m\n\u001b[32m    304\u001b[39m     \u001b[38;5;66;03m# sending a valid response.\u001b[39;00m\n\u001b[32m--> \u001b[39m\u001b[32m305\u001b[39m     \u001b[38;5;28;01mraise\u001b[39;00m RemoteDisconnected(\u001b[33m\"\u001b[39m\u001b[33mRemote end closed connection without\u001b[39m\u001b[33m\"\u001b[39m\n\u001b[32m    306\u001b[39m                              \u001b[33m\"\u001b[39m\u001b[33m response\u001b[39m\u001b[33m\"\u001b[39m)\n\u001b[32m    307\u001b[39m \u001b[38;5;28;01mtry\u001b[39;00m:\n\n\u001b[31mRemoteDisconnected\u001b[39m: Remote end closed connection without response\n\nThe above exception was the direct cause of the following exception:\n\n\u001b[31mRuntimeError\u001b[39m                              Traceback (most recent call last)\n\u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[2]\u001b[39m\u001b[32m, line 41\u001b[39m\n\u001b[32m     37\u001b[39m     save_config({'dataset_yaml':str(yaml_path),\n\u001b[32m     38\u001b[39m                  \u001b[33m'dataset_kind'\u001b[39m:\u001b[33m'X-AnyLabeling_student_reviewed_teaching'\u001b[39m})\n\u001b[32m     39\u001b[39m \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[32m     40\u001b[39m     \u001b[38;5;66;03m# Validated fallback: COCO128 with regrouping, 3 selected COCO categories.\u001b[39;00m\n\u001b[32m---> \u001b[39m\u001b[32m41\u001b[39m     source=download_coco128(home)\n\u001b[32m     42\u001b[39m     dest=home/\u001b[33m'data/processed/coco128_classroom_3class'\u001b[39m\n\u001b[32m     43\u001b[39m     \u001b[38;5;28;01mif\u001b[39;00m (dest/\u001b[33m'data.yaml'\u001b[39m).is_file():\n\u001b[32m     44\u001b[39m         print(\u001b[33m'Reusing existing dataset; do not overwrite student corrections automatically.'\u001b[39m)\n\n\u001b[36mFile \u001b[39m\u001b[32m/workspace/yolo26-rocm-day1-labs/course/lab_utils.py:119\u001b[39m, in \u001b[36mdownload_coco128\u001b[39m\u001b[34m(home, allow_download)\u001b[39m\n\u001b[32m    117\u001b[39m     \u001b[38;5;28;01mexcept\u001b[39;00m \u001b[38;5;167;01mException\u001b[39;00m \u001b[38;5;28;01mas\u001b[39;00m e:\n\u001b[32m    118\u001b[39m         archive.unlink(missing_ok=\u001b[38;5;28;01mTrue\u001b[39;00m)\n\u001b[32m--> \u001b[39m\u001b[32m119\u001b[39m         \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mRuntimeError\u001b[39;00m(\u001b[33mf\u001b[39m\u001b[33m'\u001b[39m\u001b[33mCannot download COCO128 from official URL: \u001b[39m\u001b[38;5;132;01m{\u001b[39;00me\u001b[38;5;132;01m}\u001b[39;00m\u001b[33m. Upload coco128.zip to \u001b[39m\u001b[38;5;132;01m{\u001b[39;00marchive\u001b[38;5;132;01m}\u001b[39;00m\u001b[33m.\u001b[39m\u001b[33m'\u001b[39m) \u001b[38;5;28;01mfrom\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[34;01me\u001b[39;00m\n\u001b[32m    120\u001b[39m extract_root = home / \u001b[33m'\u001b[39m\u001b[33mdata/raw\u001b[39m\u001b[33m'\u001b[39m\n\u001b[32m    121\u001b[39m \u001b[38;5;28;01mwith\u001b[39;00m zipfile.ZipFile(archive) \u001b[38;5;28;01mas\u001b[39;00m z:\n\n\u001b[31mRuntimeError\u001b[39m: Cannot download COCO128 from official URL: Remote end closed connection without response. Upload coco128.zip to /workspace/yolo_course_kernel_notice_check/data/raw/coco128.zip.\n\n",
+      "duration_seconds": 91.43,
+      "code_cells": 7,
+      "executed_cells": 2,
+      "gpu_referenced_and_executed": true,
+      "cells": [
+        {
+          "index": 7,
+          "executed": true,
+          "execution_count": 1,
+          "duration_seconds": null,
+          "output_tail": "Project: /workspace/yolo26-rocm-day1-labs \nPersistent output: /workspace/yolo_course_kernel_notice_check\n"
+        },
+        {
+          "index": 8,
+          "executed": true,
+          "execution_count": 2,
+          "duration_seconds": null,
+          "output_tail": ""
+        },
+        {
+          "index": 9,
+          "executed": false,
+          "execution_count": null,
+          "duration_seconds": null,
+          "output_tail": ""
+        },
+        {
+          "index": 10,
+          "executed": false,
+          "execution_count": null,
+          "duration_seconds": null,
+          "output_tail": ""
+        },
+        {
+          "index": 11,
+          "executed": false,
+          "execution_count": null,
+          "duration_seconds": null,
+          "output_tail": ""
+        },
+        {
+          "index": 12,
+          "executed": false,
+          "execution_count": null,
+          "duration_seconds": null,
+          "output_tail": ""
+        },
+        {
+          "index": 14,
+          "executed": false,
+          "execution_count": null,
+          "duration_seconds": null,
+          "output_tail": ""
+        }
+      ],
+      "executed_copy": "validation/executed/20261103_062757/02_Lab_B_Dataset_Annotation_QA.executed.ipynb"
+    }
+  ]
+}

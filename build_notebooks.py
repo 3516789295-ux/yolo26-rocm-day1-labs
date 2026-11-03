@@ -64,6 +64,29 @@ def lab_map(rows):
     return m('\n'.join(zh), '\n'.join(en))
 
 
+# Every notebook opens with this bilingual notice: users must pick the course
+# kernel before running anything. The notebook metadata below also pins the
+# kernelspec so Jupyter pre-selects it when the file is opened.
+KERNEL_NOTICE = ('''> ### 运行前 30 秒：确认 Kernel 选对了
+> 本课程全部 Notebook 必须运行在 **`YOLO26 - AMD ROCm 7.14.1`** 内核上（看页面右上角的内核名）。
+>
+> - **怎么选**：菜单 **Kernel → Change Kernel → YOLO26 - AMD ROCm 7.14.1**（JupyterLab 点右上角内核名）。
+> - **怎么确认**：运行第一个代码格后，`torch_hip` 是版本号而非 `None`，并打印出你的 AMD 显卡名。
+> - **选错会怎样**：00 会被 ROCm 门禁当场拦截；若误用平台默认 `python3`，可能到 Lab A 才报出难懂的 `NotImplementedError`。
+> - **列表里没有这个内核？** 在项目目录执行一次注册：
+>   `.venv/bin/python -m ipykernel install --user --name yolo26-rocm7141 --display-name "YOLO26 - AMD ROCm 7.14.1"`
+>   （Windows 见 `docs/ROCM_WINDOWS_SETUP.md`；Linux 见 `docs/RADEON_CLOUD_LINUX_SETUP.md` §2B）''',
+'''> ### 30 seconds before you run: make sure the Kernel is right
+> Every notebook in this course must run on the **`YOLO26 - AMD ROCm 7.14.1`** kernel (see the kernel name at the top right).
+>
+> - **How to select**: menu **Kernel → Change Kernel → YOLO26 - AMD ROCm 7.14.1** (JupyterLab: click the kernel name at the top right).
+> - **How to confirm**: after the first code cell, `torch_hip` is a version string (not `None`) and your AMD GPU name is printed.
+> - **What if you pick the wrong one**: Lab 00's ROCm gate stops you immediately; with the platform default `python3` you may instead hit an opaque `NotImplementedError` deep inside Lab A.
+> - **Kernel not in the list?** Register it once from the project directory:
+>   `.venv/bin/python -m ipykernel install --user --name yolo26-rocm7141 --display-name "YOLO26 - AMD ROCm 7.14.1"`
+>   (Windows: `docs/ROCM_WINDOWS_SETUP.md`; Linux: `docs/RADEON_CLOUD_LINUX_SETUP.md` §2B)''')
+
+
 def make(fname, title_zh, title_en, cells, duration_zh, duration_en, tags_zh, tags_en):
     # Guard against transposing the duration/learning-path arguments (a real
     # defect shipped in v1.2): durations must look like durations, paths must not.
@@ -79,8 +102,8 @@ def make(fname, title_zh, title_en, cells, duration_zh, duration_en, tags_zh, ta
         f'# {title_en}\n\n**Suggested time: {duration_en}** | Learning path: {tags_en}\n\n'
         f'> Run the cells in order; every result must come from your own GPU environment — '
         f'never present the sample text as measured data.')
-    nb=nbf.v4.new_notebook(cells=[nbf.v4.new_markdown_cell(STYLE),header,*cells],
-        metadata={'kernelspec':{'display_name':'Python 3 (ROCm)','language':'python','name':'python3'},
+    nb=nbf.v4.new_notebook(cells=[nbf.v4.new_markdown_cell(STYLE),header,m(*KERNEL_NOTICE),*cells],
+        metadata={'kernelspec':{'display_name':'YOLO26 - AMD ROCm 7.14.1','language':'python','name':'yolo26-rocm7141'},
                   'language_info':{'name':'python'},
                   'course':{'version':'1.2-bilingual-pep8','lab':fname,'design':'Premium Engineering Keynote'}})
     nbf.validate(nb)
