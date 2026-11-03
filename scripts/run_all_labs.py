@@ -353,6 +353,12 @@ def main() -> int:
     ap.add_argument('--only', default=None, help='Comma list of notebook prefixes, e.g. 00,03')
     ap.add_argument('--keep-going', action='store_true', help='Continue after failures.')
     ap.add_argument('--list', action='store_true', help='List discovered notebooks and exit.')
+    ap.add_argument('--practice-fill', default=None, metavar='JSON',
+                    help='Unattended-revalidation fills for the student practice cells '
+                         '(variable overrides keyed by lab00_practice / lab_c_my_reading / '
+                         'lab_d_error_analysis / lab_e_hypothesis). Sets YOLO_PRACTICE_FILL '
+                         'for the kernels; the injected values appear verbatim in the cell '
+                         'outputs and saved reports. Students never need this flag.')
     args = ap.parse_args()
 
     venv_exe = check_venv()
@@ -397,6 +403,12 @@ def main() -> int:
         'YOLO_COURSE_HOME': str(course_home),
         'MPLBACKEND': 'module://matplotlib_inline.backend_inline',
     }
+    if args.practice_fill:
+        fill_path = Path(args.practice_fill).resolve()
+        if not fill_path.is_file():
+            print(f'FATAL: --practice-fill file not found: {fill_path}', file=sys.stderr)
+            return 2
+        env['YOLO_PRACTICE_FILL'] = str(fill_path)
     # MIOpen hipRTC freestanding shims (Windows only; see install_miopen_shims.py)
     shim_dir = PROJECT / 'scripts' / 'miopen_shims'
     if sys.platform == 'win32' and shim_dir.is_dir() and 'HIPRTC_COMPILE_OPTIONS_APPEND' not in os.environ:
@@ -433,6 +445,7 @@ def main() -> int:
         'kernel_probe': probe,
         'course_home': str(course_home), 'per_cell_timeout': args.timeout,
         'venv_python': str(venv_exe),
+        'practice_fill': str(Path(args.practice_fill).resolve()) if args.practice_fill else None,
         'results': [{k: v for k, v in r.items() if k != 'cells'} for r in results],
     }
     data_path = VALIDATION / f'NOTEBOOK_EXECUTION_DATA_{stamp}.json'

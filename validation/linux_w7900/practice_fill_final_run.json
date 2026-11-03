@@ -1,0 +1,23 @@
+{
+  "_comment": "Validator demonstration fills for the unattended Phase-8 revalidation run (runner --practice-fill). These are the validating engineer's own genuine readings of THIS round's artifacts, used only to exercise the practice cells end-to-end. Students write their own answers in class; the TODO-assert gates stay active for them.",
+  "lab00_practice": {
+    "shape": "(128, 128)",
+    "device": "cuda:0 (HIP)"
+  },
+  "lab_c_my_reading": {
+    "train_box_loss_epoch1_to_12": "train/box_loss 从 1.548（epoch 1）仅降到 1.512（epoch 12），降幅约 2%，基本走平",
+    "val_mAP50_trend": "mAP50 从 0.556（epoch 1）降到 0.492（epoch 12）；mAP50-95 从 0.350 降到 0.261；val/box_loss 从 1.757 升到 1.913",
+    "overfitting_call": "过拟合了：train loss 微降而 val loss 上升、验证 mAP 持续下降，说明后续 epoch 在记忆训练集。best.pt 来自 epoch 1（mAP50-95=0.350，官方 val 复测 0.624 与之一致），这正是 best/last 分离的意义"
+  },
+  "lab_d_error_analysis": {
+    "symptom": "000000000074.jpg：模型以 0.507 置信度预测了一个 person 框，但与任何真值框的 IoU 只有 0.337（低于 0.50），同时图里另有 2 个真人没有被检出（FN）",
+    "evidence": "lab_d_errors.csv 第一行：error=FP_localization_or_background, score=0.507, max_iou_gt=0.337；同图随后两行 FN。对照图左侧 GT 框与右侧预测框位置偏移明显",
+    "suspected_cause": "定位偏移类 FP：目标可能存在遮挡或部分出画，模型看到了人但框不准；两个 FN 可能是小目标/遮挡目标置信度低于 0.25",
+    "verify_next_step": "用 conf=0.10 重跑该图推理，看 FN 是否被召回且框是否更准；再检查该图的标注是否本身有边界问题（人工复核 GT）"
+  },
+  "lab_e_hypothesis": {
+    "mAP50_95_winner": "baseline(512)——更高的训练分辨率保留更多空间细节，小数据集上更稳",
+    "training_time_winner": "不确定——imgsz 变小单步计算量下降，但固定 12 Epoch 下数据加载与 JIT 预热占比不小，差距可能不明显",
+    "reasoning": "分类回归头在小输入上更粗；但 128 张图的小数据训练瓶颈未必在计算"
+  }
+}
