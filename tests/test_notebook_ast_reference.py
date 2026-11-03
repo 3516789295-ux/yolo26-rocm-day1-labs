@@ -68,6 +68,28 @@ def test_reference_file_exists_and_current():
         'together with the notebook change')
 
 
+def test_reference_digest_format():
+    """Hand-patched digest entries must be valid 64-char lowercase hex.
+
+    Regression: v1.2 shipped a Lab B reference entry whose 'sha256' was a
+    54-character truncated digest — impossible to ever match, yet easy to miss
+    because it *looks* like a hash. Reject that class of corruption early.
+    """
+    import re
+    reference = json.loads(REFERENCE.read_text(encoding='utf-8'))
+    assert set(reference) == {p.name for p in NOTEBOOKS}, 'reference must cover exactly the six notebooks'
+    hex64 = re.compile(r'^[0-9a-f]{64}$')
+    for nb, cells in reference.items():
+        assert isinstance(cells, list) and cells, f'{nb}: empty reference entry'
+        for idx, cell in enumerate(cells):
+            if isinstance(cell, dict):
+                assert set(cell) == {'sha256'}, f'{nb} cell #{idx}: unknown keys {sorted(cell)}'
+                assert hex64.match(cell['sha256'] or ''), (
+                    f'{nb} cell #{idx}: sha256 entry is not a valid 64-char lowercase hex digest '
+                    f'(got {len(cell["sha256"] or "")} chars) — regenerate the reference instead of '
+                    'hand-patching it')
+
+
 def test_notebook_code_matches_ast_reference():
     nbformat = pytest.importorskip('nbformat')
     reference = json.loads(REFERENCE.read_text(encoding='utf-8'))
@@ -92,6 +114,10 @@ def test_notebook_code_matches_ast_reference():
 
 
 if __name__ == '__main__':
-    test_reference_file_exists_and_current()
+    try:
+        test_reference_file_exists_and_current()
+    except pytest.skip.Exception:
+        pass  # --regenerate path: reference already rewritten above
+    test_reference_digest_format()
     test_notebook_code_matches_ast_reference()
     print('AST reference check: OK')

@@ -50,6 +50,14 @@ def c(text):return nbf.v4.new_code_cell(dedent(text).strip())
 
 
 def make(fname, title_zh, title_en, cells, duration_zh, duration_en, tags_zh, tags_en):
+    # Guard against transposing the duration/learning-path arguments (a real
+    # defect shipped in v1.2): durations must look like durations, paths must not.
+    import re
+    _time_like = re.compile(r'分钟|minutes|min', re.IGNORECASE)
+    assert _time_like.search(duration_zh) and _time_like.search(duration_en), \
+        f'{fname}: duration args must contain a time unit: {duration_zh!r} / {duration_en!r}'
+    assert not _time_like.search(tags_zh) and not _time_like.search(tags_en), \
+        f'{fname}: learning-path args must not contain a time unit: {tags_zh!r} / {tags_en!r}'
     header = m(
         f'# {title_zh}\n\n**建议时长：{duration_zh}**　｜　学习路径：{tags_zh}\n\n'
         f'> 请按顺序运行；运行结果必须来自自己的 GPU 环境，不可把示例文字当作实测数据。',
@@ -91,12 +99,48 @@ pprint(info)'''),
 - `torch.version.hip != None` 表示 ROCm PyTorch 构建。
 - 在 AMD GPU 上，`torch.cuda.is_available()` 也可以返回 `True`，这是 HIP 对 PyTorch CUDA API 的兼容设计。
 - 训练传 `device=0`；**不要**传 `device="rocm"`。
-- 云端代理只需要继承平台设置；本课不会输出代理 URL、访问令牌或秘密。''',
+- 云端代理只需要继承平台设置；本课不会输出代理 URL、访问令牌或秘密。
+
+**依赖**：这是第一份 Notebook，无前置实验；只需按部署文档建好 ROCm 环境。
+
+### 预期输出（正常长什么样）
+- `environment.json` 打印出的字典里：`torch_hip` 是一串版本号（非空）、`gpu_name` 是你的 AMD 显卡名、`gpu_device_nodes` 两项都是 `True`。
+- ROCm 检查格打印 `AMD ROCm verified: <你的显卡名> HIP: <版本>`。
+- HIP 冒烟格打印 `HIP kernel smoke: PASS, output shape: (128, 128)`。
+- 若与上述形状不符（例如 `torch_hip` 为 `None` 或 GPU 不可见），先看下面的常见错误，不要继续后面的实验。
+
+### 常见错误与下一步
+| 症状 | 原因 | 下一步 |
+|---|---|---|
+| `torch.version.hip` 为 `None` | 当前 Kernel 不是 ROCm 构建（CPU/CUDA wheel） | 切换到课程注册的 Kernel；重装见部署文档 |
+| `no GPU visible` / `/dev/kfd` 不存在 | GPU 未分配或节点不可见 | 检查平台 GPU 分配；Linux 看 `/dev/kfd`、`/dev/dri` |
+| `torchvision GPU NMS is unavailable` | 平台预装 torchvision 缺 GPU NMS 内核 | 按部署文档方式 B 自建 uv 隔离栈 |
+| `pip install torch` 后环境损坏 | 覆盖了 AMD 定制 PyTorch | 重建环境，永远不要在课程环境里装默认 torch |
+
+更多排障见 `docs/TROUBLESHOOTING.md`。''',
    '''### Reading the Environment Info
 - `torch.version.hip != None` marks a ROCm build of PyTorch.
 - On AMD GPUs `torch.cuda.is_available()` may also return `True` — that is HIP's compatibility layer over the PyTorch CUDA API surface.
 - Pass `device=0` for training; **do not** pass `device="rocm"`.
-- Cloud proxies only need the platform defaults; this course never prints proxy URLs, tokens or secrets.'''),
+- Cloud proxies only need the platform defaults; this course never prints proxy URLs, tokens or secrets.
+
+**Prerequisite**: this is the first notebook — no prior lab; only a working ROCm environment from the setup guide.
+
+### Expected Output (what healthy looks like)
+- In the printed `environment.json` dict: `torch_hip` is a non-empty version string, `gpu_name` is your AMD GPU, and both `gpu_device_nodes` entries are `True`.
+- The ROCm gate cell prints `AMD ROCm verified: <your GPU> HIP: <version>`.
+- The HIP smoke cell prints `HIP kernel smoke: PASS, output shape: (128, 128)`.
+- If the shape differs (e.g. `torch_hip` is `None` or no GPU), read the common errors below before continuing.
+
+### Common Errors & Next Steps
+| Symptom | Cause | Next step |
+|---|---|---|
+| `torch.version.hip` is `None` | kernel is not a ROCm build (CPU/CUDA wheel) | switch to the registered course kernel; reinstall per the setup guide |
+| `no GPU visible` / missing `/dev/kfd` | GPU not allocated or nodes hidden | check platform GPU assignment; on Linux inspect `/dev/kfd`, `/dev/dri` |
+| `torchvision GPU NMS is unavailable` | platform torchvision lacks the GPU NMS kernel | build the uv-isolated stack (setup guide, option B) |
+| environment broken after `pip install torch` | AMD-customized PyTorch overwritten | rebuild the env; never install default torch inside it |
+
+Full troubleshooting: `docs/TROUBLESHOOTING.md`.'''),
  c('''STRICT_ROCM = True  # 教学 GPU 实验应保持 True；不要为了通过检查而改成 False
 if STRICT_ROCM:
     device = require_rocm()
@@ -113,6 +157,46 @@ if STRICT_ROCM:
     torch.cuda.synchronize()
     assert y.device.type == 'cuda'  # ROCm 也报告 cuda device type
     print('HIP kernel smoke: PASS, output shape:', tuple(y.shape))'''),
+ m('''### 练习：先预测，再运行（5 分钟）
+计算思维的第一步是**预测→运行→对照**。下面这个格子默认能跑通，但直接跑没有意义：
+1. 把 `SMOKE_N` 改成 256（或任意正整数）。
+2. **先**把你的预测写进 `MY_PREDICTION`（替换两个 TODO）。
+3. 运行，对照 `actual` 输出；猜错完全没关系——关键是养成先预测的习惯。
+你的预测会保存到 `reports/lab00_practice.json`，作为你动手的证据。''',
+   '''### Try It Yourself: predict, then run (5 min)
+Computational thinking starts with **predict → run → compare**. The cell below runs as-is, but running it blindly teaches nothing:
+1. Change `SMOKE_N` to 256 (or any positive integer).
+2. **First** write your prediction into `MY_PREDICTION` (replace both TODOs).
+3. Run it and compare with the `actual` output; being wrong is fine — the habit of predicting first is the point.
+Your prediction is saved to `reports/lab00_practice.json` as evidence of hands-on work.'''),
+ c('''# 学生练习：预测 → 运行 → 对照（修改 SMOKE_N 与 MY_PREDICTION 后运行）
+SMOKE_N = 128
+MY_PREDICTION = {'shape': 'TODO: 写下你预测的输出形状，如 (128, 128)',
+                 'device': 'TODO: 你预测结果张量落在哪个设备？'}
+
+# 无人值守复验通道（学生不需要）：设 YOLO_PRACTICE_FILL 指向 JSON 文件可注入已填写样例，
+# 注入值会原样出现在本格输出与保存的报告里——不做任何隐藏。
+if os.environ.get('YOLO_PRACTICE_FILL'):
+    _p = Path(os.environ['YOLO_PRACTICE_FILL'])
+    if _p.is_file():
+        for _k, _v in json.loads(_p.read_text(encoding='utf-8')).get('lab00_practice', {}).items():
+            MY_PREDICTION[_k] = _v
+
+import torch
+
+for key, value in MY_PREDICTION.items():
+    assert not str(value).startswith('TODO'), f'请先填写 {key} 的预测再运行——直接运行无法形成预测习惯'
+probe = torch.randn((SMOKE_N, SMOKE_N), device='cuda:0')
+outcome = probe @ probe
+torch.cuda.synchronize()
+print('actual shape:', tuple(outcome.shape), '| actual device:', outcome.device)
+matched = str(MY_PREDICTION['shape']).replace(' ', '') == str(tuple(outcome.shape))
+print('your prediction:', MY_PREDICTION)
+print('prediction matched:', matched, '（猜错不扣分；先预测再验证才是目的）')
+write_json(home / 'reports/lab00_practice.json',
+           {'smoke_n': SMOKE_N, 'prediction': MY_PREDICTION,
+            'actual': {'shape': list(outcome.shape), 'device': str(outcome.device)},
+            'matched': matched})'''),
  m('''### 冻结预训练权重（所有 A/C/E 使用相同模型）
 为了避免课程中途的自动下载或不同版本导致 A/B 实验起点不一致，首次联网时缓存 `yolo26n.pt`，后续统一从 `/workspace/yolo_course/artifacts/yolo26n.pt` 读取。缓存成功后记录 SHA256。''',
    '''### Pinning the Pretrained Weights (labs A/C/E share one model)
@@ -135,24 +219,58 @@ save_config({'model': 'yolo26n.pt', 'model_sha256': sha256(model_cache)})'''),
 2. `torch.version.hip` 返回 `None` 意味着什么？
 3. 为什么不能在已经配好的 ROCm 环境随意覆盖 PyTorch？
 
-**验收文件**：`reports/environment.json`。''',
+**面试可能这样问**：入职后给你一台 AMD GPU 服务器，你怎么确认上面的深度学习环境能用？会检查哪些字段、分别排除什么问题？
+
+**带走什么 / Takeaway**：环境是实验的地基——`torch.version.hip`、GPU 可见性、设备节点、权重指纹（SHA256），四样确认完才开始训练。
+
+**验收文件**：`reports/environment.json`、`reports/lab00_practice.json`。''',
    '''### After-Class Questions (put answers in your environment report)
 1. Why do AMD GPUs use the `torch.cuda` API?
 2. What does it mean when `torch.version.hip` returns `None`?
 3. Why must you never overwrite PyTorch in an already-configured ROCm environment?
 
-**Acceptance artifact**: `reports/environment.json`.''')
-], '10–15 分钟','环境 → GPU 后端 → 持久化工件','10–15 minutes','environment → GPU backend → persistent artifacts')
+**Interview-style question**: you are handed an AMD GPU server on day one — how do you verify its deep-learning stack works? Which fields do you check, and what does each rule out?
+
+**Takeaway**: the environment is the foundation of every experiment — `torch.version.hip`, GPU visibility, device nodes, and the weight fingerprint (SHA256). Confirm all four before any training.
+
+**Acceptance artifacts**: `reports/environment.json`, `reports/lab00_practice.json`.''')
+], '10–15 分钟','10–15 minutes','环境 → GPU 后端 → 持久化工件','environment → GPU backend → persistent artifacts')
 
 make('01_Lab_A_Predict_and_Threshold.ipynb','01 / Lab A · 推理、BBox 与置信度阈值','01 / Lab A · Inference, BBoxes & Confidence Thresholds',[
  m('''## 实验目标
 给同一张图片设置 `conf=0.10/0.25/0.50`，测量检测数量并保存图片。理解 **Score ≠ 真实正确概率**，置信度阈值只影响显示/保留哪些预测，不会修改模型权重。
 
-**依赖**：先完成 00；预训练模型和示例图片可从官方地址下载（如云端不能访问外网，请提前上传缓存）。''',
+**依赖**：先完成 00；预训练模型和示例图片可从官方地址下载（如云端不能访问外网，请提前上传缓存）。
+
+### 预期输出（看形状，不是标准答案数字）
+- 先显示一张样例图；随后每个阈值打印一行 `0.1 predictions: N -> <保存路径>`，保存的 jpg 上有带类别名和分数的框。
+- 三张图**只差画的框数**——同样的框，阈值越高保留越少。
+- `xyxy / confidence / class ID` 单元格打印三小段 numpy 数组（像素坐标、0–1 浮点、整数类别号）。
+- IoU 单元格对给定两框打印一个严格介于 0 和 1 之间的数。
+
+### 常见错误与下一步
+| 症状 | 原因 | 下一步 |
+|---|---|---|
+| `FileNotFoundError` 找不到 `yolo26n.pt` | 没先跑 00 / 权重未缓存 | 先跑 00（它把模型固定到 `artifacts/`） |
+| `NotImplementedError ... torchvision::nms` | torchvision 构建缺 GPU NMS 内核 | 换 uv 隔离 ROCm 栈（部署文档 §2B） |
+| 自己换图后检出数随阈值升高而增加 | 通常是低对比/重复目标的边界情况 | 重新阅读单调性断言的报错信息；如实报告你看到的现象 |''',
    '''## Goal
 Run the same image at `conf=0.10/0.25/0.50`, count detections and save the images. Understand that **a score ≠ the true probability of correctness** — the confidence threshold only filters which predictions are kept/displayed; it never changes model weights.
 
-**Prerequisite**: finish 00 first. The pretrained model and the sample image come from official sources (pre-upload them to the cache if your cloud has no external network).'''),
+**Prerequisite**: finish 00 first. The pretrained model and the sample image come from official sources (pre-upload them to the cache if your cloud has no external network).
+
+### Expected Output (shape, not ground-truth numbers)
+- One sample image is displayed, then for each threshold a line like `0.1 predictions: N -> <saved path>`; the saved jpg shows boxes with class names and scores.
+- The three saved images differ **only in how many boxes are drawn** — same boxes, fewer of them as the threshold rises.
+- The `xyxy / confidence / class ID` cell prints three small numpy arrays (pixel coordinates, 0–1 floats, integer class ids).
+- The IoU cell prints a number strictly between 0 and 1 for the given boxes.
+
+### Common Errors & Next Steps
+| Symptom | Cause | Next step |
+|---|---|---|
+| `FileNotFoundError` on `yolo26n.pt` | Lab 00 not run / weights not cached | run 00 first (it pins the model into `artifacts/`) |
+| `NotImplementedError ... torchvision::nms` | torchvision build lacks the GPU NMS kernel | switch to the uv-isolated ROCm stack (setup guide §2B) |
+| counts **increase** as threshold rises on your own image | usually a very low-contrast/duplicate object case | re-check the monotonicity assertion message; report honestly what you saw |'''),
  c(SETUP),
  c('''device = require_rocm()
 from ultralytics import YOLO
@@ -208,9 +326,21 @@ else:
 from course.lab_utils import iou_xyxy
 
 box_true = (160, 120, 480, 360)
-box_pred = (200, 140, 500, 380)
+box_pred = (200, 140, 500, 380)  # 学生可修改这个框，重新预测后再运行
+MY_PREDICTED_IOU = 'TODO: 先预测——这两个框的 IoU 大概是多少？写一个 0 到 1 之间的数'
+
+# 无人值守复验通道（学生不需要）：YOLO_PRACTICE_FILL 指向 JSON 可注入已填写样例
+if os.environ.get('YOLO_PRACTICE_FILL'):
+    _p = Path(os.environ['YOLO_PRACTICE_FILL'])
+    if _p.is_file():
+        _v = json.loads(_p.read_text(encoding='utf-8')).get('lab_a_iou')
+        if _v is not None:
+            MY_PREDICTED_IOU = _v
+
+assert not str(MY_PREDICTED_IOU).startswith('TODO'), '请先写下你的预测（0–1 之间的数）再运行'
 overlap = iou_xyxy(box_true, box_pred)
-print('IoU=', round(overlap, 4), '学生可修改 box_pred 并观察变化')
+print('实际 IoU =', round(overlap, 4), '| 你的预测 =', MY_PREDICTED_IOU)
+print('修改 box_pred 的坐标再运行一次，观察 IoU 怎么变；猜错不扣分，先预测才是目的')
 assert 0 <= overlap <= 1'''),
  c('''for item in summary:
     print(f"conf={item['conf']:.2f}  boxes={item['detections']}")
@@ -232,13 +362,15 @@ print('Threshold monotonicity: PASS')'''),
 4. If recalls are badly missed, how would you evaluate the FP/Recall trade-off of lowering the threshold?
 
 **Deliverables**: 3 prediction images + `reports/lab_a_predictions.json` + a short conclusion.''')
-], '20 分钟','图像 → 检测结果 → 参数敏感性','20 minutes','image → detections → parameter sensitivity')
+], '20 分钟','20 minutes','图像 → 检测结果 → 参数敏感性','image → detections → parameter sensitivity')
 
 make('02_Lab_B_Dataset_Annotation_QA.ipynb','02 / Lab B · 数据集、标注、分离与 QA','02 / Lab B · Dataset, Annotation, Splits & QA',[
  m('''## 实验目标
 - 检查一行 YOLO 标签 `class x_center y_center width height`，五个值中坐标为归一化值。
 - 从 COCO128 **原始 128 张图**构造教学用、图片不重叠的 Train/Val/Test；默认只保留 `person/car/chair` 三类，并**不是**快递包裹数据集。
 - 检查标签范围、重复图片、边界框与数据集配置。
+
+**依赖**：先完成 00（环境与权重缓存）。本实验主要用 CPU 做数据 QA，不需要长时间占用 GPU。
 
 > **关键科学边界**：官方 COCO128 训练/验证复用同样图片，仅用于冒烟测试。本 Notebook 对其重新分组和划分，尽量防止直接重叠；由于只有 128 张，无法据此宣称工业精度或严格 COCO 基准；语义相似场景泄漏还需人工审查。''',
    '''## Goal
@@ -408,14 +540,46 @@ make('03_Lab_C_ROCm_Training_Finetune.ipynb','03 / Lab C · ROCm GPU 训练、�
 3. 保存运行条件、`best.pt`、`last.pt`、训练曲线与 SHA256。
 4. 解释 Loss、Epoch、Batch、学习率、过拟合和泛化；不得把 Smoke 成绩说成工业精度。
 
-**注意**：本实验需要 GPU 和时间。推荐课前缓存模型/数据。`amp=False` 仅作 ROCm AMP 异常排查，不应在没有问题时随意更改对照配置。''',
+**依赖**：先完成 00（权重缓存）与 02（数据集登记）。需要 GPU 与时间；推荐课前缓存模型/数据。
+
+**注意**：`amp=False` 仅作 ROCm AMP 异常排查，不应在没有问题时随意更改对照配置。
+
+### 预期输出（看形状，不是标准答案数字）
+- 冒烟格几分钟内完成并打印 `GPU smoke completed`。
+- 正式训练逐 epoch 打印进度；结束后 `runs/lab_c/baseline/` 下出现 `weights/best.pt`、`weights/last.pt`、`results.csv`（每 epoch 一行）、`results.png`。
+- `results.png` 里 **train loss 各列整体下降**、mAP 相关列整体上升——小数据集上会抖动，方向比光滑更重要。
+- 验证格打印一个含 `precision / recall / mAP50 / mAP50_95` 的字典，并明确标注 `split: val`。
+
+### 常见错误与下一步
+| 症状 | 原因 | 下一步 |
+|---|---|---|
+| `先完成 02 Lab B` 断言失败 | course_config 里没有数据集 | 先跑 02，或设 `YOLO_USER_DATA_YAML` |
+| 训练出现 NaN | AMP/数值问题或数据有坏标签 | 保持 `amp=False` 重试；用 02 的 QA 复查标签 |
+| `torchvision GPU NMS` 报错 | 平台栈缺 NMS 内核 | 部署文档 §2B 自建隔离栈 |
+| 显存不足 OOM | batch 过大或 imgsz 过大 | 本课程配置在 48GB 卡上余量充足；改配置前先记录并说明理由 |''',
    '''## Goal
 1. Fine-tune the YOLO26n pretrained model on a real AMD ROCm GPU.
 2. **Smoke-test the training pipeline** on COCO8 (4 train + 4 val) first, then train on the Lab B dataset.
 3. Persist run conditions, `best.pt`, `last.pt`, training curves and SHA256 hashes.
 4. Explain loss, epochs, batches, learning rate, overfitting and generalization; never dress smoke-run numbers up as industrial accuracy.
 
-**Note**: this lab needs a GPU and time; pre-caching model/data before class is recommended. `amp=False` exists for ROCm AMP troubleshooting only — do not flip comparison configs without a diagnosed problem.'''),
+**Prerequisite**: finish 00 (weight cache) and 02 (dataset registration). This lab needs a GPU and time; pre-caching model/data before class is recommended.
+
+**Note**: `amp=False` exists for ROCm AMP troubleshooting only — do not flip comparison configs without a diagnosed problem.
+
+### Expected Output (shape, not ground-truth numbers)
+- The smoke cell finishes within minutes and prints `GPU smoke completed`.
+- Full training prints per-epoch progress; afterwards `runs/lab_c/baseline/` contains `weights/best.pt`, `weights/last.pt`, `results.csv` (one row per epoch) and `results.png`.
+- In `results.png` the **train-loss columns trend down** and the mAP columns trend up — on a tiny dataset they wobble; direction matters more than smoothness.
+- The validation cell prints a dict with `precision / recall / mAP50 / mAP50_95`, clearly tagged `split: val`.
+
+### Common Errors & Next Steps
+| Symptom | Cause | Next step |
+|---|---|---|
+| assertion `先完成 02 Lab B` fires | no dataset in course_config | run 02 first, or set `YOLO_USER_DATA_YAML` |
+| NaN during training | AMP/numeric issue or bad labels | keep `amp=False` and retry; re-run 02 QA on labels |
+| `torchvision GPU NMS` error | platform stack lacks the NMS kernel | build the isolated stack (setup guide §2B) |
+| CUDA OOM | batch/imgsz too large | the course config fits comfortably in 48 GB; record and justify any change |'''),
  c(SETUP),
  c('''from course.lab_utils import get_metrics_summary
 import torch
@@ -490,6 +654,41 @@ summary['split'] = 'val'
 summary['model_sha256'] = sha256(Path(cfg['baseline_weights']))
 write_json(home / 'reports/lab_c_baseline_val.json', summary)
 print('Validation only (NOT test):', summary)'''),
+ m('''### 练习：读懂你自己的训练曲线（先判断，再验证）
+训练不是"跑完就结束"。打开上面 `results.csv` 的最后几行和 `results.png`，**自己**回答三个问题：
+1. train 的 box_loss 从第 1 到第 12 个 epoch 大致怎么变？
+2. 验证集 mAP50 怎么变？
+3. 以你的数字为证据：过拟合了吗？为什么？
+
+把答案写进下面的 `MY_READING` 再运行保存。你的判断会在 Lab D 与官方验证指标对照——现在写错完全没关系，先形成"用证据下结论"的习惯。''',
+   '''### Try It Yourself: read your own training curve (judge first, verify later)
+Training is not "run and done". Open the tail of `results.csv` above and `results.png`, and answer three questions **yourself**:
+1. How did train box_loss move from epoch 1 to 12?
+2. How did validation mAP50 move?
+3. With your numbers as evidence: is the model overfitting? Why?
+
+Write your answers into `MY_READING` below, then run the cell to save them. Lab D will confront your reading with the official metrics — being wrong now is fine; build the habit of concluding from evidence first.'''),
+ c('''# 学生练习：读曲线（填写 MY_READING 后运行；引用你自己 results.csv 里的数字）
+import csv
+
+MY_READING = {
+    'train_box_loss_epoch1_to_12': 'TODO: box_loss 从第 1 到第 12 个 epoch 大致如何变化？引用两个数字',
+    'val_mAP50_trend': 'TODO: 验证集 mAP50 大致如何变化？引用两个数字',
+    'overfitting_call': 'TODO: 以你的曲线为证据，过拟合了吗？为什么？',
+}
+# 无人值守复验通道（学生不需要）：YOLO_PRACTICE_FILL 指向 JSON 可注入已填写样例
+if os.environ.get('YOLO_PRACTICE_FILL'):
+    _p = Path(os.environ['YOLO_PRACTICE_FILL'])
+    if _p.is_file():
+        for _k, _v in json.loads(_p.read_text(encoding='utf-8')).get('lab_c_my_reading', {}).items():
+            MY_READING[_k] = _v
+for key, value in MY_READING.items():
+    assert not str(value).startswith('TODO'), f'请先填写 {key}——用自己的 results.csv 数字回答后再运行'
+with (Path(cfg['baseline_run']) / 'results.csv').open(encoding='utf-8') as f:
+    rows = list(csv.DictReader(f))
+print('你的 epoch 数:', len(rows), '| 首行/末行 epoch:', rows[0].get('epoch'), '/', rows[-1].get('epoch'))
+write_json(home / 'reports/lab_c_my_reading.json', MY_READING)
+print('曲线阅读已保存到 reports/lab_c_my_reading.json；Lab D 会用官方指标对照你的判断。')'''),
  m('''### 为什么基线固定训练用 `imgsz=512`，评测用 `imgsz=640`？
 训练输入尺寸属于训练方案，下一步 Lab E 会只改变训练尺寸；为了公平比较两组模型，Lab E 会用同一个 `imgsz=640` 做评测。这是一种课堂控制变量方案，不是所有工业评测任务必须如此。
 
@@ -510,7 +709,7 @@ Training input size is part of the training recipe — Lab E will vary exactly t
 4. If the AMP check or training produces NaN, how do you troubleshoot and record the config change?
 
 **Deliverables**: `runs/lab_c/baseline/`, `reports/lab_c_baseline.json`, `lab_c_baseline_val.json`.''')
-], '50–70 分钟','预训练权重 → 前后向训练 → 模型工件','50–70 minutes','pretrained weights → forward/backward training → model artifacts')
+], '50–70 分钟','50–70 minutes','预训练权重 → 前后向训练 → 模型工件','pretrained weights → forward/backward training → model artifacts')
 
 make('04_Lab_D_Evaluation_Error_Analysis.ipynb','04 / Lab D · mAP、混淆与失败案例','04 / Lab D · mAP, Confusion & Failure Cases',[
  m('''## 实验目标
@@ -519,12 +718,16 @@ make('04_Lab_D_Evaluation_Error_Analysis.ipynb','04 / Lab D · mAP、混淆与�
 - 查看 PR/混淆矩阵并生成至少五份真实失败案例。
 - 不用 Test 集选择模型或调阈值。
 
+**依赖**：先完整运行 03（需要它的 `best.pt` 与数据集登记）。本实验的预测都在 GPU 上完成，但单张推理很快。
+
 `metrics.box.map` 才是官方 mAP50-95；我们的 TP/FP/FN 固定阈值分析只用于学习错误原因。''',
    '''## Goal
 - Compute Precision, Recall, mAP50 and mAP50-95 with the official Ultralytics validator.
 - Independently run a **fixed-threshold `conf=0.25`, IoU=0.50 teaching-level TP/FP/FN matching** (this is NOT the COCO mAP algorithm).
 - Inspect PR/confusion matrices and produce at least five genuine failure cases.
 - Never use the test split to pick models or tune thresholds.
+
+**Prerequisite**: fully run 03 first (its `best.pt` and dataset registration are required). Predictions run on the GPU but are fast per image.
 
 `metrics.box.map` is the official mAP50-95; our fixed-threshold TP/FP/FN analysis exists only to learn about error causes.'''),
  c(SETUP),
@@ -618,32 +821,65 @@ if len(failures) < 5:
  m('''### 学生工作：手动归因至少 5 个实际错误（如果有）
 打开 `reports/lab_d_errors.csv` 和并排对照图，添加 **现象、证据、可能根因、下次实验验证方法**。把推测与已确认根因区分开。
 
-### 思考题 / 面试必答
+下面提供一个可保存的归因练习格：从 `lab_d_errors.csv` 里挑**一个**你最好奇的错误，把四项分析写进 `MY_ANALYSIS` 再运行（写错不扣分，空着或 TODO 才是不合格）。''',
+   '''### Student Work: manually attribute at least 5 real errors (if any)
+Open `reports/lab_d_errors.csv` and the side-by-side boards, then add **symptom, evidence, suspected root cause, and how the next experiment would verify it**. Keep hypotheses clearly separate from confirmed causes.
+
+The practice cell below makes this concrete: pick **one** error you are most curious about from `lab_d_errors.csv`, fill the four fields of `MY_ANALYSIS`, then run it (wrong hypotheses cost nothing; empty or TODO answers do).'''),
+ c('''# 学生练习：独立归因一个真实错误（填写 MY_ANALYSIS 后运行）
+import csv
+
+with (home / 'reports/lab_d_errors.csv').open(encoding='utf-8-sig') as f:
+    error_rows = list(csv.DictReader(f))
+MY_ERROR_INDEX = 0  # 改成你想分析的那一行（0 到 len(error_rows)-1）
+MY_ANALYSIS = {
+    'symptom': 'TODO: 现象——这张图上到底发生了什么？',
+    'evidence': 'TODO: 证据——引用该行的 error / score / max_iou_gt 数字与图上所见',
+    'suspected_cause': 'TODO: 你的假设（遮挡/小目标/类别混淆/标注问题/阈值…）',
+    'verify_next_step': 'TODO: 下一次实验如何验证这个假设？',
+}
+# 无人值守复验通道（学生不需要）：YOLO_PRACTICE_FILL 指向 JSON 可注入已填写样例
+if os.environ.get('YOLO_PRACTICE_FILL'):
+    _p = Path(os.environ['YOLO_PRACTICE_FILL'])
+    if _p.is_file():
+        for _k, _v in json.loads(_p.read_text(encoding='utf-8')).get('lab_d_error_analysis', {}).items():
+            MY_ANALYSIS[_k] = _v
+assert error_rows, '没有错误行——恭喜，但请如实报告并挑一张困难样本做分析'
+assert 0 <= MY_ERROR_INDEX < len(error_rows), f'索引需在 0 到 {len(error_rows) - 1} 之间'
+for key, value in MY_ANALYSIS.items():
+    assert not str(value).startswith('TODO'), f'请先填写 {key}——归因练习不允许留空'
+chosen = error_rows[MY_ERROR_INDEX]
+print('你选择的错误:', chosen['image'], chosen['error'], '| score:', chosen['score'],
+      '| max_iou_gt:', chosen['max_iou_gt'])
+write_json(home / 'reports/lab_d_my_error_analysis.json', {'chosen': chosen, 'analysis': MY_ANALYSIS})
+print('归因已保存到 reports/lab_d_my_error_analysis.json。')'''),
+ m('''### 思考题 / 面试必答
 1. 为什么官方 mAP50 和单一 conf=0.25 下的 Precision 不是同一个东西？
 2. IoU=0.5 的定位标准会漏掉什么信息？
 3. `mAP50-95` 的 50–95 指置信度吗？
 4. 为什么不能用测试集调阈值后再报告该测试集成绩？
 
-**交付**：`lab_d_official_metrics.json`、`lab_d_fixed_threshold.json`、`lab_d_errors.csv`、至少现有真实失败图和分析报告。''',
-   '''### Student Work: manually attribute at least 5 real errors (if any)
-Open `reports/lab_d_errors.csv` and the side-by-side boards, then add **symptom, evidence, suspected root cause, and how the next experiment would verify it**. Keep hypotheses clearly separate from confirmed causes.
-
-### Think / Interview Questions
+**交付**：`lab_d_official_metrics.json`、`lab_d_fixed_threshold.json`、`lab_d_errors.csv`、`lab_d_my_error_analysis.json`、至少现有真实失败图和分析报告。''',
+   '''### Think / Interview Questions
 1. Why is the official mAP50 not the same thing as Precision at a single conf=0.25?
 2. What information does an IoU=0.5 localization criterion throw away?
 3. Does the 50–95 in `mAP50-95` refer to confidence?
 4. Why can't you tune thresholds on a test set and then report scores on that same set?
 
-**Deliverables**: `lab_d_official_metrics.json`, `lab_d_fixed_threshold.json`, `lab_d_errors.csv`, the real failure images so far and an analysis report.''')
-], '35–45 分钟','官方指标 → 固定阈值配对 → 错误归因','35–45 minutes','official metrics → fixed-threshold matching → error attribution')
+**Deliverables**: `lab_d_official_metrics.json`, `lab_d_fixed_threshold.json`, `lab_d_errors.csv`, `lab_d_my_error_analysis.json`, the real failure images so far and an analysis report.''')
+], '35–45 分钟','35–45 minutes','官方指标 → 固定阈值配对 → 错误归因','official metrics → fixed-threshold matching → error attribution')
 
 make('05_Lab_E_Controlled_AB_Optimization.ipynb','05 / Lab E · 受控 A/B 训练优化实验','05 / Lab E · Controlled A/B Training Experiment',[
  m('''## 实验目标
 基于 Lab C 的**真实 baseline**，只修改训练图像尺寸（512 → 416）；保持模型初始化权重、数据集、Epoch、Batch、随机种子等条件不变，用统一的验证输入尺寸 640 测量两组模型。不要因为速度更快就直接宣布算法优化成功。
 
+**依赖**：先完整运行 03（baseline 工件与 `baseline_train_settings` 都来自它）。两次 12-Epoch 训练共需几分钟 GPU 时间。
+
 > **公平性说明：** 降低 imgsz 会改变输入信息量和计算量。固定相同 Epoch 不保证相同训练时长 / SGD 更新质量；本实验验证一个明确的课程假设，不提供统计显著性证明。训练时间还可能受缓存及云端 GPU 并发负载影响。''',
    '''## Goal
 Starting from the **real baseline produced by Lab C**, change exactly one thing — the training image size (512 → 416). Keep initial weights, dataset, epochs, batch, random seed and everything else identical, then measure both models with the same validation input size of 640. Never declare an optimization successful just because it runs faster.
+
+**Prerequisite**: fully run 03 first (the baseline artifacts and `baseline_train_settings` come from it). The two 12-epoch trainings need a few minutes of GPU time.
 
 > **Fairness note:** lowering imgsz changes both the information content and the compute of each step. Equal epochs do not guarantee equal training time / SGD update quality; this experiment tests one clearly stated classroom hypothesis and provides no statistical significance. Training time is also affected by caches and concurrent load on shared cloud GPUs.'''),
  c(SETUP),
@@ -663,6 +899,36 @@ model_cache = home / 'artifacts/yolo26n.pt'
 assert model_cache.is_file(), '预训练初始权重缓存不存在；重新运行 00 进行固定。'
 assert sha256(model_cache) == cfg.get('model_sha256'), '初始权重 SHA256 改变，A/B 结果不可比。'
 assert args['imgsz'] == 512, '此 Notebook 的实验方案假定 baseline 训练尺寸为 512，请先审核与修改方案' '''),
+ m('''### 练习：先写下你的假设（在看到任何结果之前）
+受控实验的第一步不是跑代码，而是**预测**。在运行 Variant 训练之前，回答：
+1. 你预测哪组的 mAP50-95 更高？（baseline 512 / imgsz416 / 不确定）
+2. 你预测哪组训练更快？依据是什么？（提示：输入变小≠必然更快，想想数据加载、JIT 预热等因素）
+3. 一句话说明你的理由。
+
+把预测写进 `MY_HYPOTHESIS` 再运行——它会**在结果产生前**封存到 `reports/lab_e_my_hypothesis.json`。实验结束后回来对照：预测错了恰恰是学习收获最大的时刻。''',
+   '''### Try It Yourself: write your hypothesis first (before seeing any result)
+The first step of a controlled experiment is not running code — it is **predicting**. Before the variant training starts, answer:
+1. Which arm do you predict will score higher on mAP50-95? (baseline 512 / imgsz416 / not sure)
+2. Which arm do you predict trains faster, and why? (hint: smaller inputs ≠ automatically faster — think about data loading, JIT warm-up, …)
+3. One sentence for your reasoning.
+
+Fill `MY_HYPOTHESIS` and run the cell — it is **sealed before any result exists** into `reports/lab_e_my_hypothesis.json`. You will come back to compare after the experiment; a wrong prediction is where the learning happens.'''),
+ c('''# 学生练习：假设先行（在运行 Variant 训练之前填写并运行）
+MY_HYPOTHESIS = {
+    'mAP50_95_winner': 'TODO: baseline(512) / imgsz416 / 不确定——你预测哪组 mAP50-95 更高？',
+    'training_time_winner': 'TODO: 你预测哪组训练更快？为什么（不只是分辨率一个因素）',
+    'reasoning': 'TODO: 一句话说明你的依据',
+}
+# 无人值守复验通道（学生不需要）：YOLO_PRACTICE_FILL 指向 JSON 可注入已填写样例
+if os.environ.get('YOLO_PRACTICE_FILL'):
+    _p = Path(os.environ['YOLO_PRACTICE_FILL'])
+    if _p.is_file():
+        for _k, _v in json.loads(_p.read_text(encoding='utf-8')).get('lab_e_hypothesis', {}).items():
+            MY_HYPOTHESIS[_k] = _v
+for key, value in MY_HYPOTHESIS.items():
+    assert not str(value).startswith('TODO'), f'请先填写 {key}——假设必须在看到结果之前写下'
+write_json(home / 'reports/lab_e_my_hypothesis.json', MY_HYPOTHESIS)
+print('假设已封存到 reports/lab_e_my_hypothesis.json（先于任何 Variant 结果）。开始 Variant 训练。')'''),
  c('''# Variant：只修改 imgsz；额外不同的仅是 run output name/project
 RUN_VARIANT = True
 variant_args = dict(args)
@@ -725,6 +991,18 @@ fig.tight_layout()
 fig.savefig(home / 'assets/lab_e_ab_mAP.png', dpi=150)
 plt.show()
 print('ΔmAP50-95 B−A:', round(reports[1]['mAP50_95'] - reports[0]['mAP50_95'], 4))'''),
+ m('''### 对照你的假设（Check your hypothesis）
+打开 `reports/lab_e_my_hypothesis.json`，和上面的真实结果逐项对照：
+- mAP 预测对了吗？如果错了，错在哪个推理环节？
+- 训练时间预测对了吗？两臂耗时差了多少？这个差值在噪声范围内吗（参考你记录的冷/热启动差异）？
+
+把对照结论写进你的实验报告——**预测错误 + 解释为什么错**，比"我猜对了"更能体现实验素养。''',
+   '''### Check your hypothesis
+Open `reports/lab_e_my_hypothesis.json` and compare it item by item against the real results above:
+- Was your mAP prediction right? If not, which step of your reasoning failed?
+- Was your training-time prediction right? How large is the gap, and is it within noise (compare with the cold/warm-start differences you observed)?
+
+Write the comparison into your experiment report — **a wrong prediction plus an explanation of why** demonstrates more experimental maturity than "I guessed right".'''),
  m('''### 最终 Test：仅在选定模型之后运行一次
 只使用 Validation 指标决定选择哪个候选模型。不要在查看 Test 分数后反过来改动超参数，再把同一 Test 分数当作独立最终成绩。''',
    '''### The final Test: run exactly once, after model selection
@@ -756,7 +1034,9 @@ else:
 4. 显存数字是 PyTorch allocated peak，不是整卡显存占用。
 5. 这个结果能否推广到更大模型、不同硬件和工业现场？为什么不能直接断言？
 
-**交付**：`lab_e_variant.json`、`lab_e_ab_comparison.csv`、`lab_e_ab_mAP.png`、文字分析。
+**交付**：`lab_e_variant.json`、`lab_e_ab_comparison.csv`、`lab_e_ab_mAP.png`、`lab_e_my_hypothesis.json`、文字分析。
+
+**面试可能这样问**：你说做过一次"受控实验"——你怎么保证只有一个变量？为什么训练耗时不能当推理延迟？单次 A/B 能证明统计显著吗？如果面试官让你再提升 2 个点，你的下一步实验设计是什么？
 
 **进阶**：用多个随机种子重复实验；在真正独立的业务数据上验证；在第二天再比较 ONNX/OpenVINO、GPU/ROCm 推理速度、显存与准确性。''',
    '''### Your conclusion must answer five questions
@@ -766,7 +1046,9 @@ else:
 4. The memory figure is PyTorch's allocated peak, not whole-GPU VRAM usage.
 5. Can this result generalize to larger models, other hardware and production sites? Why can't you just assert it?
 
-**Deliverables**: `lab_e_variant.json`, `lab_e_ab_comparison.csv`, `lab_e_ab_mAP.png`, written analysis.
+**Deliverables**: `lab_e_variant.json`, `lab_e_ab_comparison.csv`, `lab_e_ab_mAP.png`, `lab_e_my_hypothesis.json`, written analysis.
+
+**Interview-style questions**: you claim you ran a "controlled experiment" — how do you guarantee exactly one variable changed? Why can't training time stand in for inference latency? Can a single A/B run prove statistical significance? If the interviewer asks for 2 more mAP points, what is your next experiment design?
 
 **Going further**: repeat with multiple random seeds; validate on truly independent business data; on day 2 compare ONNX/OpenVINO vs GPU/ROCm inference speed, memory and accuracy.''')
-], '30–40 分钟（完整训练可能更久）','控制变量 → 重新训练 → 同口径比较','30–40 minutes (full training may take longer)','controlled variable → retrain → same-protocol comparison')
+], '30–40 分钟（完整训练可能更久）','30–40 minutes (full training may take longer)','控制变量 → 重新训练 → 同口径比较','controlled variable → retrain → same-protocol comparison')
