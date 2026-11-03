@@ -50,6 +50,14 @@ def c(text):return nbf.v4.new_code_cell(dedent(text).strip())
 
 
 def make(fname, title_zh, title_en, cells, duration_zh, duration_en, tags_zh, tags_en):
+    # Guard against transposing the duration/learning-path arguments (a real
+    # defect shipped in v1.2): durations must look like durations, paths must not.
+    import re
+    _time_like = re.compile(r'分钟|minutes|min', re.IGNORECASE)
+    assert _time_like.search(duration_zh) and _time_like.search(duration_en), \
+        f'{fname}: duration args must contain a time unit: {duration_zh!r} / {duration_en!r}'
+    assert not _time_like.search(tags_zh) and not _time_like.search(tags_en), \
+        f'{fname}: learning-path args must not contain a time unit: {tags_zh!r} / {tags_en!r}'
     header = m(
         f'# {title_zh}\n\n**建议时长：{duration_zh}**　｜　学习路径：{tags_zh}\n\n'
         f'> 请按顺序运行；运行结果必须来自自己的 GPU 环境，不可把示例文字当作实测数据。',
@@ -142,7 +150,7 @@ save_config({'model': 'yolo26n.pt', 'model_sha256': sha256(model_cache)})'''),
 3. Why must you never overwrite PyTorch in an already-configured ROCm environment?
 
 **Acceptance artifact**: `reports/environment.json`.''')
-], '10–15 分钟','环境 → GPU 后端 → 持久化工件','10–15 minutes','environment → GPU backend → persistent artifacts')
+], '10–15 分钟','10–15 minutes','环境 → GPU 后端 → 持久化工件','environment → GPU backend → persistent artifacts')
 
 make('01_Lab_A_Predict_and_Threshold.ipynb','01 / Lab A · 推理、BBox 与置信度阈值','01 / Lab A · Inference, BBoxes & Confidence Thresholds',[
  m('''## 实验目标
@@ -232,7 +240,7 @@ print('Threshold monotonicity: PASS')'''),
 4. If recalls are badly missed, how would you evaluate the FP/Recall trade-off of lowering the threshold?
 
 **Deliverables**: 3 prediction images + `reports/lab_a_predictions.json` + a short conclusion.''')
-], '20 分钟','图像 → 检测结果 → 参数敏感性','20 minutes','image → detections → parameter sensitivity')
+], '20 分钟','20 minutes','图像 → 检测结果 → 参数敏感性','image → detections → parameter sensitivity')
 
 make('02_Lab_B_Dataset_Annotation_QA.ipynb','02 / Lab B · 数据集、标注、分离与 QA','02 / Lab B · Dataset, Annotation, Splits & QA',[
  m('''## 实验目标
@@ -510,7 +518,7 @@ Training input size is part of the training recipe — Lab E will vary exactly t
 4. If the AMP check or training produces NaN, how do you troubleshoot and record the config change?
 
 **Deliverables**: `runs/lab_c/baseline/`, `reports/lab_c_baseline.json`, `lab_c_baseline_val.json`.''')
-], '50–70 分钟','预训练权重 → 前后向训练 → 模型工件','50–70 minutes','pretrained weights → forward/backward training → model artifacts')
+], '50–70 分钟','50–70 minutes','预训练权重 → 前后向训练 → 模型工件','pretrained weights → forward/backward training → model artifacts')
 
 make('04_Lab_D_Evaluation_Error_Analysis.ipynb','04 / Lab D · mAP、混淆与失败案例','04 / Lab D · mAP, Confusion & Failure Cases',[
  m('''## 实验目标
@@ -635,7 +643,7 @@ Open `reports/lab_d_errors.csv` and the side-by-side boards, then add **symptom,
 4. Why can't you tune thresholds on a test set and then report scores on that same set?
 
 **Deliverables**: `lab_d_official_metrics.json`, `lab_d_fixed_threshold.json`, `lab_d_errors.csv`, the real failure images so far and an analysis report.''')
-], '35–45 分钟','官方指标 → 固定阈值配对 → 错误归因','35–45 minutes','official metrics → fixed-threshold matching → error attribution')
+], '35–45 分钟','35–45 minutes','官方指标 → 固定阈值配对 → 错误归因','official metrics → fixed-threshold matching → error attribution')
 
 make('05_Lab_E_Controlled_AB_Optimization.ipynb','05 / Lab E · 受控 A/B 训练优化实验','05 / Lab E · Controlled A/B Training Experiment',[
  m('''## 实验目标
@@ -769,4 +777,4 @@ else:
 **Deliverables**: `lab_e_variant.json`, `lab_e_ab_comparison.csv`, `lab_e_ab_mAP.png`, written analysis.
 
 **Going further**: repeat with multiple random seeds; validate on truly independent business data; on day 2 compare ONNX/OpenVINO vs GPU/ROCm inference speed, memory and accuracy.''')
-], '30–40 分钟（完整训练可能更久）','控制变量 → 重新训练 → 同口径比较','30–40 minutes (full training may take longer)','controlled variable → retrain → same-protocol comparison')
+], '30–40 分钟（完整训练可能更久）','30–40 minutes (full training may take longer)','控制变量 → 重新训练 → 同口径比较','controlled variable → retrain → same-protocol comparison')
