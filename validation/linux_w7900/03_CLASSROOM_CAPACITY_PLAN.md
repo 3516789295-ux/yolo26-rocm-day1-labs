@@ -29,8 +29,12 @@
 ### 2.1 目录与资产隔离（防互相覆盖）
 
 ```bash
-# 每组独立 course home（runner 原生支持）
-export YOLO_COURSE_HOME=/workspace/group{1..5}_course   # 或 run_all_labs.py --course-home
+# 每组（或每人）设置一次自己的目录——注意：不要写 group{1..5} 花括号展开，
+# 那会把字面字符串 "{1..5}" 赋给变量。正确写法是每组各设各的，例如第 2 组：
+export YOLO_COURSE_HOME=/workspace/group2_course        # 组号由讲师分配：group1..group5
+# 或 runner 显式传参（等价）：
+#   python scripts/run_all_labs.py --course-home /workspace/group2_course
+# 学生个人再隔离：/workspace/group2_student07
 # 模型权重共享只读缓存（00 会各自复制到本组 artifacts/，SHA256 一致性由断言保证）
 ```
 - 组间零冲突：config、runs、reports 全部按 home 隔离；数据集各自重建（2.6 s，代价可忽略）。

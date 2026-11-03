@@ -1,0 +1,62 @@
+{
+  "notebook": "02_Lab_B_Dataset_Annotation_QA.ipynb",
+  "kernel": "yolo26-rocm7141",
+  "started": "2026-11-03T03:53:49.726234+00:00",
+  "result": "PASS",
+  "duration_seconds": 2.21,
+  "code_cells": 7,
+  "executed_cells": 7,
+  "gpu_referenced_and_executed": true,
+  "cells": [
+    {
+      "index": 6,
+      "executed": true,
+      "execution_count": 1,
+      "duration_seconds": null,
+      "output_tail": "Project: /workspace/yolo26-rocm-day1-labs \nPersistent output: /workspace/yolo_course_release_fixture\n"
+    },
+    {
+      "index": 7,
+      "executed": true,
+      "execution_count": 2,
+      "duration_seconds": null,
+      "output_tail": "Using previously imported dataset; change YOLO_ANYLABELING_OUTPUT_NAME for a new revision: /workspace/yolo_course_release_fixture/data/processed/xanylabeling_fixture_v1\nTraining dataset: /workspace/yolo_course_release_fixture/data/processed/xanylabeling_fixture_v1/data.yaml\n"
+    },
+    {
+      "index": 8,
+      "executed": true,
+      "execution_count": 3,
+      "duration_seconds": null,
+      "output_tail": "Class names: {0: 'person', 1: 'car', 2: 'chair'}\nSplit stats: {'train': {'images': 22, 'boxes': 46, 'empty_or_missing_labels': 10}, 'val': {'images': 5, 'boxes': 2, 'empty_or_missing_labels': 3}, 'test': {'images': 5, 'boxes': 46, 'empty_or_missing_labels': 1}}\nErrors: []\nNear-duplicate review warnings: []\nDataset structural QA: PASS\n"
+    },
+    {
+      "index": 9,
+      "executed": true,
+      "execution_count": 4,
+      "duration_seconds": null,
+      "output_tail": "<Figure size 1200x700 with 6 Axes>"
+    },
+    {
+      "index": 10,
+      "executed": true,
+      "execution_count": 5,
+      "duration_seconds": null,
+      "output_tail": "Label format & invalid-bound tests: PASS\n"
+    },
+    {
+      "index": 11,
+      "executed": true,
+      "execution_count": 6,
+      "duration_seconds": null,
+      "output_tail": "复用已填写的人工检查表，避免重复运行时覆盖: /workspace/yolo_course_release_fixture/reports/lab_b_manual_review.csv\n"
+    },
+    {
+      "index": 13,
+      "executed": true,
+      "execution_count": 7,
+      "duration_seconds": null,
+      "output_tail": "编辑目标: /workspace/yolo_course_release_fixture/data/processed/xanylabeling_fixture_v1/labels/train/fixture_000.txt\n原始标签: []\n安全预览：未修改任何文件。\n"
+    }
+  ],
+  "executed_copy": "validation/executed/20261103_035345/02_Lab_B_Dataset_Annotation_QA.executed.ipynb"
+}

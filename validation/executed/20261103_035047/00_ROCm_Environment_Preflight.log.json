@@ -1,0 +1,55 @@
+{
+  "notebook": "00_ROCm_Environment_Preflight.ipynb",
+  "kernel": "yolo26-rocm7141",
+  "started": "2026-11-03T03:50:51.932187+00:00",
+  "result": "PASS",
+  "duration_seconds": 4.44,
+  "code_cells": 6,
+  "executed_cells": 6,
+  "gpu_referenced_and_executed": true,
+  "cells": [
+    {
+      "index": 4,
+      "executed": true,
+      "execution_count": 1,
+      "duration_seconds": null,
+      "output_tail": "Project: /workspace/yolo26-rocm-day1-labs \nPersistent output: /workspace/yolo_course_release_final\n"
+    },
+    {
+      "index": 5,
+      "executed": true,
+      "execution_count": 2,
+      "duration_seconds": null,
+      "output_tail": "{'gpu_device_nodes': {'/dev/dri': True, '/dev/kfd': True},\n 'gpu_name': 'AMD Radeon Pro W7900D',\n 'gpu_visible': True,\n 'platform': 'Linux-6.8.0-79-generic-x86_64-with-glibc2.39',\n 'proxy_configured': {'HTTPS_PROXY': True,\n                      'HTTP_PROXY': True,\n                      'http_proxy': True,\n                      'https_proxy': True},\n 'python': '3.12.13',\n 'timestamp_utc': '2026-11-03T03:50:52Z',\n 'torch': '2.12.0+rocm7.14.1',\n 'torch_hip': '7.14.60850',\n 'ultralytics': '8.4.199'}\n"
+    },
+    {
+      "index": 7,
+      "executed": true,
+      "execution_count": 3,
+      "duration_seconds": null,
+      "output_tail": "AMD ROCm verified: AMD Radeon Pro W7900D HIP: 7.14.60850\nDevice argument for Ultralytics: 0\n"
+    },
+    {
+      "index": 8,
+      "executed": true,
+      "execution_count": 4,
+      "duration_seconds": null,
+      "output_tail": "HIP kernel smoke: PASS, output shape: (128, 128)\n"
+    },
+    {
+      "index": 10,
+      "executed": true,
+      "execution_count": 5,
+      "duration_seconds": null,
+      "output_tail": "actual shape: (128, 128) | actual device: cuda:0\nyour prediction: {'shape': '(128, 128)', 'device': 'cuda:0 (HIP)'}\nprediction matched: False （猜错不扣分；先预测再验证才是目的）\n"
+    },
+    {
+      "index": 12,
+      "executed": true,
+      "execution_count": 6,
+      "duration_seconds": null,
+      "output_tail": "Pinned model: /workspace/yolo_course_release_final/artifacts/yolo26n.pt sha256: 9b09cc8bf347f0fc8a5f7657480587f25db09b34bf33b0652110fb03a8ad4fef\n{'home': '/workspace/yolo_course_release_final',\n 'model': 'yolo26n.pt',\n 'dataset_yaml': '',\n 'dataset_kind': '',\n 'baseline_weights': '',\n 'baseline_run': '',\n 'model_licence_reviewed': False,\n 'model_sha256': '9b09cc8bf347f0fc8a5f7657480587f25db09b34bf33b0652110fb03a8ad4fef'}"
+    }
+  ],
+  "executed_copy": "validation/executed/20261103_035047/00_ROCm_Environment_Preflight.executed.ipynb"
+}

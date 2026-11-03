@@ -4,6 +4,8 @@
 
 ## 一、课前预演（建议由讲师用与学生相同的 Radeon Cloud 镜像执行）
 
+> **一键课前自检**：`python scripts/preflight_classroom.py --course-home <课堂输出目录>`（GPU/NMS/权重/数据/Kernel/磁盘逐项 PASS/FAIL）。完整发布清单、错峰表与降级预案见 [validation/linux_w7900/CLASSROOM_READINESS_CHECKLIST.md](validation/linux_w7900/CLASSROOM_READINESS_CHECKLIST.md)。
+
 - [ ] AMD GPU 已分配，`torch.version.hip` 非空，`torch.cuda.is_available()` 为 True；确认 `torch.cuda.get_device_name(0)`。
 - [ ] Jupyter Kernel 的 pip 与运行 Python 对应同一环境；保存 `reports/environment.json`。
 - [ ] 核实 `yolo26n.pt` 在 `/workspace/yolo_course/artifacts/`，保留 SHA256。

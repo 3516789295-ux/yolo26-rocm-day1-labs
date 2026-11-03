@@ -87,7 +87,12 @@ def import_anylabeling_yolo(images_dir: Path, labels_dir: Path, classes_txt: Pat
             issues.extend(f"{label}: {error}" for error in bad)
         box_count += len(source_text.splitlines()) if source_text.strip() else 0
     if issues:
-        raise ValueError("Invalid YOLO detection labels; no files copied:\n" + "\n".join(issues[:30]))
+        raise ValueError(
+            "Invalid YOLO detection labels; no files copied:\n" + "\n".join(issues[:30]) +
+            f"\nHint/提示: 每行应为 5 个数 'class x y w h'；类别 ID 必须是 0 到 {len(names) - 1} 的整数"
+            f"（classes.txt 共 {len(names)} 行）；坐标是 0–1 的归一化小数。"
+            f" / Each line must be 'class x y w h'; class IDs are integers in [0, {len(names) - 1}] "
+            f"({len(names)} lines in classes.txt); coordinates are normalized 0-1.")
     scene_by_name = _scene_groups(scene_csv, images)
     groups, _perceptual, digests = _groups_of_related_images(images)
     parent = list(range(len(images)))

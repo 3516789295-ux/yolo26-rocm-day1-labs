@@ -1,0 +1,62 @@
+{
+  "notebook": "03_Lab_C_ROCm_Training_Finetune.ipynb",
+  "kernel": "yolo26-rocm7141",
+  "started": "2026-11-03T03:51:08.768970+00:00",
+  "result": "PASS",
+  "duration_seconds": 41.05,
+  "code_cells": 7,
+  "executed_cells": 7,
+  "gpu_referenced_and_executed": true,
+  "cells": [
+    {
+      "index": 4,
+      "executed": true,
+      "execution_count": 1,
+      "duration_seconds": null,
+      "output_tail": "Project: /workspace/yolo26-rocm-day1-labs \nPersistent output: /workspace/yolo_course_release_final\n"
+    },
+    {
+      "index": 5,
+      "executed": true,
+      "execution_count": 2,
+      "duration_seconds": null,
+      "output_tail": "AMD ROCm verified: AMD Radeon Pro W7900D HIP: 7.14.60850\nTraining: /workspace/yolo_course_release_final/artifacts/yolo26n.pt dataset: /workspace/yolo_course_release_final/data/processed/coco128_classroom_3class/data.yaml\n"
+    },
+    {
+      "index": 7,
+      "executed": true,
+      "execution_count": 3,
+      "duration_seconds": null,
+      "output_tail": "━━ 1/1 22.4it/s 0.0s\n                   all          4         17      0.624       0.65      0.797      0.577\n\n1 epochs completed in 0.001 hours.\nOptimizer stripped from /workspace/yolo_course_release_final/runs/lab_c/smoke/weights/last.pt, 5.5MB\nOptimizer stripped from /workspace/yolo_course_release_final/runs/lab_c/smoke/weights/best.pt, 5.5MB\n\nValidating /workspace/yolo_course_release_final/runs/lab_c/smoke/weights/best.pt...\nUltralytics 8.4.199 🚀 Python-3.12.13 torch-2.12.0+rocm7.14.1 CUDA:0 (AMD Radeon Pro W7900D, 49136MiB)\nYOLO26n summary (fused): 120 layers, 2,408,932 parameters, 0 gradients, 5.5 GFLOPs\n\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 1/1 56.2it/s 0.0s\n                   all          4         17      0.646       0.64      0.797       0.59\n                person          3         10      0.324      0.338      0.307      0.148\n                   dog          1          1      0.602          1      0.995      0.697\n                 horse          1          2      0.591          1      0.995      0.509\n              elephant          1          2       0.81        0.5      0.495      0.396\n              umbrella          1          1      0.549          1      0.995      0.995\n          potted plant          1          1          1          0      0.995      0.796\nSpeed: 0.1ms preprocess, 1.7ms inference, 0.0ms loss, 0.5ms postprocess per image\nGPU smoke completed; COCO8 is not a benchmark.\n"
+    },
+    {
+      "index": 8,
+      "executed": true,
+      "execution_count": 4,
+      "duration_seconds": null,
+      "output_tail": "GFLOPs\n\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2/2 15.6it/s 0.1s\n                   all         20         29      0.761      0.483      0.555       0.35\n                person          8         29      0.761      0.483      0.555       0.35\nSpeed: 0.1ms preprocess, 1.1ms inference, 0.0ms loss, 0.3ms postprocess per image\nResults saved to \u001b[1m/workspace/yolo_course_release_final/runs/lab_c/baseline\u001b[0m\n{'run_dir': '/workspace/yolo_course_release_final/runs/lab_c/baseline', 'weights': '/workspace/yolo_course_release_final/runs/lab_c/baseline/weights/best.pt', 'sha256': 'e40edc6782d50ac9cb0d980566992367f616d496711d1c2370e8623a2d39e250', 'elapsed_seconds': 28.94, 'peak_allocated_GiB': 1.542, 'args': {'data': '/workspace/yolo_course_release_final/data/processed/coco128_classroom_3class/data.yaml', 'epochs': 12, 'imgsz': 512, 'batch': 8, 'device': 0, 'workers': 0, 'patience': 30, 'optimizer': 'SGD', 'seed': 42, 'deterministic': False, 'amp': False, 'plots': True, 'project': '/workspace/yolo_course_release_final/runs/lab_c', 'name': 'baseline', 'exist_ok': True}, 'system': {'python': '3.12.13', 'platform': 'Linux-6.8.0-79-generic-x86_64-with-glibc2.39', 'timestamp_utc': '2026-11-03T03:51:45Z', 'torch': '2.12.0+rocm7.14.1', 'torch_hip': '7.14.60850', 'gpu_visible': True, 'gpu_name': 'AMD Radeon Pro W7900D', 'ultralytics': '8.4.199'}, 'warning': 'Peak memory is PyTorch allocated memory, not total device VRAM.'}\n"
+    },
+    {
+      "index": 9,
+      "executed": true,
+      "execution_count": 5,
+      "duration_seconds": null,
+      "output_tail": "    epoch     time  train/box_loss  train/cls_loss  train/l1_loss  \\\n7       8  16.7267         1.46232         1.32192        0.01108   \n8       9  18.7640         1.50570         1.35677        0.01162   \n9      10  20.8063         1.64673         1.24598        0.01046   \n10     11  22.8839         1.52820         1.37769        0.01123   \n11     12  24.9690         1.51238         1.31376        0.00976   \n\n    metrics/precision(B)  metrics/recall(B)  metrics/mAP50(B)  \\\n7                0.43706            0.42864           0.43006   \n8                0.38087            0.44828           0.47999   \n9                0.36613            0.51724           0.46002   \n10               0.40943            0.51724           0.47044   \n11               0.46696            0.51364           0.49168   \n\n    metrics/mAP50-95(B)  val/box_loss  val/cls_loss  val/l1_loss    lr/pg0  \\\n7               0.26359       1.84881       1.56285      0.01818  0.004225   \n8               0.25596       2.03421       1.59102      0.02067  0.003400   \n9               0.25351       2.04981       1.56912      0.02235  0.002575   \n10              0.25313       1.91753       1.61937      0.01918  0.001750   \n11              0.26116       1.91266       1.54271      0.01854  0.000925   \n\n      lr/pg1    lr/pg2  \n7   0.004225  0.004225  \n8   0.003400  0.003400  \n9   0.002575  0.002575  \n10  0.001750  0.001750  \n11  0.000925  0.000925  <PIL.Image.Image image mode=RGBA size=1120x530>"
+    },
+    {
+      "index": 10,
+      "executed": true,
+      "execution_count": 6,
+      "duration_seconds": null,
+      "output_tail": "Ultralytics 8.4.199 🚀 Python-3.12.13 torch-2.12.0+rocm7.14.1 CUDA:0 (AMD Radeon Pro W7900D, 49136MiB)\nYOLO26n summary (fused): 121 layers, 2,390,221 parameters, 0 gradients, 5.4 GFLOPs\n\u001b[34m\u001b[1mval: \u001b[0mFast image access ✅ (ping: 0.0±0.0 ms, read: 1995.6±667.4 MB/s, size: 69.6 KB)\n\r\u001b[K\u001b[34m\u001b[1mval: \u001b[0mScanning /workspace/yolo_course_release_final/data/processed/coco128_classroom_3class/labels/val.cache... 20 images, 12 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 20/20 9.3Mit/s 0.0s\n\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 66% ━━━━━━━━──── 2/3 4.5it/s 0.1s<0.2s\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 3/3 14.2it/s 0.2s\n                   all         20         29      0.839      0.552      0.624      0.383\nSpeed: 1.3ms preprocess, 5.2ms inference, 0.0ms loss, 0.4ms postprocess per image\nResults saved to \u001b[1m/workspace/yolo26-rocm-day1-labs/runs/detect/val-11\u001b[0m\nValidation only (NOT test): {'precision': 0.8394751789338629, 'recall': 0.5517241379310345, 'mAP50': 0.6237316111766408, 'mAP50_95': 0.38295583016361323, 'split': 'val', 'model_sha256': 'e40edc6782d50ac9cb0d980566992367f616d496711d1c2370e8623a2d39e250'}\n"
+    },
+    {
+      "index": 12,
+      "executed": true,
+      "execution_count": 7,
+      "duration_seconds": null,
+      "output_tail": "你的 epoch 数: 12 | 首行/末行 epoch: 1 / 12\n曲线阅读已保存到 reports/lab_c_my_reading.json；Lab D 会用官方指标对照你的判断。\n"
+    }
+  ],
+  "executed_copy": "validation/executed/20261103_035047/03_Lab_C_ROCm_Training_Finetune.executed.ipynb"
+}

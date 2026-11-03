@@ -44,10 +44,28 @@ def test_rejects_invalid_and_missing_labels(tmp_path):
     one.write_text("3 0.5 0.5 0.2 0.2\n")
     with pytest.raises(ValueError, match="Invalid YOLO"):
         import_anylabeling_yolo(images, labels, classes, tmp_path / "student")
+    # Beginner hint: the error must tell the student the valid class-id range
+    # and the label format, not just "invalid class id 3" (release-closure P1).
+    with pytest.raises(ValueError, match=r"类别 ID 必须是 0 到 2 的整数.*0–1 的归一化小数") as excinfo:
+        import_anylabeling_yolo(images, labels, classes, tmp_path / "student2")
+    assert "classes.txt 共 3 行" in str(excinfo.value)
     assert not (tmp_path / "student").exists()
+    assert not (tmp_path / "student2").exists()
     one.unlink()
     with pytest.raises(ValueError, match="Missing labels"):
         import_anylabeling_yolo(images, labels, classes, tmp_path / "student")
+    one.write_text("0 0.5 0.5 0.2 0.2\n")  # restore a valid label for the scene test below
+    # scene CSV coverage gaps must be rejected with the exact missing/extra lists
+    scene = tmp_path / "scenes.csv"
+    all_images = sorted(images.glob("*.png"))
+    scene.write_text("image,scene\n" + "".join(
+        f"{p.name},scene{i//3}\n" for i, p in enumerate(all_images)
+    ), encoding="utf-8")
+    scene.write_text("\n".join(scene.read_text().splitlines()[:-1]) + "\n")  # drop last row
+    with pytest.raises(ValueError, match="Scene CSV must cover every image exactly once.*missing="):
+        import_anylabeling_yolo(images, labels, classes, tmp_path / "student",
+                                scene_csv=scene)
+    assert not (tmp_path / "student").exists()
 
 
 def test_grouped_scenes_never_cross_splits(tmp_path):

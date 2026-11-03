@@ -49,6 +49,21 @@ def m(zh: str, en: str = ''):
 def c(text):return nbf.v4.new_code_cell(dedent(text).strip())
 
 
+def lab_map(rows):
+    """Compact bilingual 'lab map': the seven questions every notebook must
+    answer up front (why / prerequisites / what to change / expected success /
+    failure self-help / evidence to save / job value). Rows are (zh, en) pairs;
+    the Chinese table comes first, the English translation after the divider."""
+    zh = ['### 学习地图（30 秒看完这张表再开始）', '',
+          '| 问题 | 答案 |', '|---|---|']
+    en = ['### Lab Map (read this 30-second table first)', '',
+          '| Question | Answer |', '|---|---|']
+    for q_zh, a_zh, q_en, a_en in rows:
+        zh.append(f'| {q_zh} | {a_zh} |')
+        en.append(f'| {q_en} | {a_en} |')
+    return m('\n'.join(zh), '\n'.join(en))
+
+
 def make(fname, title_zh, title_en, cells, duration_zh, duration_en, tags_zh, tags_en):
     # Guard against transposing the duration/learning-path arguments (a real
     # defect shipped in v1.2): durations must look like durations, paths must not.
@@ -74,6 +89,22 @@ def make(fname, title_zh, title_en, cells, duration_zh, duration_en, tags_zh, ta
 
 
 make('00_ROCm_Environment_Preflight.ipynb','00 / ROCm 环境预检与课程工作目录','00 / ROCm Environment Preflight & Course Workspace',[
+ lab_map([
+  ('为什么学这个？','环境是全部实验的地基——后面 5 个实验都靠它，错了全白跑',
+   'Why learn this?','The environment is the foundation of all five later labs; a broken one wastes everything'),
+  ('需要先懂什么？','会点 Jupyter 运行按钮即可，概念现场解释',
+   'Prerequisites?','Being able to run a Jupyter cell; concepts are explained on the spot'),
+  ('我修改哪个参数？','练习格的 `SMOKE_N` 与 `MY_PREDICTION`（先预测再运行）',
+   'What do I change?','`SMOKE_N` and `MY_PREDICTION` in the practice cell (predict first, then run)'),
+  ('成功长什么样？','`torch_hip` 非空、GPU 名字打印、`HIP kernel smoke: PASS`',
+   'What does success look like?','Non-empty `torch_hip`, your GPU name printed, `HIP kernel smoke: PASS`'),
+  ('失败怎么自救？','本页"常见错误与下一步"表 → `docs/TROUBLESHOOTING.md`',
+   'If it fails?','The common-errors table on this page → `docs/TROUBLESHOOTING.md`'),
+  ('保存什么证据？','`reports/environment.json` + 权重 SHA256',
+   'Evidence to save?','`reports/environment.json` + the weight SHA256'),
+  ('求职价值？','"给我一台 AMD GPU 服务器，我 5 分钟验明环境"——运维/算法岗都考',
+   'Job value?','"Hand me an AMD GPU server and I will verify the stack in 5 minutes"'),
+ ]),
  m('''## 学习目标
 - 确认当前 Jupyter Kernel 的 **PyTorch 是 ROCm/HIP 版本**，不是 CPU 或 NVIDIA CUDA 版。
 - 检查 GPU 设备、Ultralytics 版本和 `/workspace` 持久化路径。
@@ -237,6 +268,22 @@ save_config({'model': 'yolo26n.pt', 'model_sha256': sha256(model_cache)})'''),
 ], '10–15 分钟','10–15 minutes','环境 → GPU 后端 → 持久化工件','environment → GPU backend → persistent artifacts')
 
 make('01_Lab_A_Predict_and_Threshold.ipynb','01 / Lab A · 推理、BBox 与置信度阈值','01 / Lab A · Inference, BBoxes & Confidence Thresholds',[
+ lab_map([
+  ('为什么学这个？','推理是"使用模型"的方式；置信度阈值是你每天要调的第一个旋钮',
+   'Why learn this?','Inference is how a model is used; the confidence threshold is the first knob you will tune daily'),
+  ('需要先懂什么？','完成 00；知道"框 + 类别 + 分数"是什么即可',
+   'Prerequisites?','Lab 00; knowing what "box + class + score" means'),
+  ('我修改哪个参数？','`box_pred` 坐标与 `MY_PREDICTED_IOU`（先预测！）',
+   'What do I change?','`box_pred` coordinates and `MY_PREDICTED_IOU` (predict first!)'),
+  ('成功长什么样？','三张图只差框数；`xyxy/conf/cls` 三段数组；单调性 PASS',
+   'What does success look like?','Three images differing only in box count; three small arrays; monotonicity PASS'),
+  ('失败怎么自救？','本页常见错误表（模型缺失 / NMS / 单调性反例）',
+   'If it fails?','The common-errors table on this page (missing model / NMS / monotonicity)'),
+  ('保存什么证据？','3 张预测图 + `lab_a_predictions.json` + 一句结论',
+   'Evidence to save?','3 prediction images + `lab_a_predictions.json` + a one-line conclusion'),
+  ('求职价值？','"conf 0.25 改 0.5，权重变了吗？"——面试必答的直觉题',
+   'Job value?','"Does raising conf from 0.25 to 0.5 change the weights?" — a guaranteed interview question'),
+ ]),
  m('''## 实验目标
 给同一张图片设置 `conf=0.10/0.25/0.50`，测量检测数量并保存图片。理解 **Score ≠ 真实正确概率**，置信度阈值只影响显示/保留哪些预测，不会修改模型权重。
 
@@ -365,6 +412,22 @@ print('Threshold monotonicity: PASS')'''),
 ], '20 分钟','20 minutes','图像 → 检测结果 → 参数敏感性','image → detections → parameter sensitivity')
 
 make('02_Lab_B_Dataset_Annotation_QA.ipynb','02 / Lab B · 数据集、标注、分离与 QA','02 / Lab B · Dataset, Annotation, Splits & QA',[
+ lab_map([
+  ('为什么学这个？','真实项目约七成时间在数据；脏数据与泄漏是"成绩造假"的头号来源',
+   'Why learn this?','Real projects spend ~70% of time on data; dirty data and leakage are the top sources of fake scores'),
+  ('需要先懂什么？','完成 00；课前装好 X-AnyLabeling 并标注 ≥5 张（见 `docs/LAB_B_X_ANYLABELING.md`）',
+   'Prerequisites?','Lab 00; X-AnyLabeling installed and ≥5 images labeled before class (see `docs/LAB_B_X_ANYLABELING.md`)'),
+  ('我修改哪个参数？','修正练习的 `NEW_LABEL_LINE`/`LABEL_LINE_INDEX`（须显式 `APPLY_CORRECTION=True` 才写入）',
+   'What do I change?','`NEW_LABEL_LINE`/`LABEL_LINE_INDEX` in the correction exercise (writes only with an explicit `APPLY_CORRECTION=True`)'),
+  ('成功长什么样？','QA `pass=true`、标注画廊带框、无效标签注入实验会报错',
+   'What does success look like?','QA `pass=true`, a labeled gallery, and the injected-invalid-label experiment raising errors'),
+  ('失败怎么自救？','本页常见错误表；导入器报错精确到文件与行',
+   'If it falls?','The common-errors table on this page; importer errors name the exact file and line'),
+  ('保存什么证据？','data.yaml、QA JSON、split_manifest.csv、人工检查表',
+   'Evidence to save?','data.yaml, the QA JSON, split_manifest.csv, the manual review sheet'),
+  ('求职价值？','数据岗必问："你怎么发现训练/测试泄漏？"——这节就是标准答案',
+   'Job value?','Data-role staple: "How would you catch train/test leakage?" — this lab is the answer'),
+ ]),
  m('''## 实验目标
 - 检查一行 YOLO 标签 `class x_center y_center width height`，五个值中坐标为归一化值。
 - 从 COCO128 **原始 128 张图**构造教学用、图片不重叠的 Train/Val/Test；默认只保留 `person/car/chair` 三类，并**不是**快递包裹数据集。
@@ -379,6 +442,22 @@ make('02_Lab_B_Dataset_Annotation_QA.ipynb','02 / Lab B · 数据集、标注、
 - Check label ranges, duplicates, bounding boxes and the dataset config.
 
 > **Key scientific boundary**: official COCO128 reuses the same images for train and val and is for smoke tests only. This notebook re-groups and re-splits them to prevent direct overlap; with just 128 images the result can never be presented as industrial accuracy or a strict COCO benchmark, and semantically similar scenes still need human review.'''),
+ m('''### 常见错误与下一步
+| 症状 | 原因 | 下一步 |
+|---|---|---|
+| `Scene CSV must cover every image exactly once` | scenes.csv 漏图/多图/文件名对不上 | 按报错里的 missing/extra 清单逐个核对文件名（区分大小写） |
+| `Invalid YOLO detection labels ... invalid class id` | 类别号 ≥ classes.txt 行数 | 类别 ID 从 0 开始且小于类别数；检查 X-AnyLabeling 导出时的类别顺序 |
+| `Missing labels: [...]` | 有图片但没有对应 txt | 为确认无目标的图片创建**空** txt（合法负样本），不要删图 |
+| `FileExistsError ... choose a new output name` | 同名数据集已导入过 | 换 `YOLO_ANYLABELING_OUTPUT_NAME`（如 `_v2`），不要删除旧结果 |
+| `At least 9 images` / `Fewer than three independent groups` | 样本或独立场景太少 | 课上先用 COCO128 演示路径完成教学目标，课后补数据再导入 |''',
+   '''### Common Errors & Next Steps
+| Symptom | Cause | Next step |
+|---|---|---|
+| `Scene CSV must cover every image exactly once` | scenes.csv missing/extra/mismatched names | Fix filenames one by one using the missing/extra lists in the error (case-sensitive) |
+| `Invalid YOLO detection labels ... invalid class id` | class id ≥ number of classes.txt lines | Class IDs are zero-based; check the class order in the X-AnyLabeling export |
+| `Missing labels: [...]` | image without a matching txt | Create an **empty** txt for verified negatives — never delete the image |
+| `FileExistsError ... choose a new output name` | dataset name already imported | Change `YOLO_ANYLABELING_OUTPUT_NAME` (e.g. `_v2`); never delete the old result |
+| `At least 9 images` / `Fewer than three independent groups` | too few samples or scenes | Use the COCO128 demo path in class; collect more data and re-import after class |'''),
  m('''### 新的 Lab B：先手工标注，再自动检查
 1. 在 Windows/macOS/Linux 本地安装开源 **X-AnyLabeling**（它是独立桌面软件，不要装进 ROCm PyTorch 环境）。
 2. 讲师提供已获授权的图片；每名学生先手工绘制至少 5 张图片的矩形框，与同伴交换至少 5 张进行复核。先定义统一的类别顺序：classes.txt 每行一个类别，从 0 开始。
@@ -534,6 +613,22 @@ else:
 ], '50–60 分钟','50–60 minutes','手工标注 → 导出 → 防泄漏划分 → QA','manual labeling → export → grouped splits → QA')
 
 make('03_Lab_C_ROCm_Training_Finetune.ipynb','03 / Lab C · ROCm GPU 训练、微调与 Loss','03 / Lab C · ROCm GPU Training, Fine-tuning & Loss',[
+ lab_map([
+  ('为什么学这个？','训练把"会用模型"变成"会造模型"；读懂 Loss 曲线是分水岭',
+   'Why learn this?','Training turns "can use a model" into "can build one"; reading loss curves is the watershed'),
+  ('需要先懂什么？','完成 00（权重缓存）与 02（数据集登记）',
+   'Prerequisites?','Lab 00 (weight cache) and Lab 02 (registered dataset)'),
+  ('我修改哪个参数？','课堂保持默认（12 Epoch 是全组统一基线）；课后可试 `epochs`/`imgsz` 并记录理由',
+   'What do I change?','Keep defaults in class (12 epochs is the shared baseline); after class try `epochs`/`imgsz` and record why'),
+  ('成功长什么样？','冒烟几十秒完成；曲线 loss 整体降、mAP 整体升；`best.pt` 生成',
+   'What does success look like?','Smoke finishes in tens of seconds; loss trends down, mAP up; `best.pt` appears'),
+  ('失败怎么自救？','本页常见错误表；训练"看似卡住"多半是 JIT 预热（见下方等待说明）',
+   'If it fails?','The common-errors table; a "stuck" training is usually JIT warm-up (see the wait note below)'),
+  ('保存什么证据？','best.pt + SHA256、results.csv/png、训练配置 JSON',
+   'Evidence to save?','best.pt + SHA256, results.csv/png, the training-config JSON'),
+  ('求职价值？','"我在 AMD ROCm 上真机微调过 YOLO" + 完整复现链',
+   'Job value?','"I fine-tuned YOLO on real AMD ROCm hardware" with a full reproduction chain'),
+ ]),
  m('''## 实验目标
 1. 在真实 AMD ROCm GPU 上运行 YOLO26n 预训练模型微调。
 2. 先用 COCO8（4 train + 4 val）做**训练链路冒烟**，再训练 Lab B 数据。
@@ -592,6 +687,14 @@ assert cfg['dataset_yaml'] and Path(cfg['dataset_yaml']).is_file(), \\
 model_initial = (str(home / 'artifacts/yolo26n.pt')
                  if (home / 'artifacts/yolo26n.pt').is_file() else cfg['model'])
 print('Training:', model_initial, 'dataset:', cfg['dataset_yaml'])'''),
+ m('''### 训练开始后的正常现象（等待时看这里）
+- 每个 Epoch 打印一行进度（各项 loss 与耗时）；W7900 级别显卡上 12 Epoch 约 **30–100 秒**。
+- **首次运行前 ~1 分钟可能"看似卡住"**——那是 MIOpen 在编译 GPU kernel（一次性编译，之后全机共享缓存，第二次起不再出现）。想确认它在干活，可在另一个终端运行 `rocm-smi` 观察 GPU 利用率。
+- 请不要中断训练；等待期间正好阅读下面的思考题。''',
+   '''### What to expect while training runs (read while you wait)
+- One progress line per epoch (losses and time); on a W7900-class GPU, 12 epochs take roughly **30–100 seconds**.
+- **The first run may look frozen for ~1 minute** — that is MIOpen compiling GPU kernels (a one-time cost shared machine-wide afterwards). Run `rocm-smi` in another terminal to watch the GPU working.
+- Do not interrupt; the wait is the perfect time to read the questions below.'''),
  c('''# 非正式数据集，验证 GPU 实际能跑 Forward/Backward，不用于发布精度成绩。
 RUN_SMOKE = True
 if RUN_SMOKE:
@@ -712,6 +815,22 @@ Training input size is part of the training recipe — Lab E will vary exactly t
 ], '50–70 分钟','50–70 minutes','预训练权重 → 前后向训练 → 模型工件','pretrained weights → forward/backward training → model artifacts')
 
 make('04_Lab_D_Evaluation_Error_Analysis.ipynb','04 / Lab D · mAP、混淆与失败案例','04 / Lab D · mAP, Confusion & Failure Cases',[
+ lab_map([
+  ('为什么学这个？','没有评价的训练是盲飞；错误归因决定下一步优化方向',
+   'Why learn this?','Training without evaluation is flying blind; error attribution decides the next move'),
+  ('需要先懂什么？','完成 03（要它的 best.pt）；Lab A 的 IoU 概念',
+   'Prerequisites?','Lab 03 (its best.pt); the IoU idea from Lab A'),
+  ('我修改哪个参数？','`MY_ERROR_INDEX` 与 `MY_ANALYSIS` 四字段（选一个错误深挖）',
+   'What do I change?','`MY_ERROR_INDEX` and the four fields of `MY_ANALYSIS` (dig into one error)'),
+  ('成功长什么样？','官方 mAP 打印、PR/混淆矩阵图、左右对照失败图',
+   'What does success look like?','Official mAP printed, PR/confusion plots, side-by-side failure boards'),
+  ('失败怎么自救？','本页常见错误表；失败案例不足 5 张时如实报告',
+   'If it fails?','The common-errors table; report honestly when fewer than 5 failure cases exist'),
+  ('保存什么证据？','官方指标 JSON、固定阈值 JSON、errors.csv、归因 JSON',
+   'Evidence to save?','Official-metrics JSON, fixed-threshold JSON, errors.csv, your attribution JSON'),
+  ('求职价值？','"讲一个你定位过的 badcase"——算法岗必问',
+   'Job value?','"Walk me through a bad case you diagnosed" — asked in every algorithm interview'),
+ ]),
  m('''## 实验目标
 - 用 Ultralytics 官方验证器计算 Precision、Recall、mAP50、mAP50-95。
 - 独立完成一次**固定 `conf=0.25`、IoU=0.50 的教学级 TP/FP/FN 匹配**（并非 COCO mAP 实现）。
@@ -730,6 +849,20 @@ make('04_Lab_D_Evaluation_Error_Analysis.ipynb','04 / Lab D · mAP、混淆与�
 **Prerequisite**: fully run 03 first (its `best.pt` and dataset registration are required). Predictions run on the GPU but are fast per image.
 
 `metrics.box.map` is the official mAP50-95; our fixed-threshold TP/FP/FN analysis exists only to learn about error causes.'''),
+ m('''### 常见错误与下一步
+| 症状 | 原因 | 下一步 |
+|---|---|---|
+| `先完成 Lab C` 断言失败 | course_config 里没有 baseline_weights | 先完整运行 03（训练 + 保存 best.pt） |
+| `lab_d_errors.csv` 是空的 | 该阈值下确实没有错误（或阈值过高） | 如实报告"0 个错误"；可选做困难样本分析，不要编造 |
+| 官方 P/R 与固定阈值 P/R 差很多 | 两套口径本就不同 | 重读上面的双口径说明；报告时分开写、分开引用 |
+| PR/混淆矩阵图不显示 | plots 输出目录因版本而异 | 查看 `val_metrics.save_dir` 的打印值并打开该目录 |''',
+   '''### Common Errors & Next Steps
+| Symptom | Cause | Next step |
+|---|---|---|
+| `先完成 Lab C` assertion fires | no baseline_weights in course_config | fully run Lab 03 (training + saved best.pt) first |
+| `lab_d_errors.csv` is empty | genuinely no errors at this threshold (or threshold too high) | report "0 errors" honestly; optionally analyze hard samples — never fabricate |
+| Official P/R very different from fixed-threshold P/R | the two calibers are different by design | re-read the dual-caliber note above; cite them separately |
+| PR/confusion plots missing | plots directory varies by version | open the printed `val_metrics.save_dir` path |'''),
  c(SETUP),
  c('''from course.lab_utils import (get_metrics_summary, inspect_dataset, match_predictions,
                               xywhn_to_xyxy, read_labels, label_path_for_image)
@@ -870,6 +1003,22 @@ print('归因已保存到 reports/lab_d_my_error_analysis.json。')'''),
 ], '35–45 分钟','35–45 minutes','官方指标 → 固定阈值配对 → 错误归因','official metrics → fixed-threshold matching → error attribution')
 
 make('05_Lab_E_Controlled_AB_Optimization.ipynb','05 / Lab E · 受控 A/B 训练优化实验','05 / Lab E · Controlled A/B Training Experiment',[
+ lab_map([
+  ('为什么学这个？','受控实验是"调参"与"科学"的分界线；面试官用它识破纸面调参',
+   'Why learn this?','Controlled experiments separate "tweaking" from "science"; interviewers use them to spot paper-tuning'),
+  ('需要先懂什么？','完成 03；理解"一次只改一个变量"',
+   'Prerequisites?','Lab 03; the idea of changing exactly one variable at a time'),
+  ('我修改哪个参数？','只填 `MY_HYPOTHESIS`（结果前封存）；**A/B 训练参数不许改**——改了就不是受控实验',
+   'What do I change?','Only `MY_HYPOTHESIS` (sealed before results); **never touch the A/B training args** — that breaks the control'),
+  ('成功长什么样？','双臂柱状图 + ΔmAP 打印；你的假设与真实结果并列',
+   'What does success look like?','Two-arm bar chart + ΔmAP; your hypothesis next to the real result'),
+  ('失败怎么自救？','本页常见错误表；初始权重 SHA256 不一致 → 重跑 00',
+   'If it fails?','The common-errors table; initial-weight SHA256 mismatch → rerun Lab 00'),
+  ('保存什么证据？','hypothesis JSON、A/B CSV、双 best.pt 哈希',
+   'Evidence to save?','The hypothesis JSON, the A/B CSV, both best.pt hashes'),
+  ('求职价值？','"你怎么保证只有一个变量？"——标准答案就在这节',
+   'Job value?','"How do you guarantee a single variable?" — the standard answer is this lab'),
+ ]),
  m('''## 实验目标
 基于 Lab C 的**真实 baseline**，只修改训练图像尺寸（512 → 416）；保持模型初始化权重、数据集、Epoch、Batch、随机种子等条件不变，用统一的验证输入尺寸 640 测量两组模型。不要因为速度更快就直接宣布算法优化成功。
 
@@ -882,6 +1031,20 @@ Starting from the **real baseline produced by Lab C**, change exactly one thing 
 **Prerequisite**: fully run 03 first (the baseline artifacts and `baseline_train_settings` come from it). The two 12-epoch trainings need a few minutes of GPU time.
 
 > **Fairness note:** lowering imgsz changes both the information content and the compute of each step. Equal epochs do not guarantee equal training time / SGD update quality; this experiment tests one clearly stated classroom hypothesis and provides no statistical significance. Training time is also affected by caches and concurrent load on shared cloud GPUs.'''),
+ m('''### 常见错误与下一步
+| 症状 | 原因 | 下一步 |
+|---|---|---|
+| `初始权重 SHA256 改变` 断言 | `yolo26n.pt` 被替换过 | 重跑 00 重新冻结——A/B 两臂必须同一初始权重 |
+| `baseline 训练尺寸为 512` 断言 | 03 的实验方案被改动 | 恢复 03 默认方案，或明确修改本实验设计并说明 |
+| `set(changed) == {...}` 断言失败 | variant 参数改多了 | 只允许 imgsz 差异；project/name 只是日志位置 |
+| 这一臂比 Lab C 慢 | GPU 上有并发负载 | A/B 计时轮必须独占 GPU；重跑并在报告记录干扰 |''',
+   '''### Common Errors & Next Steps
+| Symptom | Cause | Next step |
+|---|---|---|
+| initial-weight SHA256 assertion | `yolo26n.pt` was replaced | rerun Lab 00 to re-pin — both arms must share one initial weight |
+| `baseline 训练尺寸为 512` assertion | Lab 03's recipe was altered | restore the Lab 03 defaults, or consciously redesign this experiment and say so |
+| `set(changed) == {...}` assertion | too many variant args changed | only imgsz may differ; project/name are log locations |
+| this arm slower than Lab C | concurrent load on the GPU | the timing round must own the GPU; rerun and record the interference |'''),
  c(SETUP),
  c('''from course.lab_utils import get_metrics_summary
 import torch
@@ -929,6 +1092,12 @@ for key, value in MY_HYPOTHESIS.items():
     assert not str(value).startswith('TODO'), f'请先填写 {key}——假设必须在看到结果之前写下'
 write_json(home / 'reports/lab_e_my_hypothesis.json', MY_HYPOTHESIS)
 print('假设已封存到 reports/lab_e_my_hypothesis.json（先于任何 Variant 结果）。开始 Variant 训练。')'''),
+ m('''### Variant 训练等待说明
+- 与 Lab C 相同：12 Epoch、约 30–60 秒；若这是本机今天第一次训练，还会多出 ~1 分钟 MIOpen JIT 预热（只发生一次）。
+- **这期间不要启动其他训练或评测**——A/B 的"相同 GPU 条件"要求本臂独占显卡，否则计时不可比。''',
+   '''### Variant training wait note
+- Same as Lab C: 12 epochs, ~30–60 s; if this is the machine's first training today, add a one-time ~1-minute MIOpen JIT warm-up.
+- **Do not start other training or evaluation during this arm** — the "identical GPU conditions" requirement means this arm must own the GPU, or timings are not comparable.'''),
  c('''# Variant：只修改 imgsz；额外不同的仅是 run output name/project
 RUN_VARIANT = True
 variant_args = dict(args)
@@ -991,6 +1160,38 @@ fig.tight_layout()
 fig.savefig(home / 'assets/lab_e_ab_mAP.png', dpi=150)
 plt.show()
 print('ΔmAP50-95 B−A:', round(reports[1]['mAP50_95'] - reports[0]['mAP50_95'], 4))'''),
+ m('''### 四个指标一起读（不要只看一个数）
+| 指标 | 回答的问题 | 单独引用的陷阱 |
+|---|---|---|
+| Precision | 报出来的框有多少是对的？ | 偏高可能只是"保守"（少报） |
+| Recall | 真实目标找回了多少？ | 偏高可能靠"滥报"换来 |
+| mAP50 | IoU≥0.5 的宽松综合质量 | 掩盖定位精度问题 |
+| mAP50-95 | 严格定位下的综合质量 | 数值天然偏低；跨数据集不可比 |
+
+**把你的两臂结果抄进这张表**（数据在 `reports/lab_e_ab_comparison.csv`，这是你的报告素材）：
+
+| 臂 | Precision | Recall | mAP50 | mAP50-95 |
+|---|---|---|---|---|
+| baseline (imgsz=512) |  |  |  |  |
+| variant (imgsz=416) |  |  |  |  |
+
+读法示例：如果一臂 **P 降 R 升**，说明模型变得更"敢报"但更不准——两个数必须成对解释；如果四项指标方向不一致，结论应写"不确定"而不是挑好看的数。''',
+   '''### Read all four metrics together (never just one number)
+| Metric | Question it answers | Trap when quoted alone |
+|---|---|---|
+| Precision | Of the boxes we reported, how many are right? | High P may just mean "conservative" (under-reporting) |
+| Recall | How many real targets were found? | High R may come from over-reporting |
+| mAP50 | Lenient overall quality at IoU≥0.5 | Hides localization quality |
+| mAP50-95 | Strict overall quality | Naturally lower; not comparable across datasets |
+
+**Copy your two arms into this table** (from `reports/lab_e_ab_comparison.csv` — this is your report material):
+
+| Arm | Precision | Recall | mAP50 | mAP50-95 |
+|---|---|---|---|---|
+| baseline (imgsz=512) |  |  |  |  |
+| variant (imgsz=416) |  |  |  |  |
+
+How to read it: if one arm shows **P down, R up**, the model became bolder but less precise — the pair must be interpreted together; when the four metrics disagree, the honest conclusion is "inconclusive", not cherry-picking the flattering one.'''),
  m('''### 对照你的假设（Check your hypothesis）
 打开 `reports/lab_e_my_hypothesis.json`，和上面的真实结果逐项对照：
 - mAP 预测对了吗？如果错了，错在哪个推理环节？
