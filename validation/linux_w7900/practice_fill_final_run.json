@@ -4,6 +4,7 @@
     "shape": "(128, 128)",
     "device": "cuda:0 (HIP)"
   },
+  "lab_a_iou": "约 0.55（两框重叠区域约占并集一半多）",
   "lab_c_my_reading": {
     "train_box_loss_epoch1_to_12": "train/box_loss 从 1.548（epoch 1）仅降到 1.512（epoch 12），降幅约 2%，基本走平",
     "val_mAP50_trend": "mAP50 从 0.556（epoch 1）降到 0.492（epoch 12）；mAP50-95 从 0.350 降到 0.261；val/box_loss 从 1.757 升到 1.913",
