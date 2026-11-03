@@ -1,0 +1,62 @@
+{
+  "notebook": "01_Lab_A_Predict_and_Threshold.ipynb",
+  "kernel": "yolo26-rocm7141",
+  "started": "2026-11-03T03:50:56.371768+00:00",
+  "result": "PASS",
+  "duration_seconds": 5.0,
+  "code_cells": 7,
+  "executed_cells": 7,
+  "gpu_referenced_and_executed": true,
+  "cells": [
+    {
+      "index": 4,
+      "executed": true,
+      "execution_count": 1,
+      "duration_seconds": null,
+      "output_tail": "Project: /workspace/yolo26-rocm-day1-labs \nPersistent output: /workspace/yolo_course_release_final\n"
+    },
+    {
+      "index": 5,
+      "executed": true,
+      "execution_count": 2,
+      "duration_seconds": null,
+      "output_tail": "AMD ROCm verified: AMD Radeon Pro W7900D HIP: 7.14.60850\nLoaded: /workspace/yolo_course_release_final/artifacts/yolo26n.pt\n"
+    },
+    {
+      "index": 6,
+      "executed": true,
+      "execution_count": 3,
+      "duration_seconds": null,
+      "output_tail": "<PIL.Image.Image image mode=RGB size=480x640>"
+    },
+    {
+      "index": 7,
+      "executed": true,
+      "execution_count": 4,
+      "duration_seconds": null,
+      "output_tail": "0.1 predictions: 7 -> /workspace/yolo_course_release_final/assets/lab_a_thresholds/conf_0.10.jpg\n0.25 predictions: 5 -> /workspace/yolo_course_release_final/assets/lab_a_thresholds/conf_0.25.jpg\n0.5 predictions: 5 -> /workspace/yolo_course_release_final/assets/lab_a_thresholds/conf_0.50.jpg\n"
+    },
+    {
+      "index": 8,
+      "executed": true,
+      "execution_count": 5,
+      "duration_seconds": null,
+      "output_tail": "xyxy: [[          0      230.48       803.2       750.7]\n [     48.614       397.7      240.34      902.41]\n [     222.94      404.82      345.47      861.02]]\nconfidence: [     0.8806     0.87201     0.86081]\nclass ID: [          5           0           0]\n"
+    },
+    {
+      "index": 9,
+      "executed": true,
+      "execution_count": 6,
+      "duration_seconds": null,
+      "output_tail": "实际 IoU = 0.7064 | 你的预测 = 约 0.55（两框重叠区域约占并集一半多）\n修改 box_pred 的坐标再运行一次，观察 IoU 怎么变；猜错不扣分，先预测才是目的\n"
+    },
+    {
+      "index": 10,
+      "executed": true,
+      "execution_count": 7,
+      "duration_seconds": null,
+      "output_tail": "conf=0.10  boxes=7\n<PIL.Image.Image image mode=RGB size=640x480>conf=0.25  boxes=5\n<PIL.Image.Image image mode=RGB size=640x480>conf=0.50  boxes=5\n<PIL.Image.Image image mode=RGB size=640x480>Threshold monotonicity: PASS\n"
+    }
+  ],
+  "executed_copy": "validation/executed/20261103_035047/01_Lab_A_Predict_and_Threshold.executed.ipynb"
+}

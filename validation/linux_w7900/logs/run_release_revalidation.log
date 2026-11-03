@@ -1,0 +1,88 @@
++ cd /workspace/yolo26-rocm-day1-labs
++ echo '=========== 1. FULL RUN 00-05 (fresh home) ==========='
+=========== 1. FULL RUN 00-05 (fresh home) ===========
++ rm -rf /workspace/yolo_course_release_final
++ .venv/bin/python scripts/run_all_labs.py --course-home /workspace/yolo_course_release_final --timeout 7200 --practice-fill validation/linux_w7900/practice_fill_final_run.json
+Probing kernel 'yolo26-rocm7141' (real execution check) ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+{
+  "kernel": "yolo26-rocm7141",
+  "expected_executable": "/workspace/yolo26-rocm-day1-labs/.venv/bin/python",
+  "executable": "/workspace/yolo26-rocm-day1-labs/.venv/bin/python",
+  "torch": "2.12.0+rocm7.14.1",
+  "hip": "7.14.60850",
+  "gpu": "AMD Radeon Pro W7900D",
+  "ok": true,
+  "problems": []
+}
+== YOLO26 ROCm Day1 runner ==
+venv: /workspace/yolo26-rocm-day1-labs/.venv/bin/python
+kernel: yolo26-rocm7141 (registered=True)
+course home: /workspace/yolo_course_release_final
+output: /workspace/yolo26-rocm-day1-labs/validation/executed/20261103_035047
+
+--- [03:50:51] running 00_ROCm_Environment_Preflight.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 00_ROCm_Environment_Preflight.ipynb: PASS in 4.44s (6/6 cells)
+--- [03:50:56] running 01_Lab_A_Predict_and_Threshold.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 01_Lab_A_Predict_and_Threshold.ipynb: PASS in 5.0s (7/7 cells)
+--- [03:51:01] running 02_Lab_B_Dataset_Annotation_QA.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 02_Lab_B_Dataset_Annotation_QA.ipynb: PASS in 7.37s (7/7 cells)
+--- [03:51:08] running 03_Lab_C_ROCm_Training_Finetune.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 03_Lab_C_ROCm_Training_Finetune.ipynb: PASS in 41.05s (7/7 cells)
+--- [03:51:49] running 04_Lab_D_Evaluation_Error_Analysis.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 04_Lab_D_Evaluation_Error_Analysis.ipynb: PASS in 8.78s (7/7 cells)
+--- [03:51:58] running 05_Lab_E_Controlled_AB_Optimization.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 05_Lab_E_Controlled_AB_Optimization.ipynb: PASS in 31.6s (7/7 cells)
+
+== 6/6 notebooks PASS ==
+data: /workspace/yolo26-rocm-day1-labs/validation/NOTEBOOK_EXECUTION_DATA_20261103_035047.json
++ echo '=== FULL_RUN_EXIT=0 ==='
+=== FULL_RUN_EXIT=0 ===
++ echo '=========== 2. LAB B FIXTURE E2E (fresh home) ==========='
+=========== 2. LAB B FIXTURE E2E (fresh home) ===========
++ rm -rf /workspace/yolo_course_release_fixture
++ export YOLO_ANYLABELING_EXPORT=/workspace/fixture_xanylabeling_export
++ YOLO_ANYLABELING_EXPORT=/workspace/fixture_xanylabeling_export
++ export YOLO_ANYLABELING_SCENES=/workspace/fixture_xanylabeling_export/scenes.csv
++ YOLO_ANYLABELING_SCENES=/workspace/fixture_xanylabeling_export/scenes.csv
++ export YOLO_ANYLABELING_OUTPUT_NAME=xanylabeling_fixture_v1
++ YOLO_ANYLABELING_OUTPUT_NAME=xanylabeling_fixture_v1
++ .venv/bin/python scripts/run_all_labs.py --course-home /workspace/yolo_course_release_fixture --only 02,03 --timeout 7200
+Probing kernel 'yolo26-rocm7141' (real execution check) ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+{
+  "kernel": "yolo26-rocm7141",
+  "expected_executable": "/workspace/yolo26-rocm-day1-labs/.venv/bin/python",
+  "executable": "/workspace/yolo26-rocm-day1-labs/.venv/bin/python",
+  "torch": "2.12.0+rocm7.14.1",
+  "hip": "7.14.60850",
+  "gpu": "AMD Radeon Pro W7900D",
+  "ok": true,
+  "problems": []
+}
+== YOLO26 ROCm Day1 runner ==
+venv: /workspace/yolo26-rocm-day1-labs/.venv/bin/python
+kernel: yolo26-rocm7141 (registered=True)
+course home: /workspace/yolo_course_release_fixture
+output: /workspace/yolo26-rocm-day1-labs/validation/executed/20261103_035230
+
+--- [03:52:33] running 02_Lab_B_Dataset_Annotation_QA.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 02_Lab_B_Dataset_Annotation_QA.ipynb: PASS in 2.45s (7/7 cells)
+--- [03:52:36] running 03_Lab_C_ROCm_Training_Finetune.ipynb ...
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+--- 03_Lab_C_ROCm_Training_Finetune.ipynb: FAIL in 25.02s (7/7 cells)
+Stopping (use --keep-going to continue after failures).
+
+== 1/2 notebooks PASS ==
+data: /workspace/yolo26-rocm-day1-labs/validation/NOTEBOOK_EXECUTION_DATA_20261103_035230.json
++ echo '=== FIXTURE_EXIT=1 ==='
+=== FIXTURE_EXIT=1 ===
++ echo '=========== ALL DONE ==========='
+=========== ALL DONE ===========

@@ -1,0 +1,74 @@
+{
+  "timestamp_utc": "2026-11-03T03:49:57.444684+00:00",
+  "python": "3.12.13",
+  "platform": "Linux-6.8.0-79-generic-x86_64-with-glibc2.39",
+  "results": [
+    {
+      "check": "torch version",
+      "status": "PASS",
+      "detail": "2.12.0+rocm7.14.1",
+      "fix": ""
+    },
+    {
+      "check": "torchvision version",
+      "status": "PASS",
+      "detail": "0.27.0+rocm7.14.1",
+      "fix": ""
+    },
+    {
+      "check": "HIP backend",
+      "status": "PASS",
+      "detail": "7.14.60850",
+      "fix": "Wrong wheel flavor (CPU/CUDA) — rebuild the course environment"
+    },
+    {
+      "check": "GPU visible",
+      "status": "PASS",
+      "detail": "AMD Radeon Pro W7900D · gfx1100 · 48.0 GiB",
+      "fix": "Check GPU allocation / /dev/kfd / /dev/dri"
+    },
+    {
+      "check": "torchvision GPU NMS",
+      "status": "PASS",
+      "detail": "kept=[0, 2]",
+      "fix": "Platform torchvision lacks the GPU NMS kernel — use the uv-isolated stack (setup guide §2B); this is the documented #1 pitfall"
+    },
+    {
+      "check": "yolo26n.pt pre-staged",
+      "status": "PASS",
+      "detail": "/workspace/yolo26-rocm-day1-labs/yolo26n.pt (sha256 matches official)",
+      "fix": "Re-stage from the official ultralytics/assets v8.4.0 release (verify sha256 9b09cc8bf347f0fc…); restricted networks can use the mirrored asset with the same hash — see CLASSROOM_READINESS_CHECKLIST.md §assets"
+    },
+    {
+      "check": "COCO128 dataset",
+      "status": "PASS",
+      "detail": "extracted at /workspace/yolo_course_validation_linux_w7900_final/data/raw/coco128/images/train2017",
+      "fix": ""
+    },
+    {
+      "check": "COCO8 smoke dataset",
+      "status": "PASS",
+      "detail": "8 images under /workspace/datasets/coco8/images",
+      "fix": "Stage COCO8 (16 files, see checklist) — Lab C smoke needs it"
+    },
+    {
+      "check": "course kernel registered",
+      "status": "PASS",
+      "detail": "yolo26-rocm7141 -> /workspace/yolo26-rocm-day1-labs/.venv/bin/python",
+      "fix": ""
+    },
+    {
+      "check": "free disk space",
+      "status": "PASS",
+      "detail": "86.1 GiB free",
+      "fix": "Need >=10 GiB for a classroom of outputs (28 students × ~50 MB + caches)"
+    },
+    {
+      "check": "GPU compute probe",
+      "status": "PASS",
+      "detail": "first matmul 58 ms, warm 0.07 ms (warm MIOpen state — cold adds ~1 min to the first training run; run one warm-up training before class)",
+      "fix": ""
+    }
+  ],
+  "overall": "PASS"
+}

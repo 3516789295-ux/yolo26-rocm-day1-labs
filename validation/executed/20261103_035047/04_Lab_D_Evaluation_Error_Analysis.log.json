@@ -1,0 +1,62 @@
+{
+  "notebook": "04_Lab_D_Evaluation_Error_Analysis.ipynb",
+  "kernel": "yolo26-rocm7141",
+  "started": "2026-11-03T03:51:49.829689+00:00",
+  "result": "PASS",
+  "duration_seconds": 8.78,
+  "code_cells": 7,
+  "executed_cells": 7,
+  "gpu_referenced_and_executed": true,
+  "cells": [
+    {
+      "index": 5,
+      "executed": true,
+      "execution_count": 1,
+      "duration_seconds": null,
+      "output_tail": "Project: /workspace/yolo26-rocm-day1-labs \nPersistent output: /workspace/yolo_course_release_final\n"
+    },
+    {
+      "index": 6,
+      "executed": true,
+      "execution_count": 2,
+      "duration_seconds": null,
+      "output_tail": "AMD ROCm verified: AMD Radeon Pro W7900D HIP: 7.14.60850\nWeight SHA256: e40edc6782d50ac9cb0d980566992367f616d496711d1c2370e8623a2d39e250\n"
+    },
+    {
+      "index": 7,
+      "executed": true,
+      "execution_count": 3,
+      "duration_seconds": null,
+      "output_tail": "Ultralytics 8.4.199 🚀 Python-3.12.13 torch-2.12.0+rocm7.14.1 CUDA:0 (AMD Radeon Pro W7900D, 49136MiB)\nYOLO26n summary (fused): 121 layers, 2,390,221 parameters, 0 gradients, 5.4 GFLOPs\n\u001b[34m\u001b[1mval: \u001b[0mFast image access ✅ (ping: 0.0±0.0 ms, read: 2541.9±924.4 MB/s, size: 57.9 KB)\n\r\u001b[K\u001b[34m\u001b[1mval: \u001b[0mScanning /workspace/yolo_course_release_final/data/processed/coco128_classroom_3class/labels/val.cache... 20 images, 12 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 20/20 7.0Mit/s 0.0s\n\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 33% ━━━━──────── 1/3 1.8it/s 0.2s<1.1s\r\u001b[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 3/3 9.3it/s 0.3s\n                   all         20         29      0.839      0.552      0.624      0.383\nSpeed: 0.3ms preprocess, 5.4ms inference, 0.0ms loss, 0.5ms postprocess per image\nResults saved to \u001b[1m/workspace/yolo26-rocm-day1-labs/runs/detect/val-12\u001b[0m\nOfficial validation metrics: {'precision': 0.8394751789338629, 'recall': 0.5517241379310345, 'mAP50': 0.6237316111766408, 'mAP50_95': 0.38295583016361323, 'split': 'val', 'dataset_yaml': '/workspace/yolo_course_release_final/data/processed/coco128_classroom_3class/data.yaml', 'weight_sha256': 'e40edc6782d50ac9cb0d980566992367f616d496711d1c2370e8623a2d39e250'}\nmAP: IoU=0.50..0.95 average, NOT confidence 50%-95%\n"
+    },
+    {
+      "index": 8,
+      "executed": true,
+      "execution_count": 4,
+      "duration_seconds": null,
+      "output_tail": "BoxPR_curve.png\n<PIL.Image.Image image mode=RGBA size=950x600>confusion_matrix.png\n<PIL.Image.Image image mode=RGBA size=950x600>confusion_matrix_normalized.png\n<PIL.Image.Image image mode=RGBA size=950x600>"
+    },
+    {
+      "index": 9,
+      "executed": true,
+      "execution_count": 5,
+      "duration_seconds": null,
+      "output_tail": "Fixed threshold teaching-level counts: {'TP': 18, 'FP': 6, 'FN': 11} P: 0.75 R: 0.621\nImportant: these are NOT the official integrated PR or mAP values.\n"
+    },
+    {
+      "index": 10,
+      "executed": true,
+      "execution_count": 6,
+      "duration_seconds": null,
+      "output_tail": "/workspace/yolo_course_release_final/assets/lab_d_errors/01_000000000074.jpg errors: 3\n<PIL.Image.Image image mode=RGB size=960x320>/workspace/yolo_course_release_final/assets/lab_d_errors/02_000000000241.jpg errors: 3\n<PIL.Image.Image image mode=RGB size=960x640>/workspace/yolo_course_release_final/assets/lab_d_errors/03_000000000520.jpg errors: 3\n<PIL.Image.Image image mode=RGB size=960x360>/workspace/yolo_course_release_final/assets/lab_d_errors/04_000000000641.jpg errors: 8\n<PIL.Image.Image image mode=RGB size=960x321>只有 4 张有失败案例。不能编造；可拓展验证集或评估更多困难样本。\n"
+    },
+    {
+      "index": 12,
+      "executed": true,
+      "execution_count": 7,
+      "duration_seconds": null,
+      "output_tail": "你选择的错误: 000000000074.jpg FP_localization_or_background | score: 0.507 | max_iou_gt: 0.337\n归因已保存到 reports/lab_d_my_error_analysis.json。\n"
+    }
+  ],
+  "executed_copy": "validation/executed/20261103_035047/04_Lab_D_Evaluation_Error_Analysis.executed.ipynb"
+}

@@ -1,0 +1,62 @@
+{
+  "notebook": "02_Lab_B_Dataset_Annotation_QA.ipynb",
+  "kernel": "yolo26-rocm7141",
+  "started": "2026-11-03T03:51:01.387223+00:00",
+  "result": "PASS",
+  "duration_seconds": 7.37,
+  "code_cells": 7,
+  "executed_cells": 7,
+  "gpu_referenced_and_executed": true,
+  "cells": [
+    {
+      "index": 6,
+      "executed": true,
+      "execution_count": 1,
+      "duration_seconds": null,
+      "output_tail": "Project: /workspace/yolo26-rocm-day1-labs \nPersistent output: /workspace/yolo_course_release_final\n"
+    },
+    {
+      "index": 7,
+      "executed": true,
+      "execution_count": 2,
+      "duration_seconds": null,
+      "output_tail": "{'source': 'COCO128 (COCO train2017 first 128 images)', 'pedagogical_only': True, 'note': 'Image-disjoint internal partition; still tiny and biased, not a COCO benchmark, near-duplicate heuristic is not a guarantee.', 'splits': {'train': 89, 'val': 20, 'test': 19}, 'class_counts': {'train:0': 196, 'train:1': 32, 'val:0': 29, 'train:2': 33, 'test:0': 29, 'test:2': 2, 'test:1': 14}, 'groups': 128, 'seed': 42, 'names': ['person', 'car', 'chair'], 'data_yaml': '/workspace/yolo_course_release_final/data/processed/coco128_classroom_3class/data.yaml', 'source_url': 'https://github.com/ultralytics/assets/releases/download/v0.0.0/coco128.zip'}\nTraining dataset: /workspace/yolo_course_release_final/data/processed/coco128_classroom_3class/data.yaml\n"
+    },
+    {
+      "index": 8,
+      "executed": true,
+      "execution_count": 3,
+      "duration_seconds": null,
+      "output_tail": "Class names: {0: 'person', 1: 'car', 2: 'chair'}\nSplit stats: {'train': {'images': 89, 'boxes': 261, 'empty_or_missing_labels': 34}, 'val': {'images': 20, 'boxes': 29, 'empty_or_missing_labels': 12}, 'test': {'images': 19, 'boxes': 45, 'empty_or_missing_labels': 11}}\nErrors: []\nNear-duplicate review warnings: []\nDataset structural QA: PASS\n"
+    },
+    {
+      "index": 9,
+      "executed": true,
+      "execution_count": 4,
+      "duration_seconds": null,
+      "output_tail": "<Figure size 1200x700 with 6 Axes>"
+    },
+    {
+      "index": 10,
+      "executed": true,
+      "execution_count": 5,
+      "duration_seconds": null,
+      "output_tail": "Label format & invalid-bound tests: PASS\n"
+    },
+    {
+      "index": 11,
+      "executed": true,
+      "execution_count": 6,
+      "duration_seconds": null,
+      "output_tail": "人工检查图片后填写: /workspace/yolo_course_release_final/reports/lab_b_manual_review.csv\n"
+    },
+    {
+      "index": 13,
+      "executed": true,
+      "execution_count": 7,
+      "duration_seconds": null,
+      "output_tail": "编辑目标: /workspace/yolo_course_release_final/data/processed/coco128_classroom_3class/labels/train/000000000009.txt\n原始标签: []\n安全预览：未修改任何文件。\n"
+    }
+  ],
+  "executed_copy": "validation/executed/20261103_035047/02_Lab_B_Dataset_Annotation_QA.executed.ipynb"
+}

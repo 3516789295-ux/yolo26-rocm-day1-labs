@@ -1,5 +1,5 @@
 {
-  "timestamp_utc": "2026-11-03T02:50:24.690343+00:00",
+  "timestamp_utc": "2026-11-03T03:55:10.203889+00:00",
   "python": "3.12.13",
   "platform": "Linux-6.8.0-79-generic-x86_64-with-glibc2.39",
   "gates": {
@@ -41,11 +41,11 @@
     },
     "gpu_matmul": {
       "pass": true,
-      "detail": "106.2 ms"
+      "detail": "110.1 ms"
     },
     "gpu_conv2d_forward": {
       "pass": true,
-      "detail": "91.3 ms"
+      "detail": "93.5 ms"
     },
     "gpu_loss_finite": {
       "pass": true,
@@ -53,7 +53,7 @@
     },
     "gpu_backward_grad_exists": {
       "pass": true,
-      "detail": "74.6 ms"
+      "detail": "72.1 ms"
     },
     "optimizer_step_changed_weights": {
       "pass": true,
@@ -81,9 +81,9 @@
     "multi_processor_count": 48
   },
   "compute": {
-    "alloc_matmul_ms": 106.24,
-    "conv_bn_loss_forward_ms": 91.35,
-    "backward_ms": 74.64,
+    "alloc_matmul_ms": 110.13,
+    "conv_bn_loss_forward_ms": 93.45,
+    "backward_ms": 72.1,
     "peak_allocated_GiB": 0.0845
   },
   "driver": "============================ ROCm System Management Interface ============================\n============================== Version of System Component ===============================\nDriver version: 6.16.13\n==========================================================================================\n================================== End of ROCm SMI Log ===================================\nkfd_nodes: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']",
