@@ -440,7 +440,9 @@ def main() -> int:
                                     ensure_ascii=False, indent=2, default=str), encoding='utf-8')
     passed = sum(1 for r in results if r['result'] == 'PASS')
     print(f'\n== {passed}/{len(results)} notebooks PASS ==\ndata: {data_path}')
-    return 0 if (passed == len(ORDER) and not overall_fail) else 1
+    # Compare against the SELECTED subset: a fully successful --only run is a
+    # success, not a failure (previously any partial selection exited 1).
+    return 0 if (passed == len(selected) and not overall_fail) else 1
 
 
 if __name__ == '__main__':
