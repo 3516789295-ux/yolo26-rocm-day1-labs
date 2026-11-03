@@ -4,7 +4,7 @@
 
 ![status](https://img.shields.io/badge/status-validated%20on%20real%20GPU-brightgreen) ![gpu](https://img.shields.io/badge/GPU-AMD%20Radeon%20RX%207900%20XTX%20gfx1100-red) ![rocm](https://img.shields.io/badge/ROCm-7.14.1-orange) ![torch](https://img.shields.io/badge/PyTorch-2.12.0%2Brocm7.14.1-ee4c2c) ![python](https://img.shields.io/badge/Python-3.12-blue) ![license](https://img.shields.io/badge/license-MIT-green) ![lang](https://img.shields.io/badge/lang-%E4%B8%AD%E6%96%87%20%7C%20English-informational)
 
-> 面向大四学生的 **一天入门级 AMD GPU 目标检测实训**:从 ROCm 环境验证 → 推理与阈值 → 数据标注与防泄漏划分 → 真实 GPU 训练 → mAP 评价与错误分析 → 受控 A/B 优化实验。
+> 面向大学生的 **一天入门级 AMD GPU 目标检测实训**:从 ROCm 环境验证 → 推理与阈值 → 数据标注与防泄漏划分 → 真实 GPU 训练 → mAP 评价与错误分析 → 受控 A/B 优化实验。
 > 全部 6 份 Notebook 为**中英对照**;每一份都已在一块真实的 **AMD Radeon RX 7900 XTX(gfx1100)+ Windows 11 原生 ROCm** 环境上完整执行通过(37/37 cells,含两次 12-Epoch 真实训练)——证据见 [`validation/`](validation/FINAL_REPORT.md)。
 
 ## ✅ 已验证状态(不是承诺,是实测)
