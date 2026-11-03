@@ -56,14 +56,45 @@ def gate(name: str, ok: bool, detail=None):
 
 
 # --- 1. versions & backend -------------------------------------------------
-gate('torch_version', torch.__version__ == '2.12.0+rocm7.14.1', torch.__version__)
-gate('torchvision_version', torchvision.__version__ == '0.27.0+rocm7.14.1', torchvision.__version__)
-gate('torchaudio_version', torchaudio.__version__ == '2.11.0+rocm7.14.1', torchaudio.__version__)
+# The course pins one wheel stack (constraints-rocm.txt) and the Windows run is
+# validated against it exactly. On Linux Radeon Cloud the platform may ship a
+# different preinstalled stack; docs/RADEON_CLOUD_LINUX_SETUP.md §5 states the
+# platform stack wins there and the real versions must be recorded in
+# environment.json. So: exact match on Windows, recorded-but-allowed on POSIX.
+EXPECTED_STACK = {
+    'torch': '2.12.0+rocm7.14.1',
+    'torchvision': '0.27.0+rocm7.14.1',
+    'torchaudio': '2.11.0+rocm7.14.1',
+}
+# YOLO_STRICT_STACK=1 forces the pinned stack everywhere (used by the Windows run).
+STRICT_STACK = sys.platform == 'win32' or os.getenv('YOLO_STRICT_STACK') == '1'
+
+
+def version_gate(pkg: str, actual: str) -> None:
+    """Pinned-stack gate.
+
+    Strict (Windows / YOLO_STRICT_STACK=1): the exact pinned build is required.
+    Non-strict (Linux platform stack): a different build passes, but the real
+    version is written into the report so the evidence chain stays auditable.
+    """
+    expected = EXPECTED_STACK[pkg]
+    if actual == expected:
+        gate(f'{pkg}_version', True, actual)
+    elif STRICT_STACK:
+        gate(f'{pkg}_version', False, f'{actual} (expected {expected})')
+    else:
+        report.setdefault('platform_stack', {})[pkg] = {'actual': actual, 'pinned': expected}
+        gate(f'{pkg}_version', True, f'{actual} (platform stack; pinned is {expected})')
+
+
+version_gate('torch', torch.__version__)
+version_gate('torchvision', torchvision.__version__)
+version_gate('torchaudio', torchaudio.__version__)
 gate('hip_backend', torch.version.hip is not None, str(torch.version.hip))
-# On AMD Windows ROCm wheels torch.version.cuda may be None (HIP-only build) —
-# informational; the HIP gate above is the authoritative backend proof.
+# torch.version.cuda is None on HIP-only ROCm wheels — informational; the HIP
+# gate above is the authoritative backend proof.
 gate('cuda_api_note', True, f'torch.version.cuda={torch.version.cuda} '
-                            '(None is normal on HIP-only ROCm Windows wheels; '
+                            '(None is normal on HIP-only ROCm wheels; '
                             'torch.cuda namespace is the HIP API surface)')
 gate('gpu_available', torch.cuda.is_available())
 
@@ -149,13 +180,37 @@ except Exception as exc:  # pragma: no cover - evidence capture
 else:
     gate('real_compute_pipeline', True)
 
-# --- driver info (best effort) ----------------------------------------------
-try:
-    out_txt = subprocess.run(['powershell', '-NoProfile', '-Command',
-                              '(Get-CimInstance Win32_VideoController | Where-Object {$_.Name -like "*AMD*"} | '
-                              'Select-Object Name,DriverVersion | ConvertTo-Json -Compress)'],
+# --- driver info (best effort, platform-aware) --------------------------------
+def _driver_info() -> str:
+    """Collect AMD driver information for the current platform.
+
+    Windows: WMI via PowerShell. Linux: rocm-smi / sysfs, no PowerShell needed.
+    """
+    if sys.platform == 'win32':
+        out_txt = subprocess.run(
+            ['powershell', '-NoProfile', '-Command',
+             '(Get-CimInstance Win32_VideoController | Where-Object {$_.Name -like "*AMD*"} | '
+             'Select-Object Name,DriverVersion | ConvertTo-Json -Compress)'],
+            capture_output=True, text=True, timeout=30).stdout.strip()
+        return out_txt
+    # POSIX / AMD Radeon Cloud
+    try:
+        smi = subprocess.run(['rocm-smi', '--showdriverversion'],
                              capture_output=True, text=True, timeout=30).stdout.strip()
-    report['driver'] = out_txt
+    except Exception:
+        smi = ''
+    try:
+        kfd = Path('/sys/class/kfd/kfd/topology/nodes')
+        if kfd.is_dir():
+            smi += ('\n' if smi else '') + \
+                f'kfd_nodes: {sorted(p.name for p in kfd.iterdir() if p.name.isdigit())}'
+    except Exception:
+        pass
+    return smi or 'unavailable: rocm-smi not found and /sys/class/kfd unreadable'
+
+
+try:
+    report['driver'] = _driver_info()
 except Exception as exc:
     report['driver'] = f'unavailable: {exc}'
 

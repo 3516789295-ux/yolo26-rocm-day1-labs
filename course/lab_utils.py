@@ -423,5 +423,20 @@ def require_rocm():
     assert hip is not None, ('This notebook requires an AMD ROCm PyTorch build (torch.version.hip is None). '
                               'Install the matching ROCm wheel in a separate environment first.')
     assert torch.cuda.is_available(), 'ROCm PyTorch installed but no GPU visible; check /dev/kfd, /dev/dri and GPU allocation.'
+    # A platform-preinstalled stack can pair a working ROCm torch with a torchvision
+    # built without a GPU NMS kernel. Every detection lab then dies deep inside
+    # Ultralytics (Lab A cell 5) with an opaque NotImplementedError. Probe the
+    # operator here so the failure is early and tells the reader what to do.
+    try:
+        import torchvision
+        torchvision.ops.nms(torch.zeros((2, 4), device='cuda'),
+                            torch.zeros(2, device='cuda'), 0.5)
+    except Exception as exc:
+        raise AssertionError(
+            'torchvision GPU NMS is unavailable: the installed torchvision was built without a '
+            'ROCm/CUDA nms kernel, so every detection lab would fail. Install the pinned stack '
+            '(docs/RADEON_CLOUD_LINUX_SETUP.md section 2-B) instead of the platform stack. '
+            f'Original error: {type(exc).__name__}: {exc}'
+        ) from exc
     print('AMD ROCm verified:',torch.cuda.get_device_name(0),'HIP:',hip)
     return 0

@@ -35,12 +35,29 @@ def test_root_env_override(monkeypatch, tmp_path):
     assert lu.root() == (tmp_path / 'my_course').resolve()
 
 
+def _posix_workspace_root() -> Path | None:
+    """The /workspace default that lab_utils.root() applies on Radeon Cloud hosts.
+
+    Returns None when the branch cannot trigger (Windows, or a POSIX host without
+    /workspace), so the caller can assert the cwd-local default instead.
+    """
+    if os.name == 'posix' and Path('/workspace').exists():
+        return Path('/workspace/yolo_course').resolve()
+    return None
+
+
 def test_root_default_is_cwd_local(tmp_path, monkeypatch):
-    """Without env var, default must stay inside the project/cwd, never a drive-root hijack."""
+    """Without env var, default must stay inside the project/cwd, never a drive-root hijack.
+
+    On a POSIX host that really has /workspace (AMD Radeon Cloud) root() is
+    documented to return /workspace/yolo_course — see
+    docs/RADEON_CLOUD_LINUX_SETUP.md §3 — so that host asserts the POSIX contract.
+    """
     import course.lab_utils as lu
     monkeypatch.delenv('YOLO_COURSE_HOME', raising=False)
     monkeypatch.chdir(tmp_path)
-    assert lu.root() == (tmp_path / 'yolo_course').resolve()
+    expected = _posix_workspace_root() or (tmp_path / 'yolo_course').resolve()
+    assert lu.root() == expected
 
 
 def test_root_workspace_only_on_posix(monkeypatch, tmp_path):
@@ -56,7 +73,8 @@ def test_root_workspace_only_on_posix(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     src = inspect.getsource(lu.root)
     assert "os.name == 'posix' and Path('/workspace').exists()" in src
-    assert lu.root() == (tmp_path / 'yolo_course').resolve()
+    expected = _posix_workspace_root() or (tmp_path / 'yolo_course').resolve()
+    assert lu.root() == expected
 
 
 # ---------------------------------------------------- ROCm gate integrity ----
@@ -138,6 +156,7 @@ def test_lab_c_smoke_and_baseline_use_gpu_device():
 
 
 # ------------------------------------------------------ lab_utils invariants ----
+@pytest.mark.skipif(os.name != 'nt', reason='Windows path semantics: backslash is a separator only on nt')
 def test_label_path_for_image_windows_separator():
     from course.lab_utils import label_path_for_image
     p = Path(r'C:\some\ds\images\train\pic.jpg')
